@@ -1,6 +1,6 @@
 import SideNav from '@/app/ui/sidenav';
  
-export const experimental_ppr = true;
+const experimental_ppr = true;
 
 import '@/app/ui/global.css';
 import { lusitana } from '@/app/ui/fonts';
