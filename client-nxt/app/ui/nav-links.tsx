@@ -9,11 +9,11 @@ import { usePathname } from 'next/navigation';
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: 'Mid Point Finder', href: '/midpoint'},
+  { name: 'Mid Point Finder', href: '/midpoint-finder'},
   {name: 'Manage Friends',  href: '/friends'},
-  { name: 'Location Approval', href: '/', },
-  { name: 'Travel History', href: '/', },
-  { name: 'Reviews', href: '/', },
+  { name: 'Location Approval', href: '/location-approval', },
+  { name: 'Travel History', href: '/travel-history', },
+  { name: 'Reviews', href: '/reviews', },
   
 
 ];
