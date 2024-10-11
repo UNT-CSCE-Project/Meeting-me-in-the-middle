@@ -3,3 +3,6 @@
 server/config/serviceAccountKey.json
 server/node_modules
 client-nxt/package-lock.json
+client-nxt/.env
+client-nxt/pnpm-lock.yaml
+client-nxt/app/lib/serviceAccountKey.json
