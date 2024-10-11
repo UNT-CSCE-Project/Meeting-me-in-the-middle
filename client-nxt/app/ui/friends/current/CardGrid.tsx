@@ -1,18 +1,13 @@
 import { Card } from "./Card"
-export default async function CardGrid() {
+import {CardGridProps} from "./definitions";
+
+export default async function CardGrid({ friends }: CardGridProps) {
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 px-3">
                 
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
+            {friends?.map((friend) => (
+                <Card key={friend.id} friend={friend} />
+             ))}
                 
         </div>
     )

@@ -1,27 +1,39 @@
-import {
-    BanknotesIcon,
-    ClockIcon,
-    UserGroupIcon,
-    InboxIcon,
-  } from '@heroicons/react/24/outline';
+"use client";
 import Link from "next/link";
-const iconMap = {
-    collected: BanknotesIcon,
-    customers: UserGroupIcon,
-    pending: ClockIcon,
-    invoices: InboxIcon,
-  };
-export function Card({
-    title,
-    value,
-    type,
-  }: {
-    title: string;
-    value: number | string;
-    type: 'invoices' | 'customers' | 'pending' | 'collected';
-  }) {
-    const Icon = iconMap[type];
-  
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { addFriend, deleteFriend } from '@/app/lib/friends/actions';
+import { friend } from "../definitions";
+export function Card({request} : friend) {
+
+    const [loading, setLoading] = useState(false);
+    const handleConnect = async (requestId: string) => {
+      setLoading(true);
+      try {
+       
+
+           await addFriend(requestId);
+    
+          console.log('Friend request created successfully:', requestId);
+          
+      } catch (error) {
+        console.error('An error occurred:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const handleCancel = async (requestId: string) => {
+      setLoading(true);
+      try {
+    
+        await deleteFriend(requestId);
+    
+      } catch (error) {
+        console.error('An error occurred:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     return (
       
       <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
@@ -39,8 +51,8 @@ export function Card({
 
         {/* Name, Title and Address Section */}
         <div className="ml-4">
-          <h3 className="text-sm font-medium">Avijeet</h3>
-          <p className="text-xs text-gray-500">2105 Stella St</p>
+          <h3 className="text-sm font-medium">{request.sender}</h3>
+          <p className="text-xs text-gray-500">{request.request_send_time}</p>
         </div>
       </div>
 
@@ -48,11 +60,17 @@ export function Card({
 
       {/* Connect and Deny Buttons */}
       <div className="mt-4 flex justify-end">
-        <button className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600">
-          Connect
+        <button 
+          onClick={() => handleConnect(request.id)}
+          disabled={loading}
+          className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600">
+          {loading ? 'Connecting...' : 'Connect'}
         </button>
-        <button className="w-20 ml-2 rounded-lg bg-red-500 text-white py-2 hover:bg-red-600">
-          Deny
+        <button 
+          onClick={() => handleCancel(request.id)}
+          disabled={loading}
+          className="w-20 ml-2 rounded-lg bg-red-500 text-white py-2 hover:bg-red-600">
+          {loading ? 'Cancelling...' : 'Cancel'}
         </button>
       </div>
     </div>

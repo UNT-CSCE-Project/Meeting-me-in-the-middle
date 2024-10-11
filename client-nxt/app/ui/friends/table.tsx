@@ -1,4 +1,4 @@
-import { CreateFriend, DeleteFriend, UpdateFriend } from "./buttons";
+import { SendRequest, DeleteFriend, UpdateFriend } from "./buttons";
 import FriendStatus from "./status";
 
 export default async function Table({
@@ -75,8 +75,8 @@ export default async function Table({
                         </div>
                     ) : (
                     <div className="flex justify-start gap-3">
-                        <CreateFriend id={friend.id} />
-                    </div>
+                        <SendRequest request={friend} />
+                    </div> 
               )}
                     </td>
                   </tr>
