@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/lib/firebaseAdmin.js"  ],
   "exclude": [
     "node_modules"
   ]
