@@ -8,12 +8,18 @@ import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';  // Make 
 // Update the schema to include sender, recipient, status, and request_send_time
 const FriendSchema = z.object({
   id: z.string().optional(),
-  sender: z.string({
+  sender_id: z.string({
     invalid_type_error: 'Please provide a sender.',
   }).nonempty('Sender cannot be empty.'),
-  recipient: z.string({
+  sender_name: z.string({
+    invalid_type_error: 'Please provide a sender.',
+  }).nonempty('Sender cannot be empty.'),
+  recipient_id: z.string({
     invalid_type_error: 'Please provide a recipient.',
   }).nonempty('Recipient cannot be empty.'),
+  recipent_name: z.string({
+    invalid_type_error: 'Please provide a sender.',
+  }).nonempty('Sender cannot be empty.'),
   status: z.enum(['pending', 'connected', 'not connected'], {
     invalid_type_error: 'Please provide a valid friend request status.',
   }),
@@ -27,8 +33,10 @@ const CreateFriend = FriendSchema.omit({ id: true });
 
 export type State = {
   errors?: {
-    sender?: string[];
-    recipient?: string[];
+    sender_id?: string[];
+    sender_name?: string[];
+    recipient_id?: string[];
+    recipent_name?: string[];
     status?: string[];
     request_send_time?: string[];
   };
@@ -61,8 +69,10 @@ const sendRequest = FriendSchema.omit({ id: true });
 
 export async function sendFriendRequest(formData: FormData) {
   const validatedFields = sendRequest.safeParse({
-    sender: formData.get('sender'),
-    recipient: formData.get('recipient'),
+    sender_id: formData.get('sender_id'),
+    sender_name: formData.get('sender_name'),
+    recipient_id: formData.get('recipient_id'),
+    recipent_name: formData.get('recipent_name'),
     status: formData.get('status'),
     request_send_time: formData.get('request_send_time'),
     is_deleted: false,
@@ -75,14 +85,16 @@ export async function sendFriendRequest(formData: FormData) {
     };
   }
 
-  const { sender, recipient, status, request_send_time } = validatedFields.data;
+  const { sender_id, sender_name, recipient_id, recipent_name, status, request_send_time } = validatedFields.data;
 
   // create friend request in Firestore
   try {
     const docRef = firebaseFirestore.collection('friends').doc();
     await docRef.set({
-      sender,
-      recipient,
+      sender_id,
+      sender_name,
+      recipient_id,
+      recipent_name,
       status,
       request_send_time,
       is_deleted: false,

@@ -1,13 +1,14 @@
 "use client";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { friend } from "../definitions";
+import { friend } from "./definitions";
 import { deleteFriend,  sendFriendRequest } from '@/app/lib/friends/actions';
+import {addNotification} from '@/app/lib/notifications/actions';
 import { useState } from 'react';
 export function SendRequest({ request }: { request: friend }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  console.log(request)
+  
   const handleClick = async () => {
     setLoading(true);
     setError(null);
@@ -15,16 +16,31 @@ export function SendRequest({ request }: { request: friend }) {
     try {
       console.log(`Sending friend request to ${request.name}: ${request.name}`);
       const formData = new FormData();
-      formData.append('sender', "Avijeet Shil");
-      formData.append('recipient', request.name);
+      formData.append('sender_id', "1");
+      formData.append('sender_name', "Avijeet Shil");
+      formData.append('recipient', request.id);
+      formData.append('recipient_name', request.name);
       formData.append('status', 'pending');
       formData.append('request_send_time', new Date().toISOString());
       
       console.log(`formData: ${formData}`);
-      const response = await sendFriendRequest( formData);
+      let response = await sendFriendRequest( formData);
       if (response?.message) {
         setError(response?.message);
+      } 
+      /* TODO: Add notification */
+      /* Start
+      const notificationData = new FormData();
+      notificationData.append('type', 'friend_request');
+      notificationData.append('sender_id', "1");
+      notificationData.append('sender_name', "Avijeet Shil");
+      notificationData.append('message', `Friend request sent to ${request.name}`);
+      try {
+        await addNotification(notificationData);
+      } catch (error) {
+        setError('Failed to send notification.');
       }
+      End */
       // Optionally, handle success (e.g., show a success message)
     } catch (err) {
       setError('Failed to send friend request.'); // Handle error appropriately
