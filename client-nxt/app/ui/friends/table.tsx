@@ -1,3 +1,4 @@
+import { fetchUsersByQuery } from "@/app/lib/users/data";
 import { SendRequest, DeleteFriend, UpdateFriend } from "./buttons";
 import FriendStatus from "./status";
 
@@ -10,9 +11,17 @@ export default async function Table({
   }) {
     const friends = [
       { id: 1, name: 'Avijeet', email: 'S6Q6f@example.com', date: '2023-03-02', status: 'pending' },
-      { id: 2, name: 'Nikhil', email: 'OYkZD@example.com',  date: '2023-03-02', status: 'connected' },
-      { id: 3, name: 'Sahil', email: 'jzKu7@example.com',  date: '2023-03-02', status: 'not connected' },];
-  
+      { id: 2, name: 'Nikhil', email: 'OYkZD@example.com',  date: '2023-03-02', status: 'not connected' },
+      { id: 3, name: 'Sahil', email: 'jzKu7@example.com',  date: '2023-03-02', status: 'connected' },];
+    /* TODO: fetch user list */
+    const searchList = await fetchUsersByQuery(query);
+    console.log(searchList)
+    /* TODO: Add search functionality */
+    /* TODO: ADD filter functionality */
+    /* TODO: Add sorting functionality */
+    /* TODO: Add pagination */
+
+
     return (
       <div className="mt-6 flow-root">
         <div className="inline-block min-w-full align-middle">
@@ -76,7 +85,7 @@ export default async function Table({
                     ) : (
                     <div className="flex justify-start gap-3">
                         <SendRequest request={friend} />
-                    </div> 
+                    </div>
               )}
                     </td>
                   </tr>
