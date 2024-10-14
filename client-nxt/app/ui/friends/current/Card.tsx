@@ -3,7 +3,7 @@ import { useState } from "react";
 import { friend } from "../definitions";
 import { deleteFriend } from "@/app/lib/friends/actions";
 export async function Card({ friend } : friend) {
-
+    const currentUserId = "xo1sAzsKwYHfUoTaq2jN";
     const [loading, setLoading] = useState(false);
 
     const handleCancel = async (requestId: string) => {
@@ -35,7 +35,7 @@ export async function Card({ friend } : friend) {
   
             {/* Name, Title and Address Section */}
             <div className="ml-4">
-              <h3 className="text-sm font-medium">{friend.recipient}</h3>
+              <h3 className="text-sm font-medium">{friend.recipient_id != currentUserId ? friend.name : friend.sender_name}</h3>
               <p className="text-xs text-gray-500">{friend.request_send_time}</p>
             </div>
           </div>

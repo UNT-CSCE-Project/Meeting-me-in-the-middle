@@ -9,16 +9,16 @@ import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';  // Make 
 const FriendSchema = z.object({
   id: z.string().optional(),
   sender_id: z.string({
-    invalid_type_error: 'Please provide a sender.',
+    invalid_type_error: 'Please provide a sender_id.',
   }).nonempty('Sender cannot be empty.'),
   sender_name: z.string({
-    invalid_type_error: 'Please provide a sender.',
+    invalid_type_error: 'Please provide a sender_name.',
   }).nonempty('Sender cannot be empty.'),
   recipient_id: z.string({
-    invalid_type_error: 'Please provide a recipient.',
+    invalid_type_error: 'Please provide a recipient_id.',
   }).nonempty('Recipient cannot be empty.'),
-  recipent_name: z.string({
-    invalid_type_error: 'Please provide a sender.',
+  recipient_name: z.string({
+    invalid_type_error: 'Please provide a recipient_name.',
   }).nonempty('Sender cannot be empty.'),
   status: z.enum(['pending', 'connected', 'not connected'], {
     invalid_type_error: 'Please provide a valid friend request status.',
@@ -72,12 +72,12 @@ export async function sendFriendRequest(formData: FormData) {
     sender_id: formData.get('sender_id'),
     sender_name: formData.get('sender_name'),
     recipient_id: formData.get('recipient_id'),
-    recipent_name: formData.get('recipent_name'),
+    recipient_name: formData.get('recipient_name'),
     status: formData.get('status'),
     request_send_time: formData.get('request_send_time'),
     is_deleted: false,
   });
-
+  console.log(validatedFields, ' ', formData);
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -85,7 +85,7 @@ export async function sendFriendRequest(formData: FormData) {
     };
   }
 
-  const { sender_id, sender_name, recipient_id, recipent_name, status, request_send_time } = validatedFields.data;
+  const { sender_id, sender_name, recipient_id, recipient_name, status, request_send_time } = validatedFields.data;
 
   // create friend request in Firestore
   try {
@@ -94,7 +94,7 @@ export async function sendFriendRequest(formData: FormData) {
       sender_id,
       sender_name,
       recipient_id,
-      recipent_name,
+      recipient_name,
       status,
       request_send_time,
       is_deleted: false,
@@ -102,9 +102,9 @@ export async function sendFriendRequest(formData: FormData) {
   } catch (error) {
     return { message: 'Firestore Error: Failed to send Friend Request.' };
   }
+  revalidatePath('/dashboard/friends');
 
-  //revalidatePath('/dashboard/friends');
-  //redirect('/dashboard/friends');
+  return { message: 'Friend Request Sent.' };
 }
 
 // Delete a friend request from Firestore
@@ -117,5 +117,25 @@ export async function deleteFriend(id: string) {
     };
   }
 
-  revalidatePath('/dashboard/Friends');
+  revalidatePath('/dashboard/friends');
+}
+
+export async function fetchFriendRequest(id: string) {
+  try {
+    const friendSnapshot = await firebaseFirestore.collection('friends').doc(id).get();
+    return friendSnapshot.data();
+  } catch (error) {
+    return null;
+  }
+}
+export async function cancelFriendRequest(sender_id: string, recipient_id: string) {
+  try {
+
+
+    await firebaseFirestore.collection('friends').doc(sender_id).update({ status: 'not connected' }).delete();
+  } catch (error) {
+    return {
+      message: 'Firestore Error: Failed to Cancel Friend Request.',
+    };
+  }
 }

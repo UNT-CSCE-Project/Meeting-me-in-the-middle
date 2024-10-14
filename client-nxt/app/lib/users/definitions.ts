@@ -1,4 +1,4 @@
-export type users = {
+export type User = {
     id: string;
     first_name: string;
     last_name: string;
@@ -15,3 +15,12 @@ export type users = {
     updated_at: string | null;
     deleted_at: string | null;
 };
+
+
+export type UserInfoWithStatus = {
+    id: string;
+    name: string;
+    email: string;
+    status: string;
+    requestId: string | null;
+  };
