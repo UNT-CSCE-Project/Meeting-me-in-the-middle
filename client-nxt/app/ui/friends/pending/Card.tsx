@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { addFriend, deleteFriend } from '@/app/lib/friends/actions';
 import { friend } from "../definitions";
 export function Card({request} : friend) {
-
+    const currentUserId = "xo1sAzsKwYHfUoTaq2jN";
     const [loading, setLoading] = useState(false);
     const handleConnect = async (requestId: string) => {
       setLoading(true);
@@ -51,7 +51,7 @@ export function Card({request} : friend) {
 
         {/* Name, Title and Address Section */}
         <div className="ml-4">
-          <h3 className="text-sm font-medium">{request.sender}</h3>
+          <h3 className="text-sm font-medium">{request.name}</h3>
           <p className="text-xs text-gray-500">{request.request_send_time}</p>
         </div>
       </div>

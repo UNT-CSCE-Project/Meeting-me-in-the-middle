@@ -1,3 +1,4 @@
+import { fetchUsersByQuery } from "@/app/lib/users/data";
 import { SendRequest, DeleteFriend, UpdateFriend } from "./buttons";
 import FriendStatus from "./status";
 
@@ -8,11 +9,17 @@ export default async function Table({
     query: string;
     currentPage: number;
   }) {
-    const friends = [
-      { id: 1, name: 'Avijeet', email: 'S6Q6f@example.com', date: '2023-03-02', status: 'pending' },
-      { id: 2, name: 'Nikhil', email: 'OYkZD@example.com',  date: '2023-03-02', status: 'connected' },
-      { id: 3, name: 'Sahil', email: 'jzKu7@example.com',  date: '2023-03-02', status: 'not connected' },];
   
+    /* TODO: fetch user list */
+
+    const currentUserId = "xo1sAzsKwYHfUoTaq2jN"; // Replace with authenticated user ID
+    const searchList = await fetchUsersByQuery(query, currentUserId);
+    console.log(searchList)
+    /* TODO: ADD filter functionality */
+    /* TODO: Add sorting functionality */
+    /* TODO: Add pagination */
+
+
     return (
       <div className="mt-6 flow-root">
         <div className="inline-block min-w-full align-middle">
@@ -29,9 +36,6 @@ export default async function Table({
                   </th>
                   
                   <th scope="col" className="px-3 py-5 font-medium">
-                    Date
-                  </th>
-                  <th scope="col" className="px-3 py-5 font-medium">
                     Status
                   </th>
                   <th scope="col" className="relative py-3 pl-6 pr-3 ">
@@ -40,9 +44,9 @@ export default async function Table({
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {friends?.map((friend) => (
+                {searchList?.map((item) => (
                   <tr
-                    key={friend.id}
+                    key={item.id}
                     className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                   >
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
@@ -52,31 +56,28 @@ export default async function Table({
                             src={"https://picsum.photos/200/300"} // Add dynamic avatar URL
                             alt="Avatar"
                             />
-                            <div className="text-sm font-medium text-gray-900">{friend.name}</div>
+                            <div className="text-sm font-medium text-gray-900">{item.name}</div>
                         </div>
                     </td>
 
                       
                     <td className="whitespace-nowrap px-3 py-3">
-                      {friend.email}
+                      {item.email}
                     </td>
                     
                     <td className="whitespace-nowrap px-3 py-3">
-                      {(friend.date)}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3">
-                      <FriendStatus status={friend.status} />
+                      <FriendStatus status={item.status} />
                     </td>
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
                       
-                      {friend.status === 'pending' || friend.status === 'connected' ? (
+                      {item.status === 'pending' || item.status === 'connected' ? (
                     <div className="flex justify-start gap-3">
-                        <DeleteFriend id={friend.id} />
+                        <DeleteFriend request_id= {item.requestId} />
                         </div>
                     ) : (
                     <div className="flex justify-start gap-3">
-                        <SendRequest request={friend} />
-                    </div> 
+                        <SendRequest request={item} />
+                    </div>
               )}
                     </td>
                   </tr>
