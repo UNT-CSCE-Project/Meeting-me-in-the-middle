@@ -1,16 +1,15 @@
-import Logo from '@/app/ui/logo';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import styles from '@/app/ui/home.module.css';
-import Image from 'next/image';
+// page.tsx
+
+import "@/app/ui/global.css";
+import React from 'react';
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col p-6">
-       
-    
-   <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-    MidPoint Finder
-   </div>
- </main>
+    <div className="flex h-screen flex-col md:flex-row ">
+      <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
+        {/* You can add your main content here */}
+        <h1 className="text-2xl font-bold">Welcome to Meet Me dsad in the Middle!</h1>
+        {/* You can add more content or components here */}
+      </div>
+    </div>
   );
 }

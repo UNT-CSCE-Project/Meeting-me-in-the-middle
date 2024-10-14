@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import serviceAccountKey from '../lib/serviceAccountKey.json'; // Adjust the path based on your directory structure
+import serviceAccountKey from '@/app/lib/serviceAccountKey.json'; // Adjust the path based on your directory structure
 
 
 if (!serviceAccountKey) {
@@ -15,3 +15,4 @@ const db = admin.firestore();
 const auth = admin.auth();
 
 export { admin, db, auth };
+

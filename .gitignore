@@ -6,3 +6,4 @@ client-nxt/package-lock.json
 client-nxt/.env
 client-nxt/pnpm-lock.yaml
 client-nxt/app/lib/serviceAccountKey.json
+node_modules/
