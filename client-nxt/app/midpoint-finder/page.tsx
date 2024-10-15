@@ -132,7 +132,7 @@ function MyMap() {
                     midpoint,
                     cityLocation
                   );
-                console.log("Distance:", distance);
+                  console.log("Distance:", distance);
                 if (distance < minDistance) {
                   console.log("New nearest city found");
                   minDistance = distance;
@@ -235,84 +235,84 @@ function MyMap() {
   return (
     <div className="flex flex-row h-screen">
       <div style={{ width: '600px', height: '400px'}} className="flex flex-col justify-start items-start bg-transparent border-2 border-black p-4 w-64 h-48 rounded-md">
-        <input
-          type="text"
-          value={originLocation}
-          onChange={(e) => setOriginLocation(e.target.value)}
-          placeholder="Enter origin location"
-          style={{marginTop: '20px'}}
-          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-        />
-        <input
-          type="text"
-          value={destinationLocation}
-          onChange={(e) => setDestinationLocation(e.target.value)}
-          placeholder="Enter destination location"
-          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-        />
-        <button onClick={calculateMidpoint} style={{ marginLeft: '175px', width: '200px' }} className="bg-white text-black p-2 rounded-md outline outline-1 outline-black">Calculate Midpoint</button>
+      <input
+        type="text"
+        value={originLocation}
+        onChange={(e) => setOriginLocation(e.target.value)}
+        placeholder="Enter origin location"
+        style={{marginTop: '20px'}}
+        className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+      />
+      <input
+        type="text"
+        value={destinationLocation}
+        onChange={(e) => setDestinationLocation(e.target.value)}
+        placeholder="Enter destination location"
+        className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+      />
+      <button onClick={calculateMidpoint} style={{ marginLeft: '175px', width: '200px' }} className="bg-white text-black p-2 rounded-md outline outline-1 outline-black">Calculate Midpoint</button>
       </div>
-      <div style={{ marginLeft:'50px', height: '400px'}} className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden">
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          zoom={9}
-          center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-        >
-          {directions && (
-            <DirectionsRenderer
-              directions={directions}
-              options={{
-                polylineOptions: {
-                  strokeColor: "#FF0000",
-                  strokeOpacity: 1.0,
-                  strokeWeight: 2,
-                },
-                preserveViewport: true,
-              }}
-            />
-          )}
-          {markers}
-          {places.map(
-            (place, index) =>
-              place.geometry &&
-              place.geometry.location && (
-                <Marker
-                  key={index}
-                  position={place.geometry.location}
-                  title={place.name}
-                  onClick={() => setSelectedPlace(place)}
-                />
-              )
-          )}
-          {selectedPlace && selectedPlace.geometry && (
-            <InfoWindow
-              position={selectedPlace.geometry.location}
-              onCloseClick={() => setSelectedPlace(null)}
-            >
-              <div>
-                <h2>{selectedPlace.name}</h2>
-                <p>{selectedPlace.formatted_address}</p>
-                {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
-                {selectedPlace.opening_hours && (
-                  <p>
-                    Hours:{" "}
-                    {selectedPlace.opening_hours?.weekday_text?.join(", ")}
-                  </p>
-                )}
-              </div>
-            </InfoWindow>
-          )}
-          {midpoint && (
-            <Marker
-              position={midpoint}
-              icon={{
-                url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
-              }}
-            />
-          )}
-        </GoogleMap>
+      <div style={{ marginLeft:'50px', height: '400px'}} className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden">      
+      <GoogleMap
+        mapContainerStyle={mapStyles}
+        zoom={9}
+        center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+      >
+        {directions && (
+          <DirectionsRenderer
+            directions={directions}
+            options={{
+              polylineOptions: {
+                strokeColor: "#FF0000",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+              },
+              preserveViewport: true,
+            }}
+          />
+        )}
+        {markers}
+        {places.map(
+          (place, index) =>
+            place.geometry &&
+            place.geometry.location && (
+              <Marker
+                key={index}
+                position={place.geometry.location}
+                title={place.name}
+                onClick={() => setSelectedPlace(place)}
+              />
+            )
+        )}
+        {selectedPlace && selectedPlace.geometry && (
+          <InfoWindow
+            position={selectedPlace.geometry.location}
+            onCloseClick={() => setSelectedPlace(null)}
+          >
+            <div>
+              <h2>{selectedPlace.name}</h2>
+              <p>{selectedPlace.formatted_address}</p>
+              {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
+              {selectedPlace.opening_hours && (
+                <p>
+                  Hours:{" "}
+                  {selectedPlace.opening_hours?.weekday_text?.join(", ")}
+                </p>
+              )}
+            </div>
+          </InfoWindow>
+        )}
+        {midpoint && (
+          <Marker
+            position={midpoint}
+            icon={{
+              url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
+            }}
+          />
+        )}
+      </GoogleMap>
       </div>
     </div>
   );
