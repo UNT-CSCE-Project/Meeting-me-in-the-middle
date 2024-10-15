@@ -22,7 +22,7 @@ export function SendRequest({ request }: { request: UserInfoWithStatus }) {
   const connectRequest = sendFriendRequest.bind(null, formData);
   return (
 
-    <form action={connectRequest}>
+    <form onSubmit={connectRequest}>
         <button
       type='submit'
       
@@ -60,7 +60,7 @@ export function DeleteFriend({ request_id }: { request_id: string }) {
   const deleteFriendWithId = deleteFriend.bind(null, request_id);
  
   return (
-    <form action={deleteFriendWithId}>
+    <form onSubmit={deleteFriendWithId}>
       <button type="submit"
       
       className="flex h-10 items-center rounded-lg bg-red-600 px-4 text-sm font-medium text-white transition-colors hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
