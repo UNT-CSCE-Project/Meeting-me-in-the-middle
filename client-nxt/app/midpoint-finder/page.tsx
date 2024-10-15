@@ -28,7 +28,9 @@ function MyMap() {
   const [midpoint, setMidpoint] = useState<google.maps.LatLng | null>(null);
   const [nearestCity, setNearestCity] = useState<string | null>(null);
   const [places, setPlaces] = useState<google.maps.places.PlaceResult[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
+  const [selectedPlace, setSelectedPlace] =
+    useState<google.maps.places.PlaceResult | null>(null);
+  const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -51,7 +53,27 @@ function MyMap() {
   ) => {
     if (status === google.maps.DirectionsStatus.OK && result !== null) {
       setDirections(result);
-      const route = result.routes[1];
+      const route = result.routes[0];
+      const legs = route.legs;
+      const markers = legs.map((leg, index) => (
+        <Marker
+          key={index}
+          position={leg.start_location}
+          title={`Leg ${index + 1}`}
+        >
+          <InfoWindow position={leg.start_location}>
+            <div>
+              <h2>Leg {index + 1}</h2>
+              <p>Start Address: {leg.start_address}</p>
+              <p>End Address: {leg.end_address}</p>
+              <p>Distance: {leg.distance?.text}</p>
+              <p>Duration: {leg.duration?.text}</p>
+            </div>
+          </InfoWindow>
+        </Marker>
+      ));
+      setMarkers(markers);
+
       const decodedPath = google.maps.geometry.encoding.decodePath(
         route.overview_polyline
       );
@@ -68,6 +90,7 @@ function MyMap() {
     // Clear the directions and midpoint
     setDirections(null);
     setMidpoint(null);
+    setMarkers([]);
 
     // Calculate the directions and midpoint
     const directionsService = new google.maps.DirectionsService();
@@ -87,14 +110,61 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
+        console.log(`Finding nearest city to midpoint: ${midpoint}`);
         if (status === "OK" && results !== null) {
-          const cityResult = results.find((result) =>
-            result.types.includes("locality")
-          );
-          if (cityResult) {
-            setNearestCity(cityResult.formatted_address);
-            zoomInOnCity(cityResult.formatted_address);
-            findPlacesAroundCity(cityResult.formatted_address);
+          console.log("Results:", results);
+          let nearestCity: google.maps.GeocoderResult | null = null;
+          let minDistance: number = Infinity;
+          if (Array.isArray(results)) {
+            console.log("Results is an array");
+            for (const result of results) {
+              console.log("Result:", result);
+              if ((result as google.maps.GeocoderResult).types.includes("locality")) {
+                console.log("Result is a locality");
+                const cityLocation = result.geometry.location;
+                console.log("City location:", cityLocation);
+                const distance =
+                  google.maps.geometry.spherical.computeDistanceBetween(
+                    midpoint,
+                    cityLocation
+                  );
+                  console.log("Distance:", distance);
+                if (distance < minDistance) {
+                  console.log("New nearest city found");
+                  minDistance = distance;
+                  nearestCity = result as google.maps.GeocoderResult;
+                }
+              }
+            }
+          } else {
+            console.log("Results is not an array");
+            if (
+              (results as google.maps.GeocoderResult).types.includes("locality")
+            ) {
+              console.log("Result is a locality");
+              const cityLocation = (results as google.maps.GeocoderResult)
+                .geometry.location;
+              console.log("City location:", cityLocation);
+              const distance =
+                google.maps.geometry.spherical.computeDistanceBetween(
+                  midpoint,
+                  cityLocation
+                );
+              console.log("Distance:", distance);
+              if (distance < minDistance) {
+                console.log("New nearest city found");
+                minDistance = distance;
+                nearestCity = results as google.maps.GeocoderResult;
+              }
+            }
+          }
+          console.log("Nearest city:", nearestCity);
+          console.log("Min distance:", minDistance);
+          if (nearestCity) {
+            console.log("Setting nearest city");
+            setNearestCity(nearestCity.formatted_address);
+            zoomInOnCity(nearestCity.formatted_address);
+            findPlacesAroundCity(nearestCity.formatted_address);
           }
         }
       }
@@ -109,11 +179,14 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
+        console.log(`Zooming in on city: ${city}`);
         if (status === "OK" && results !== null) {
           const cityResult = results[0];
+          console.log("Geocoder result:", JSON.stringify(cityResult, null, 2));
           if (cityResult.geometry.location) {
             map?.setCenter(cityResult.geometry.location);
             map?.setZoom(12);
+            console.log(`Map center set to: ${map?.getCenter()}`);
           }
         }
       }
@@ -138,12 +211,7 @@ function MyMap() {
             const placeId = result.place_id;
             const request: google.maps.places.PlaceDetailsRequest = {
               placeId: placeId ?? "",
-              fields: [
-                "name",
-                "formatted_address",
-                "rating",
-                "opening_hours",
-              ],
+              fields: ["name", "formatted_address", "rating", "opening_hours"],
             };
             service.getDetails(request, (result, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -195,6 +263,7 @@ function MyMap() {
             }}
           />
         )}
+        {markers}
         {places.map(
           (place, index) =>
             place.geometry &&
@@ -215,6 +284,12 @@ function MyMap() {
             <div>
               <h2>{selectedPlace.name}</h2>
               <p>{selectedPlace.formatted_address}</p>
+              {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
+              {selectedPlace.opening_hours && (
+                <p>
+                  Hours: {selectedPlace.opening_hours?.weekday_text?.join(", ")}
+                </p>
+              )}
             </div>
           </InfoWindow>
         )}
