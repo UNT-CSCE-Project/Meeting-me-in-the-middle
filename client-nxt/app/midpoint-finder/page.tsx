@@ -32,6 +32,8 @@ function MyMap() {
     useState<google.maps.places.PlaceResult | null>(null);
   const [markers, setMarkers] = useState<JSX.Element[]>([]);
   const [placeType, setPlaceType] = useState("restaurant");
+  const [newDirections, setNewDirections] =
+    useState<google.maps.DirectionsResult | null>(null);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -64,6 +66,47 @@ function MyMap() {
       const midpoint = decodedPath[midpointIndex];
       setMidpoint(midpoint);
       findNearestCity(midpoint);
+
+      if (selectedPlace) {
+        // Create a new route from the origin point to the selected place
+        const directionsService = new google.maps.DirectionsService();
+        const newRequest: google.maps.DirectionsRequest = {
+          origin: originLocation,
+          destination: selectedPlace.formatted_address as string,
+          travelMode: google.maps.TravelMode.DRIVING,
+        };
+        directionsService.route(newRequest, (newResult, newStatus) => {
+          if (
+            newStatus === google.maps.DirectionsStatus.OK &&
+            newResult !== null
+          ) {
+            const newRoute = newResult.routes[0];
+            const newLegs = newRoute.legs;
+            const newMarkers = newLegs.map((leg, index) => (
+              <Marker
+                key={index}
+                position={leg.start_location}
+                title={`Leg ${index + 1}`}
+              >
+                <InfoWindow position={midpoint}>
+                  <div>
+                    <h2>Leg {index + 1}</h2>
+                    <p>Start Address: {leg.start_address}</p>
+                    <p>End Address: {leg.end_address}</p>
+                    <p>Distance: {leg.distance?.text}</p>
+                    <p>Duration: {leg.duration?.text}</p>
+                  </div>
+                </InfoWindow>
+              </Marker>
+            ));
+            setMarkers([...markers, ...newMarkers]);
+            setNewDirections(newResult);
+          } else {
+            console.error("Error calculating new route:", newStatus);
+          }
+        });
+      }
+
       const markers = legs.map((leg, index) => (
         <Marker
           key={index}
@@ -86,6 +129,30 @@ function MyMap() {
       console.error("Error calculating directions:", status);
     }
   };
+
+  const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
+  console.log("handlePlaceSelect called");
+  setSelectedPlace(place);
+  if (place.geometry && place.geometry.location) {
+    const newRequest: google.maps.DirectionsRequest = {
+      origin: originLocation,
+      destination: place.geometry.location,
+      travelMode: google.maps.TravelMode.DRIVING,
+    };
+    const directionsService = new google.maps.DirectionsService();
+    directionsService.route(newRequest, (newResult, newStatus) => {
+      console.log("directionsService.route callback called");
+      if (newStatus === google.maps.DirectionsStatus.OK && newResult !== null) {
+        console.log("newResult:", newResult);
+        setNewDirections(newResult);
+      } else {
+        console.error("Error calculating new route:", newStatus);
+      }
+    });
+  } else {
+    console.error("Place geometry is not available");
+  }
+};
 
   const calculateMidpoint = () => {
     // Clear the directions and midpoint
@@ -342,6 +409,18 @@ function MyMap() {
                 }}
               />
             )}
+            {newDirections && (
+              <DirectionsRenderer
+                directions={newDirections}
+                options={{
+                  polylineOptions: {
+                    strokeColor: "#0000ff", // blue
+                    strokeOpacity: 0.5,
+                    strokeWeight: 5,
+                  },
+                }}
+              />
+            )}
             {markers}
             {places.map(
               (place, index) =>
@@ -351,7 +430,7 @@ function MyMap() {
                     key={index}
                     position={place.geometry.location}
                     title={place.name}
-                    onClick={() => setSelectedPlace(place)}
+                    onClick={() => handlePlaceSelect(place)}
                   />
                 )
             )}
@@ -412,7 +491,7 @@ function MyMap() {
                   boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
                   flex: 1, // take up an equal amount of space
                 }}
-                onClick={() => setSelectedPlace(place)}
+                onClick={() => handlePlaceSelect(place)}
               >
                 <h3 className="text-lg font-bold">{place.name}</h3>
               </div>
