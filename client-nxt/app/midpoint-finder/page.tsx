@@ -13,7 +13,7 @@ import {
 //import { Geocoder } from "@react-google-maps/api/dist/utils/Geocoder";
 
 const mapStyles = {
-  height: "100vh",
+  height: "400px",
   width: "100%",
 };
 
@@ -28,7 +28,9 @@ function MyMap() {
   const [midpoint, setMidpoint] = useState<google.maps.LatLng | null>(null);
   const [nearestCity, setNearestCity] = useState<string | null>(null);
   const [places, setPlaces] = useState<google.maps.places.PlaceResult[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
+  const [selectedPlace, setSelectedPlace] =
+    useState<google.maps.places.PlaceResult | null>(null);
+  const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -51,7 +53,27 @@ function MyMap() {
   ) => {
     if (status === google.maps.DirectionsStatus.OK && result !== null) {
       setDirections(result);
-      const route = result.routes[1];
+      const route = result.routes[0];
+      const legs = route.legs;
+      const markers = legs.map((leg, index) => (
+        <Marker
+          key={index}
+          position={leg.start_location}
+          title={`Leg ${index + 1}`}
+        >
+          <InfoWindow position={leg.start_location}>
+            <div>
+              <h2>Leg {index + 1}</h2>
+              <p>Start Address: {leg.start_address}</p>
+              <p>End Address: {leg.end_address}</p>
+              <p>Distance: {leg.distance?.text}</p>
+              <p>Duration: {leg.duration?.text}</p>
+            </div>
+          </InfoWindow>
+        </Marker>
+      ));
+      setMarkers(markers);
+
       const decodedPath = google.maps.geometry.encoding.decodePath(
         route.overview_polyline
       );
@@ -68,6 +90,7 @@ function MyMap() {
     // Clear the directions and midpoint
     setDirections(null);
     setMidpoint(null);
+    setMarkers([]);
 
     // Calculate the directions and midpoint
     const directionsService = new google.maps.DirectionsService();
@@ -87,14 +110,65 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
+        console.log(`Finding nearest city to midpoint: ${midpoint}`);
         if (status === "OK" && results !== null) {
-          const cityResult = results.find((result) =>
-            result.types.includes("locality")
-          );
-          if (cityResult) {
-            setNearestCity(cityResult.formatted_address);
-            zoomInOnCity(cityResult.formatted_address);
-            findPlacesAroundCity(cityResult.formatted_address);
+          console.log("Results:", results);
+          let nearestCity: google.maps.GeocoderResult | null = null;
+          let minDistance: number = Infinity;
+          if (Array.isArray(results)) {
+            console.log("Results is an array");
+            for (const result of results) {
+              console.log("Result:", result);
+              if (
+                (result as google.maps.GeocoderResult).types.includes(
+                  "locality"
+                )
+              ) {
+                console.log("Result is a locality");
+                const cityLocation = result.geometry.location;
+                console.log("City location:", cityLocation);
+                const distance =
+                  google.maps.geometry.spherical.computeDistanceBetween(
+                    midpoint,
+                    cityLocation
+                  );
+                console.log("Distance:", distance);
+                if (distance < minDistance) {
+                  console.log("New nearest city found");
+                  minDistance = distance;
+                  nearestCity = result as google.maps.GeocoderResult;
+                }
+              }
+            }
+          } else {
+            console.log("Results is not an array");
+            if (
+              (results as google.maps.GeocoderResult).types.includes("locality")
+            ) {
+              console.log("Result is a locality");
+              const cityLocation = (results as google.maps.GeocoderResult)
+                .geometry.location;
+              console.log("City location:", cityLocation);
+              const distance =
+                google.maps.geometry.spherical.computeDistanceBetween(
+                  midpoint,
+                  cityLocation
+                );
+              console.log("Distance:", distance);
+              if (distance < minDistance) {
+                console.log("New nearest city found");
+                minDistance = distance;
+                nearestCity = results as google.maps.GeocoderResult;
+              }
+            }
+          }
+          console.log("Nearest city:", nearestCity);
+          console.log("Min distance:", minDistance);
+          if (nearestCity) {
+            console.log("Setting nearest city");
+            setNearestCity(nearestCity.formatted_address);
+            zoomInOnCity(nearestCity.formatted_address);
+            findPlacesAroundCity(nearestCity.formatted_address);
           }
         }
       }
@@ -109,11 +183,14 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
+        console.log(`Zooming in on city: ${city}`);
         if (status === "OK" && results !== null) {
           const cityResult = results[0];
+          console.log("Geocoder result:", JSON.stringify(cityResult, null, 2));
           if (cityResult.geometry.location) {
             map?.setCenter(cityResult.geometry.location);
             map?.setZoom(12);
+            console.log(`Map center set to: ${map?.getCenter()}`);
           }
         }
       }
@@ -138,12 +215,7 @@ function MyMap() {
             const placeId = result.place_id;
             const request: google.maps.places.PlaceDetailsRequest = {
               placeId: placeId ?? "",
-              fields: [
-                "name",
-                "formatted_address",
-                "rating",
-                "opening_hours",
-              ],
+              fields: ["name", "formatted_address", "rating", "opening_hours"],
             };
             service.getDetails(request, (result, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -161,72 +233,87 @@ function MyMap() {
   }
 
   return (
-    <div>
-      <input
-        type="text"
-        value={originLocation}
-        onChange={(e) => setOriginLocation(e.target.value)}
-        placeholder="Enter origin location"
-      />
-      <input
-        type="text"
-        value={destinationLocation}
-        onChange={(e) => setDestinationLocation(e.target.value)}
-        placeholder="Enter destination location"
-      />
-      <button onClick={calculateMidpoint}>Calculate Midpoint</button>
-      <GoogleMap
-        mapContainerStyle={mapStyles}
-        zoom={9}
-        center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-      >
-        {directions && (
-          <DirectionsRenderer
-            directions={directions}
-            options={{
-              polylineOptions: {
-                strokeColor: "#FF0000",
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-              },
-              preserveViewport: true,
-            }}
-          />
-        )}
-        {places.map(
-          (place, index) =>
-            place.geometry &&
-            place.geometry.location && (
-              <Marker
-                key={index}
-                position={place.geometry.location}
-                title={place.name}
-                onClick={() => setSelectedPlace(place)}
-              />
-            )
-        )}
-        {selectedPlace && selectedPlace.geometry && (
-          <InfoWindow
-            position={selectedPlace.geometry.location}
-            onCloseClick={() => setSelectedPlace(null)}
-          >
-            <div>
-              <h2>{selectedPlace.name}</h2>
-              <p>{selectedPlace.formatted_address}</p>
-            </div>
-          </InfoWindow>
-        )}
-        {midpoint && (
-          <Marker
-            position={midpoint}
-            icon={{
-              url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
-            }}
-          />
-        )}
-      </GoogleMap>
+    <div className="flex flex-row h-screen">
+      <div style={{ width: '600px', height: '400px'}} className="flex flex-col justify-start items-start bg-transparent border-2 border-black p-4 w-64 h-48 rounded-md">
+        <input
+          type="text"
+          value={originLocation}
+          onChange={(e) => setOriginLocation(e.target.value)}
+          placeholder="Enter origin location"
+          style={{marginTop: '20px'}}
+          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+        />
+        <input
+          type="text"
+          value={destinationLocation}
+          onChange={(e) => setDestinationLocation(e.target.value)}
+          placeholder="Enter destination location"
+          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+        />
+        <button onClick={calculateMidpoint} style={{ marginLeft: '175px', width: '200px' }} className="bg-white text-black p-2 rounded-md outline outline-1 outline-black">Calculate Midpoint</button>
+      </div>
+      <div style={{ marginLeft:'50px', height: '400px'}} className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden">
+        <GoogleMap
+          mapContainerStyle={mapStyles}
+          zoom={9}
+          center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+        >
+          {directions && (
+            <DirectionsRenderer
+              directions={directions}
+              options={{
+                polylineOptions: {
+                  strokeColor: "#FF0000",
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2,
+                },
+                preserveViewport: true,
+              }}
+            />
+          )}
+          {markers}
+          {places.map(
+            (place, index) =>
+              place.geometry &&
+              place.geometry.location && (
+                <Marker
+                  key={index}
+                  position={place.geometry.location}
+                  title={place.name}
+                  onClick={() => setSelectedPlace(place)}
+                />
+              )
+          )}
+          {selectedPlace && selectedPlace.geometry && (
+            <InfoWindow
+              position={selectedPlace.geometry.location}
+              onCloseClick={() => setSelectedPlace(null)}
+            >
+              <div>
+                <h2>{selectedPlace.name}</h2>
+                <p>{selectedPlace.formatted_address}</p>
+                {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
+                {selectedPlace.opening_hours && (
+                  <p>
+                    Hours:{" "}
+                    {selectedPlace.opening_hours?.weekday_text?.join(", ")}
+                  </p>
+                )}
+              </div>
+            </InfoWindow>
+          )}
+          {midpoint && (
+            <Marker
+              position={midpoint}
+              icon={{
+                url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
+              }}
+            />
+          )}
+        </GoogleMap>
+      </div>
     </div>
   );
 }
