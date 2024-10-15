@@ -36,14 +36,16 @@ export default async function friends( {searchParams,
             <Navbar />
             
                    
-            {query !== '' ? (
+            <Suspense fallback={<div>Loading...</div>}>
+              {query !== '' ? (
                 <Table query={query} currentPage={currentPage} />
               ) : (
                 <>
-                <PendingRequests />     
-                <CurrentList />    
+                  <PendingRequests />     
+                  <CurrentList />    
                 </>
               )}
+            </Suspense>
         </main>
             
     );

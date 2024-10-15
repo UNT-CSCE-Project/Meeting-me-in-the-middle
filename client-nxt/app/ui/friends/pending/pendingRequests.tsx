@@ -1,3 +1,6 @@
+"use client";
+import { useState, useEffect } from 'react';
+
 import { lusitana } from '@/app/ui/fonts';
 import { CardSkeleton } from '../../skeletons';
 import React, { Suspense } from "react";
@@ -7,12 +10,30 @@ import { getPendingRequests } from '@/app/lib/friends/data';
 
 import Link from "next/link";
 import { CardGridProps } from '../definitions';
-
-export default async function PendingRequests() {
-    const pendingRequests: CardGridProps = await getPendingRequests();
+import { useUser } from '@/app/UserContext';
+export default function PendingRequests() {
+  const [pendingRequests, setPendingRequests] = useState([])
+  const {currentUser} = useUser();
+  const currentUserId = currentUser?.uid
+  const fetchPendingRequests = async () => {
+    try {
+      if(currentUserId){
+        const data = await getPendingRequests(currentUser?.uid) ;
+        console.log(data);
+        setPendingRequests(data);
+      }
+      
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
     
+    fetchPendingRequests();
+  }, currentUserId)
+
     return (
-      <>
+      <Suspense fallback={<CardSkeleton />}>
         {pendingRequests?.length === 0 ? (
           <h1 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-2xl`}>
             No Pending Requests
@@ -22,12 +43,12 @@ export default async function PendingRequests() {
             <h1 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-md`}>
               Total Pending Requests : {pendingRequests?.length}
             </h1>
-            <Suspense fallback={<CardSkeleton />}>
+            
               <CardGrid requests={pendingRequests} />
-            </Suspense>
+            
           </>
         )}
-      </>
+      </Suspense>
         
     )
 }

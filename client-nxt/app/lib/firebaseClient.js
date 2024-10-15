@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, setDoc, doc } from 'firebase/firestore';
 
-import { initializeApp } from 'firebase/app';
+
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -40,10 +40,19 @@ export const signInWithGoogle = async () => {
 };
 
 // Email Sign-In
-export const emailSignIn = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password);
+export const emailSignIn = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    if(userCredential) {
+      const user = userCredential.user;
+      return user;
+    } else{
+      return {error: 'Invalid email or password'}
+    }
+  } catch (error) {
+    return {error: 'Invalid email or password'}
+  }
 };
-
 // Email Sign-Up
 export const emailSignUp = async (email, password) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);

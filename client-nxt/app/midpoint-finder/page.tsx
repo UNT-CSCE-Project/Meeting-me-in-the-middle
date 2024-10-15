@@ -21,7 +21,7 @@ function Map(location: google.maps.LatLng) {
     );
   }
 
-export default async function midpointFinder() {
+export default  function midpointFinder() {
     const [address, setAddress] = useState('');
     const [location, setLocation] = useState<google.maps.LatLng | null>(null);
 

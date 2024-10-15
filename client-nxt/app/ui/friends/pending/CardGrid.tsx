@@ -12,14 +12,14 @@ export function CardGrid({ requests }: CardGridProps) {
 
   
         {/* Render "See All" only if there are more than 5 cards */}
-        {requests.length > 5 && (
+        {/* {requests.length > 5 && (
           <Link
             href="/see-all"
             className="mt-4 flex items-center rounded-smp-4 text-black-500 hover:text-blue-700" 
           >
             See All
           </Link>
-        )}
+        )} */}
       </div>
       
     );

@@ -18,7 +18,7 @@ export type User = {
 
 
 export type UserInfoWithStatus = {
-    id: string;
+    uid: string;
     name: string;
     email: string;
     status: string;

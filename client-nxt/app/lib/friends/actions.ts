@@ -111,6 +111,7 @@ export async function sendFriendRequest(formData: FormData) {
 export async function deleteFriend(id: string) {
   try {
     await firebaseFirestore.collection('friends').doc(id).update({ is_deleted: true });
+    return { status: 200, message: 'Friend Request Cancelled.' };
   } catch (error) {
     return {
       message: 'Firestore Error: Failed to Delete Friend Request.',
