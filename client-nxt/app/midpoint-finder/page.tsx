@@ -10,6 +10,7 @@ import {
   DirectionsRenderer,
   InfoWindow,
 } from "@react-google-maps/api";
+//import { Geocoder } from "@react-google-maps/api/dist/utils/Geocoder";
 
 const mapStyles = {
   height: "100vh",
@@ -25,6 +26,9 @@ function MyMap() {
     useState<google.maps.DirectionsResult | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [midpoint, setMidpoint] = useState<google.maps.LatLng | null>(null);
+  const [nearestCity, setNearestCity] = useState<string | null>(null);
+  const [places, setPlaces] = useState<google.maps.places.PlaceResult[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -47,13 +51,14 @@ function MyMap() {
   ) => {
     if (status === google.maps.DirectionsStatus.OK && result !== null) {
       setDirections(result);
-      const route = result.routes[0];
+      const route = result.routes[1];
       const decodedPath = google.maps.geometry.encoding.decodePath(
         route.overview_polyline
       );
       const midpointIndex = Math.floor(decodedPath.length / 2);
       const midpoint = decodedPath[midpointIndex];
       setMidpoint(midpoint);
+      findNearestCity(midpoint);
     } else {
       console.error("Error calculating directions:", status);
     }
@@ -74,6 +79,83 @@ function MyMap() {
     directionsService.route(request, directionsCallback);
   };
 
+  const findNearestCity = (midpoint: google.maps.LatLng) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode(
+      { location: midpoint },
+      (
+        results: google.maps.GeocoderResult[] | null,
+        status: google.maps.GeocoderStatus
+      ) => {
+        if (status === "OK" && results !== null) {
+          const cityResult = results.find((result) =>
+            result.types.includes("locality")
+          );
+          if (cityResult) {
+            setNearestCity(cityResult.formatted_address);
+            zoomInOnCity(cityResult.formatted_address);
+            findPlacesAroundCity(cityResult.formatted_address);
+          }
+        }
+      }
+    );
+  };
+
+  const zoomInOnCity = (city: string) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode(
+      { address: city },
+      (
+        results: google.maps.GeocoderResult[] | null,
+        status: google.maps.GeocoderStatus
+      ) => {
+        if (status === "OK" && results !== null) {
+          const cityResult = results[0];
+          if (cityResult.geometry.location) {
+            map?.setCenter(cityResult.geometry.location);
+            map?.setZoom(12);
+          }
+        }
+      }
+    );
+  };
+
+  const findPlacesAroundCity = (city: string) => {
+    if (map) {
+      const service = new google.maps.places.PlacesService(map);
+      console.log("Zooming in on:", city);
+      const request: google.maps.places.PlaceSearchRequest = {
+        location: map.getCenter(),
+        radius: 5000,
+        type: "restaurant",
+      };
+      service.nearbySearch(request, (results, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          results !== null
+        ) {
+          results.forEach((result) => {
+            const placeId = result.place_id;
+            const request: google.maps.places.PlaceDetailsRequest = {
+              placeId: placeId ?? "",
+              fields: [
+                "name",
+                "formatted_address",
+                "rating",
+                "opening_hours",
+              ],
+            };
+            service.getDetails(request, (result, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                console.log(result);
+              }
+            });
+          });
+          setPlaces(results);
+        }
+      });
+    }
+  };
   if (!apiKey) {
     throw new Error("Google Maps API key is not set");
   }
@@ -112,6 +194,29 @@ function MyMap() {
               preserveViewport: true,
             }}
           />
+        )}
+        {places.map(
+          (place, index) =>
+            place.geometry &&
+            place.geometry.location && (
+              <Marker
+                key={index}
+                position={place.geometry.location}
+                title={place.name}
+                onClick={() => setSelectedPlace(place)}
+              />
+            )
+        )}
+        {selectedPlace && selectedPlace.geometry && (
+          <InfoWindow
+            position={selectedPlace.geometry.location}
+            onCloseClick={() => setSelectedPlace(null)}
+          >
+            <div>
+              <h2>{selectedPlace.name}</h2>
+              <p>{selectedPlace.formatted_address}</p>
+            </div>
+          </InfoWindow>
         )}
         {midpoint && (
           <Marker
