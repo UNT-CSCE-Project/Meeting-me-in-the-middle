@@ -2,12 +2,13 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { friend } from "./definitions";
-import { deleteFriend,  sendFriendRequest } from '@/app/lib/friends/actions';
-import {addNotification} from '@/app/lib/notifications/actions';
+import { deleteFriend,  sendFriendRequest, addFriend } from '@/app/lib/friends/actions';
+
 import { act, useState } from 'react';
 import { useUser } from '@/app/UserContext';
 import { on } from 'events';
 import { connect } from 'http2';
+import { set } from 'zod';
 export function SendRequest({ request, onSendRequest  }: { request: friend, onSendRequest: () => void }) {  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,4 +106,39 @@ export function DeleteFriend({ request_id, onDelete }: { request_id: string, onD
       </button>
     </form>
   );
+}
+
+export function Connect({request_id, onConnect}: {request_id: string, onConnect: () => void}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const handleConnect = async () => {
+    setLoading(true);
+    try {
+         const response = await addFriend(request_id);
+         if (response?.status === 200) {
+          console.log('Friend request created successfully:', request_id);
+          setError('');
+          setLoading(false);
+           onConnect();
+         }
+         
+    } catch (error) {
+      setError(error?.message);
+      console.error('An error occurred:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <form >
+        <button 
+          onClick={handleConnect}
+          type='button'
+          disabled={loading}
+          className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600">
+          {loading ? 'Connecting...' : 'Connect'} 
+          {error && <span className="text-red-500">{error}</span>}
+        </button>
+    </form>
+  )
 }

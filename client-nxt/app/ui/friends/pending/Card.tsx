@@ -6,26 +6,15 @@ import { addFriend, deleteFriend } from '@/app/lib/friends/actions';
 import { friend } from "../definitions";
 import { useUser } from '@/app/UserContext';
 import { UserAvatar } from "../../userAvatar";
-export function Card({request} : friend) {
+import { Connect } from "../buttons";
+export function Card({request, fetchPendingRequests} : {friend, fetchPendingRequests: any}) {
     const { currentUser } = useUser();
 
     const currentUserId = currentUser?.uid || "";
     const [loading, setLoading] = useState(false);
     
     const handleConnect = async (requestId: string) => {
-      setLoading(true);
-      try {
-       
-
-           await addFriend(requestId);
-    
-          console.log('Friend request created successfully:', requestId);
-          
-      } catch (error) {
-        console.error('An error occurred:', error);
-      } finally {
-        setLoading(false);
-      }
+      fetchPendingRequests(requestId)
     };
     const handleCancel = async (requestId: string) => {
       setLoading(true);
@@ -57,13 +46,7 @@ export function Card({request} : friend) {
 
       {/* Connect and Deny Buttons */}
       <div className="mt-4 flex justify-end">
-        <button 
-        
-          onClick={() => handleConnect(request.id)}
-          disabled={loading}
-          className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600">
-          {loading ? 'Connecting...' : 'Connect'}
-        </button>
+        <Connect request_id={request.id} onConnect={handleConnect} />
         <button 
           onClick={() => handleCancel(request.id)}
           disabled={loading}

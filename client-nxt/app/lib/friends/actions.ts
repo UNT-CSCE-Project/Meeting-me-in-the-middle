@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';  // Make sure to configure Firebase
+import { stat } from 'fs';
 
 // Update the schema to include sender, recipient, status, and request_send_time
 const FriendSchema = z.object({
@@ -53,6 +54,10 @@ export async function addFriend(id: string) {
       request_send_time: new Date().toISOString(),
       is_deleted: false,
     });
+    return {
+      status: 200,
+      message: 'Friend Request Created Successfully',
+    }
   } catch (error) {
     return {
       message: 'Firestore Error: Failed to Create Friend Request.',
