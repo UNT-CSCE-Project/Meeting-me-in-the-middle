@@ -1,9 +1,16 @@
 // page.tsx
-
+"use client";
 import "@/app/ui/global.css";
 import React from 'react';
-
+import { usePathname } from 'next/navigation';
+import { useUser } from '@/app/UserContext';
 export default function Home() {
+  const {signOutUser} = useUser();
+  const pathname = usePathname(); // Get the current route
+    if(pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password'){
+     signOutUser();
+  
+  }
   return (
     <div className="flex h-screen flex-col md:flex-row ">
       <div className="flex-grow p-6 md:overflow-y-auto md:p-12">

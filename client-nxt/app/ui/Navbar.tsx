@@ -5,12 +5,12 @@ import Error from "../ui/error";
 import { lusitana } from '@/app/ui/fonts';
 import { useUser } from "@/app/UserContext";
 import Image from "next/image";
-import {  BellIcon } from '@heroicons/react/24/outline';
+import {  BellIcon, PowerIcon } from '@heroicons/react/24/outline';
 import ProfileInfo from "./profileInfo";
 import { Suspense } from "react";
 import { ProfileInfoSkeleton } from "@/app/ui/skeletons";
 export default function Navbar() {
-    
+    const { signOutUser } = useUser();
     
     return (
       <div className=" bg-[#2c2c2c] px-4">
@@ -25,6 +25,12 @@ export default function Navbar() {
                                     <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">1</span>
                                 </div>
                                 <ProfileInfo />
+                                <form>
+                                {/* Uncomment and implement the sign-out functionality if needed */}
+                                <button type="button" onClick={signOutUser} className="text-white">
+                                    <PowerIcon className="h-5 w-5" />
+                                </button>
+                                </form>
                             </Suspense>
 
 

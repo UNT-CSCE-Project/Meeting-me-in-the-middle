@@ -57,22 +57,22 @@ export async function getPendingRequests(currentUserId: string) {
         .get();
   
       // Map the results to an array of objects with the document ID and data
-const pendingFriends = await Promise.all(
-  friendsSnapshot.docs.map(async (doc) => {
-    const uid = doc.data().sender_id == currentUserId ? doc.data().recipient_id : doc.data().sender_id;
-        const userRef = db.collection('users').where('uid', '==', uid);
-        const userData = await userRef.get();
-    
-        const userDoc = userData.docs[0]; // Get the first document (assuming there's only one)
-        return {
-          id: doc.id,
-          ...doc.data(),
-          streetAddress: userDoc?.data()?.streetAddress,
-          city: userDoc?.data()?.city,
-          state: userDoc?.data()?.state,
-          zipCode: userDoc?.data()?.zipCode,
-        };
-  })
+      const pendingFriends = await Promise.all(
+        friendsSnapshot.docs.map(async (doc) => {
+          const uid = doc.data().sender_id;
+              const userRef = db.collection('users').where('uid', '==', uid);
+              const userData = await userRef.get();
+          
+              const userDoc = userData.docs[0]; // Get the first document (assuming there's only one)
+              return {
+                id: doc.id,
+                ...doc.data(),
+                streetAddress: userDoc?.data()?.streetAddress,
+                city: userDoc?.data()?.city,
+                state: userDoc?.data()?.state,
+                zipCode: userDoc?.data()?.zipCode,
+              };
+        })
 );
       return pendingFriends; // Return the filtered list of pending requests
     } catch (error) {

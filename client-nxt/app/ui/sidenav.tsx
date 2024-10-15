@@ -12,14 +12,18 @@ import { onAuthStateChanged, signOut  } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { fetchUserByUidAndEmail } from '@/app/lib/users/data';
 import { useUser } from '@/app/UserContext';
+import path from 'path';
 export default function SideNav() {
   const pathname = usePathname(); // Get the current route
-  const {signOutUser} = useUser();
+  const {signOutUser, currentUser} = useUser();
   
   // Determine if the user is authenticated based on the stored value
   const isAuthPage =  pathname === '/login' ||   pathname === '/signup' ||   pathname === '/forgot-password'; // Check if a user exists
 
   console.log('Is Auth Page:', isAuthPage); // Debug: Log the auth page status
+ 
+  const router = useRouter();
+
 
   return (
     !isAuthPage ? (

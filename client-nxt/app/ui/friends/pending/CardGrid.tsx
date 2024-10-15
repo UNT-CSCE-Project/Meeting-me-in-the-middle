@@ -1,13 +1,13 @@
 import React from "react";
 import { Card } from "./Card";
 import Link from "next/link";
-export function CardGrid({ requests, ...props }: {CardGridProps, () => void}) {
+export function CardGrid({ requests, fetchPendingRequests }: {requests: any, fetchPendingRequests: any}) {
   console.log(requests)
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 px-3">
 
         {requests?.map((request) => (
-          <Card key={request.id} request={request} />
+          <Card key={request.id} request={request} fetchPendingRequests={fetchPendingRequests}/>
         ))} 
 
   

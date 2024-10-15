@@ -13,12 +13,13 @@ import { fetchUserByUidAndEmail } from '@/app/lib/users/data';
 import { set } from 'zod';
 import { UserProvider } from '@/app/UserContext';
 export const experimental_ppr = true;
+import { useUser } from '@/app/UserContext';
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
+  
   return (
     <UserProvider>
       <html lang="en">

@@ -44,7 +44,7 @@ export default function PendingRequests() {
               Total Pending Requests : {pendingRequests?.length}
             </h1>
             
-              <CardGrid requests={pendingRequests} />
+              <CardGrid requests={pendingRequests} fetchPendingRequests={fetchPendingRequests}/>
             
           </>
         )}
