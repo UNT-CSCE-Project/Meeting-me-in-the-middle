@@ -198,7 +198,10 @@ function MyMap() {
     );
   };
 
-  const findPlacesAroundCity = (city: string, placeType: string = "restaurant") => {
+  const findPlacesAroundCity = (
+    city: string,
+    placeType: string = "restaurant"
+  ) => {
     if (map) {
       const service = new google.maps.places.PlacesService(map);
       console.log("Zooming in on:", city);
@@ -220,7 +223,12 @@ function MyMap() {
                 const placeId = result.place_id;
                 const request: google.maps.places.PlaceDetailsRequest = {
                   placeId: placeId ?? "",
-                  fields: ["name", "formatted_address", "rating", "opening_hours"],
+                  fields: [
+                    "name",
+                    "formatted_address",
+                    "rating",
+                    "opening_hours",
+                  ],
                 };
                 service.getDetails(request, (result, status) => {
                   if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -235,7 +243,7 @@ function MyMap() {
       });
     }
   };
-  
+
   if (!apiKey) {
     throw new Error("Google Maps API key is not set");
   }
@@ -247,111 +255,186 @@ function MyMap() {
   };
 
   return (
-    <div className="flex flex-row h-screen">
-      <div
-        style={{ width: "600px", height: "400px" }}
-        className="flex flex-col justify-start items-start bg-transparent border-2 border-black p-4 w-64 h-48 rounded-md"
-      >
-        <input
-          type="text"
-          value={originLocation}
-          onChange={(e) => setOriginLocation(e.target.value)}
-          placeholder="Enter origin location"
-          style={{ marginTop: "20px" }}
-          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-        />
-        <input
-          type="text"
-          value={destinationLocation}
-          onChange={(e) => setDestinationLocation(e.target.value)}
-          placeholder="Enter destination location"
-          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-        />
-        <button
-          onClick={calculateMidpoint}
-          style={{ marginLeft: "175px", width: "200px" }}
-          className="bg-white text-black p-2 rounded-md outline outline-1 outline-black"
-        >
-          Calculate Midpoint
-        </button>
-        <select
-          value={placeType}
-          onChange={(e) => {
-            setPlaceType(e.target.value);
-            updatePlaces(e.target.value);
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-row">
+        <div
+          style={{
+            width: "600px",
+            height: "400px",
+            backgroundColor: "lightGray",
           }}
-          className="bg-white text-black p-2 rounded-md outline outline-1 outline-black"
+          className="flex flex-col justify-start items-start border-2 border-black p-4 w-64 h-48 rounded-md"
         >
-          <option value="restaurant">Restaurant</option>
-          <option value="store">Store</option>
-          <option value="cafe">Cafe</option>
-          <option value="bar">Bar</option>
-        </select>
+          <input
+            type="text"
+            value={originLocation}
+            onChange={(e) => setOriginLocation(e.target.value)}
+            placeholder="Enter origin location"
+            style={{
+              marginTop: "20px",
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+            }}
+            className="w-full p-2 mb-2 rounded-md"
+          />
+          <input
+            type="text"
+            value={destinationLocation}
+            onChange={(e) => setDestinationLocation(e.target.value)}
+            placeholder="Enter destination location"
+            style={{
+              marginTop: "10px",
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+            }}
+            className="w-full p-2 mb-2 rounded-md"
+          />
+          <button
+            onClick={calculateMidpoint}
+            style={{
+              marginTop: "20px",
+              marginLeft: "175px",
+              width: "200px",
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+            }}
+            className="bg-white text-black p-2 rounded-md"
+          >
+            Calculate Midpoint
+          </button>
+          <select
+            value={placeType}
+            onChange={(e) => {
+              setPlaceType(e.target.value);
+              updatePlaces(e.target.value);
+            }}
+            style={{
+              marginTop: "20px",
+              width: "200px",
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+            }}
+            className="bg-white text-black p-2 rounded-md"
+          >
+            <option value="restaurant">Restaurant</option>
+            <option value="store">Store</option>
+            <option value="cafe">Cafe</option>
+            <option value="bar">Bar</option>
+          </select>
+        </div>
+        <div
+          style={{ marginLeft: "50px", height: "400px" }}
+          className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden"
+        >
+          <GoogleMap
+            mapContainerStyle={mapStyles}
+            zoom={9}
+            center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
+          >
+            {directions && (
+              <DirectionsRenderer
+                directions={directions}
+                options={{
+                  polylineOptions: {
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                  },
+                  preserveViewport: true,
+                }}
+              />
+            )}
+            {markers}
+            {places.map(
+              (place, index) =>
+                place.geometry &&
+                place.geometry.location && (
+                  <Marker
+                    key={index}
+                    position={place.geometry.location}
+                    title={place.name}
+                    onClick={() => setSelectedPlace(place)}
+                  />
+                )
+            )}
+            {selectedPlace && selectedPlace.geometry && (
+              <InfoWindow
+                position={selectedPlace.geometry.location}
+                onCloseClick={() => setSelectedPlace(null)}
+              >
+                <div>
+                  <h2>{selectedPlace.name}</h2>
+                  <p>{selectedPlace.formatted_address}</p>
+                  <p>Rating: {selectedPlace.rating}</p>
+                </div>
+              </InfoWindow>
+            )}
+          </GoogleMap>
+        </div>
       </div>
       <div
-        style={{ marginLeft: "50px", height: "400px" }}
-        className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden"
+        style={{
+          width: "100%",
+          height: "600px",
+          marginTop: "20px",
+          backgroundColor: "lightgray",
+        }}
+        className="flex flex-col justify-start items-start border-2 border-black p-4 rounded-md"
       >
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          zoom={9}
-          center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
+        <h2 className="text-lg font-bold mb-2">
+          {places.length > 0
+            ? `${places.length} Places Found`
+            : "Search for Places"}
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            height: "500px",
+          }}
         >
-          {directions && (
-            <DirectionsRenderer
-              directions={directions}
-              options={{
-                polylineOptions: {
-                  strokeColor: "#FF0000",
-                  strokeOpacity: 1.0,
-                  strokeWeight: 2,
-                },
-                preserveViewport: true,
-              }}
-            />
-          )}
-          {markers}
-          {places.map(
-            (place, index) =>
-              place.geometry &&
-              place.geometry.location && (
-                <Marker
-                  key={index}
-                  position={place.geometry.location}
-                  title={place.name}
-                  onClick={() => setSelectedPlace(place)}
-                />
-              )
-          )}
-          {selectedPlace && selectedPlace.geometry && (
-            <InfoWindow
-              position={selectedPlace.geometry.location}
-              onCloseClick={() => setSelectedPlace(null)}
-            >
-              <div>
-                <h2>{selectedPlace.name}</h2>
-                <p>{selectedPlace.formatted_address}</p>
-                {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
-                {selectedPlace.opening_hours && (
-                  <p>
-                    Hours:{" "}
-                    {selectedPlace.opening_hours?.weekday_text?.join(", ")}
-                  </p>
-                )}
+          <div
+            style={{
+              overflowY: "auto",
+              maxHeight: "600px",
+              width: "600px",
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {places.map((place, index) => (
+              <div
+                key={index}
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+                  flex: 1, // take up an equal amount of space
+                }}
+                onClick={() => setSelectedPlace(place)}
+              >
+                <h3 className="text-lg font-bold">{place.name}</h3>
               </div>
-            </InfoWindow>
-          )}
-          {midpoint && (
-            <Marker
-              position={midpoint}
-              icon={{
-                url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
+            ))}
+          </div>
+          {selectedPlace && (
+            <div
+              style={{
+                marginLeft: "20px",
+                backgroundColor: "white",
+                borderRadius: "10px",
+                padding: "10px",
+                height: "100%",
+                width: "600px",
+                boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+                flex: 1, // take up the full width of the column
               }}
-            />
+            >
+              <h2 className="text-lg font-bold">{selectedPlace.name}</h2>
+            </div>
           )}
-        </GoogleMap>
+        </div>
       </div>
     </div>
   );
