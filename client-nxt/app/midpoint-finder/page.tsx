@@ -31,6 +31,7 @@ function MyMap() {
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
   const [markers, setMarkers] = useState<JSX.Element[]>([]);
+  const [placeType, setPlaceType] = useState("restaurant");
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -55,13 +56,21 @@ function MyMap() {
       setDirections(result);
       const route = result.routes[0];
       const legs = route.legs;
+
+      const decodedPath = google.maps.geometry.encoding.decodePath(
+        route.overview_polyline
+      );
+      const midpointIndex = Math.floor(decodedPath.length / 2);
+      const midpoint = decodedPath[midpointIndex];
+      setMidpoint(midpoint);
+      findNearestCity(midpoint);
       const markers = legs.map((leg, index) => (
         <Marker
           key={index}
           position={leg.start_location}
           title={`Leg ${index + 1}`}
         >
-          <InfoWindow position={leg.start_location}>
+          <InfoWindow position={midpoint}>
             <div>
               <h2>Leg {index + 1}</h2>
               <p>Start Address: {leg.start_address}</p>
@@ -73,14 +82,6 @@ function MyMap() {
         </Marker>
       ));
       setMarkers(markers);
-
-      const decodedPath = google.maps.geometry.encoding.decodePath(
-        route.overview_polyline
-      );
-      const midpointIndex = Math.floor(decodedPath.length / 2);
-      const midpoint = decodedPath[midpointIndex];
-      setMidpoint(midpoint);
-      findNearestCity(midpoint);
     } else {
       console.error("Error calculating directions:", status);
     }
@@ -132,7 +133,7 @@ function MyMap() {
                     midpoint,
                     cityLocation
                   );
-                  console.log("Distance:", distance);
+                console.log("Distance:", distance);
                 if (distance < minDistance) {
                   console.log("New nearest city found");
                   minDistance = distance;
@@ -197,122 +198,160 @@ function MyMap() {
     );
   };
 
-  const findPlacesAroundCity = (city: string) => {
+  const findPlacesAroundCity = (city: string, placeType: string = "restaurant") => {
     if (map) {
       const service = new google.maps.places.PlacesService(map);
       console.log("Zooming in on:", city);
-      const request: google.maps.places.PlaceSearchRequest = {
-        location: map.getCenter(),
-        radius: 5000,
-        type: "restaurant",
-      };
-      service.nearbySearch(request, (results, status) => {
-        if (
-          status === google.maps.places.PlacesServiceStatus.OK &&
-          results !== null
-        ) {
-          results.forEach((result) => {
-            const placeId = result.place_id;
-            const request: google.maps.places.PlaceDetailsRequest = {
-              placeId: placeId ?? "",
-              fields: ["name", "formatted_address", "rating", "opening_hours"],
-            };
-            service.getDetails(request, (result, status) => {
-              if (status === google.maps.places.PlacesServiceStatus.OK) {
-                console.log(result);
-              }
-            });
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: city }, (results, status) => {
+        if (status === "OK" && results !== null) {
+          const cityLocation = results[0].geometry.location;
+          const request: google.maps.places.PlaceSearchRequest = {
+            location: cityLocation,
+            radius: 5000,
+            type: placeType,
+          };
+          service.nearbySearch(request, (results, status) => {
+            if (
+              status === google.maps.places.PlacesServiceStatus.OK &&
+              results !== null
+            ) {
+              results.forEach((result) => {
+                const placeId = result.place_id;
+                const request: google.maps.places.PlaceDetailsRequest = {
+                  placeId: placeId ?? "",
+                  fields: ["name", "formatted_address", "rating", "opening_hours"],
+                };
+                service.getDetails(request, (result, status) => {
+                  if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    console.log(result);
+                  }
+                });
+              });
+              setPlaces(results);
+            }
           });
-          setPlaces(results);
         }
       });
     }
   };
+  
   if (!apiKey) {
     throw new Error("Google Maps API key is not set");
   }
 
+  const updatePlaces = (newPlaceType: string) => {
+    if (nearestCity) {
+      findPlacesAroundCity(nearestCity, newPlaceType);
+    }
+  };
+
   return (
     <div className="flex flex-row h-screen">
-      <div style={{ width: '600px', height: '400px'}} className="flex flex-col justify-start items-start bg-transparent border-2 border-black p-4 w-64 h-48 rounded-md">
-      <input
-        type="text"
-        value={originLocation}
-        onChange={(e) => setOriginLocation(e.target.value)}
-        placeholder="Enter origin location"
-        style={{marginTop: '20px'}}
-        className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-      />
-      <input
-        type="text"
-        value={destinationLocation}
-        onChange={(e) => setDestinationLocation(e.target.value)}
-        placeholder="Enter destination location"
-        className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
-      />
-      <button onClick={calculateMidpoint} style={{ marginLeft: '175px', width: '200px' }} className="bg-white text-black p-2 rounded-md outline outline-1 outline-black">Calculate Midpoint</button>
-      </div>
-      <div style={{ marginLeft:'50px', height: '400px'}} className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden">      
-      <GoogleMap
-        mapContainerStyle={mapStyles}
-        zoom={9}
-        center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
+      <div
+        style={{ width: "600px", height: "400px" }}
+        className="flex flex-col justify-start items-start bg-transparent border-2 border-black p-4 w-64 h-48 rounded-md"
       >
-        {directions && (
-          <DirectionsRenderer
-            directions={directions}
-            options={{
-              polylineOptions: {
-                strokeColor: "#FF0000",
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-              },
-              preserveViewport: true,
-            }}
-          />
-        )}
-        {markers}
-        {places.map(
-          (place, index) =>
-            place.geometry &&
-            place.geometry.location && (
-              <Marker
-                key={index}
-                position={place.geometry.location}
-                title={place.name}
-                onClick={() => setSelectedPlace(place)}
-              />
-            )
-        )}
-        {selectedPlace && selectedPlace.geometry && (
-          <InfoWindow
-            position={selectedPlace.geometry.location}
-            onCloseClick={() => setSelectedPlace(null)}
-          >
-            <div>
-              <h2>{selectedPlace.name}</h2>
-              <p>{selectedPlace.formatted_address}</p>
-              {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
-              {selectedPlace.opening_hours && (
-                <p>
-                  Hours:{" "}
-                  {selectedPlace.opening_hours?.weekday_text?.join(", ")}
-                </p>
-              )}
-            </div>
-          </InfoWindow>
-        )}
-        {midpoint && (
-          <Marker
-            position={midpoint}
-            icon={{
-              url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
-            }}
-          />
-        )}
-      </GoogleMap>
+        <input
+          type="text"
+          value={originLocation}
+          onChange={(e) => setOriginLocation(e.target.value)}
+          placeholder="Enter origin location"
+          style={{ marginTop: "20px" }}
+          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+        />
+        <input
+          type="text"
+          value={destinationLocation}
+          onChange={(e) => setDestinationLocation(e.target.value)}
+          placeholder="Enter destination location"
+          className="w-full p-2 mb-2 rounded-md outline outline-1 outline-black"
+        />
+        <button
+          onClick={calculateMidpoint}
+          style={{ marginLeft: "175px", width: "200px" }}
+          className="bg-white text-black p-2 rounded-md outline outline-1 outline-black"
+        >
+          Calculate Midpoint
+        </button>
+        <select
+          value={placeType}
+          onChange={(e) => {
+            setPlaceType(e.target.value);
+            updatePlaces(e.target.value);
+          }}
+          className="bg-white text-black p-2 rounded-md outline outline-1 outline-black"
+        >
+          <option value="restaurant">Restaurant</option>
+          <option value="store">Store</option>
+          <option value="cafe">Cafe</option>
+          <option value="bar">Bar</option>
+        </select>
+      </div>
+      <div
+        style={{ marginLeft: "50px", height: "400px" }}
+        className="float-right flex justify-start items-start w-1/2 rounded-md overflow-hidden"
+      >
+        <GoogleMap
+          mapContainerStyle={mapStyles}
+          zoom={9}
+          center={midpoint ?? { lat: 37.7749, lng: -122.4194 }}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+        >
+          {directions && (
+            <DirectionsRenderer
+              directions={directions}
+              options={{
+                polylineOptions: {
+                  strokeColor: "#FF0000",
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2,
+                },
+                preserveViewport: true,
+              }}
+            />
+          )}
+          {markers}
+          {places.map(
+            (place, index) =>
+              place.geometry &&
+              place.geometry.location && (
+                <Marker
+                  key={index}
+                  position={place.geometry.location}
+                  title={place.name}
+                  onClick={() => setSelectedPlace(place)}
+                />
+              )
+          )}
+          {selectedPlace && selectedPlace.geometry && (
+            <InfoWindow
+              position={selectedPlace.geometry.location}
+              onCloseClick={() => setSelectedPlace(null)}
+            >
+              <div>
+                <h2>{selectedPlace.name}</h2>
+                <p>{selectedPlace.formatted_address}</p>
+                {selectedPlace.rating && <p>Rating: {selectedPlace.rating}</p>}
+                {selectedPlace.opening_hours && (
+                  <p>
+                    Hours:{" "}
+                    {selectedPlace.opening_hours?.weekday_text?.join(", ")}
+                  </p>
+                )}
+              </div>
+            </InfoWindow>
+          )}
+          {midpoint && (
+            <Marker
+              position={midpoint}
+              icon={{
+                url: "https://maps.google.com/mapfiles/ms/micons/blue-dot.png",
+              }}
+            />
+          )}
+        </GoogleMap>
       </div>
     </div>
   );
