@@ -9,6 +9,7 @@ export type friend = {
     is_deleted: boolean;
   };
 
-export type CardGridProps = {
-  friends: friend[];
-}
+  export type CardGridProps = {
+    friends?: (friend | { id: string })[];
+  };
+  

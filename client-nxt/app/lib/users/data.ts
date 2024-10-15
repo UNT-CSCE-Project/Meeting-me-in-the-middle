@@ -1,7 +1,6 @@
 import {db, auth} from '@/app/lib/firebaseAdmin.js';  
 
-import { UserInfoWithStatus } from './definitions';
-
+import { User, UserInfoWithStatus } from './definitions';
 
 export async function fetchUserById(id: string) {
     try {
@@ -21,7 +20,7 @@ export async function fetchUsersByQuery(query: string, currentUserId: string) {
         .map(doc => ({
           id: doc.id,
           ...doc.data(),
-        }))
+        }) as User) 
         .filter(user => 
           user.id != currentUserId && 
           (

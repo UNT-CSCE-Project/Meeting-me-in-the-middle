@@ -72,11 +72,18 @@ export default async function Table({
                       
                       {item.status === 'pending' || item.status === 'connected' ? (
                     <div className="flex justify-start gap-3">
-                        <DeleteFriend request_id= {item.requestId} />
+                        {item.requestId !== null && (
+                          <DeleteFriend request_id={item.requestId} />
+                        )}
                         </div>
                     ) : (
                     <div className="flex justify-start gap-3">
-                        <SendRequest request={item} />
+                      {
+                        item !== null && (
+                        <SendRequest request={item} />                          
+                        )
+                      }
+
                     </div>
               )}
                     </td>

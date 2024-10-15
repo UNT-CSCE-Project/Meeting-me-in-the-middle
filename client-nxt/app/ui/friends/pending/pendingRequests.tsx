@@ -9,7 +9,7 @@ import Link from "next/link";
 import { CardGridProps } from '../definitions';
 
 export default async function PendingRequests() {
-    const pendingRequests: CardGridProps = await getPendingRequests();
+    const pendingRequests = await getPendingRequests() || [];
     
     return (
       <>

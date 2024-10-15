@@ -7,7 +7,7 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 function Map(location: google.maps.LatLng) {
     return (
      <LoadScript
-       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
        libraries={['places']}
      >
         <GoogleMap

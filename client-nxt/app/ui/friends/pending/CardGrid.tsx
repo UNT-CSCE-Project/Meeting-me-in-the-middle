@@ -1,12 +1,13 @@
 import React from "react";
 import { Card } from "./Card";
 import Link from "next/link";
-export function CardGrid({ requests }: CardGridProps) {
+import { friend } from "../definitions";
+export function CardGrid({ requests }: any) {
   console.log(requests)
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 px-3">
 
-        {requests?.map((request) => (
+        {requests?.map((request : friend) => (
           <Card key={request.id} request={request} />
         ))} 
 

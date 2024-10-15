@@ -128,14 +128,4 @@ export async function fetchFriendRequest(id: string) {
     return null;
   }
 }
-export async function cancelFriendRequest(sender_id: string, recipient_id: string) {
-  try {
 
-
-    await firebaseFirestore.collection('friends').doc(sender_id).update({ status: 'not connected' }).delete();
-  } catch (error) {
-    return {
-      message: 'Firestore Error: Failed to Cancel Friend Request.',
-    };
-  }
-}

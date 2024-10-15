@@ -1,14 +1,12 @@
 "use client";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { friend } from "./definitions";
+
 import { deleteFriend,  sendFriendRequest } from '@/app/lib/friends/actions';
-import {addNotification} from '@/app/lib/notifications/actions';
 import { act, useState } from 'react';
 
-import { on } from 'events';
-import { connect } from 'http2';
-export function SendRequest({ request }: { request: friend }) {
+import { UserInfoWithStatus } from '@/app/lib/users/definitions';
+export function SendRequest({ request }: { request: UserInfoWithStatus }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
