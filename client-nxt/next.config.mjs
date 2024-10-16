@@ -3,7 +3,8 @@ const nextConfig = {
   experimental: {
       ppr: 'incremental',
       asyncWebAssembly: true,
-      serverActions: true
+      serverActions: true,
+      serverComponentsExternalPackages: ['cheerio'],
     },
    
 };
