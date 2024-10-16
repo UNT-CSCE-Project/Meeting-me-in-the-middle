@@ -7,7 +7,6 @@ import '@/app/ui/global.css';
 import { lusitana } from '@/app/ui/fonts';
 
 import { UserProvider } from '@/app/UserContext';
-export const experimental_ppr = true;
 export default function RootLayout({
   children,
 }: {

@@ -24,7 +24,8 @@
     "typescript": "^5.5.2",
     "undici": "^6.20.1",
     "use-debounce": "^10.0.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "eslint": "^9.12.0"
   },
   "engines": {
     "node": "^20.9.0"
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/react": "18.3.11",
-    "encoding": "^0.1.13"
+    "encoding": "^0.1.13",
+    "eslint": "^9.12.0"
   }
 }
