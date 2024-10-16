@@ -38,7 +38,7 @@ export function Card({request, fetchPendingRequests} : {request : any, fetchPend
 
         {/* Name, Title and Address Section */}
         <div className="ml-4">
-          <h3 className="text-sm font-medium">{request.recipient_name}</h3>
+          <h3 className="text-sm font-medium">{request.sender_name}</h3>
           <p className="text-xs text-gray-500">{request.request_send_time}</p>
         </div>
       </div>
