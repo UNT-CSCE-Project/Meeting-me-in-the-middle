@@ -10,13 +10,12 @@ export type User = {
     city: string | null;
     state: string | null;
     zipCode: string | null;
-    country: string | null; 
-  
+    uid : string;
 };
 
 
 export type UserInfoWithStatus = {
-    id: string;
+    uid: string;
     name: string;
     firstName: string;
     lastName: string;

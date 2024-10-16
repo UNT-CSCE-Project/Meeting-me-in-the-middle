@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        serverActions: true, // Add this line
-      },
+  experimental: {
+      ppr: 'incremental',
+      asyncWebAssembly: true,
+      serverActions: true
+    },
+   
 };
+// next.config.mjs
 
 export default nextConfig;

@@ -7,6 +7,10 @@ export type friend = {
     status: string; 
     request_send_time: string;
     is_deleted: boolean;
+    streetAddress: string;
+    city: string;
+    state: string;
+    zipCode: string;
   };
 
   export type CardGridProps = {

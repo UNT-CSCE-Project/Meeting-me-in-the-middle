@@ -2,9 +2,14 @@
 import { useState } from "react";
 import { friend } from "../definitions";
 import { deleteFriend } from "@/app/lib/friends/actions";
+import { UserAvatar } from "../../userAvatar";
+import { useUser } from "@/app/UserContext";
 export async function Card({ friend } : {friend: friend}) {
-    const currentUserId = "xo1sAzsKwYHfUoTaq2jN";
+  const { currentUser } = useUser();
+
+  const currentUserId = currentUser?.uid || "";
     const [loading, setLoading] = useState(false);
+
 
     const handleCancel = async (requestId: string) => {
       setLoading(true);
@@ -18,25 +23,21 @@ export async function Card({ friend } : {friend: friend}) {
         setLoading(false);
       }
     };
+
+    const name = friend.recipient_id !== currentUserId ? friend.recipient_name : friend.sender_name
+    const firstName = name.split(' ')[0]
+    const lastName = name.split(' ')[1]
     return (
       <>
         <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-start">
             {/* Avatar Section */}
-            <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden">
-              <img
-                className="object-cover"
-                src={"https://picsum.photos/200/300"} // Add dynamic avatar URL
-                alt="Avatar"
-                width={50}
-                height={50}
-              />
-            </div>
+            <UserAvatar firstName={firstName} lastName={lastName}/>
   
             {/* Name, Title and Address Section */}
             <div className="ml-4">
-              <h3 className="text-sm font-medium">{friend.recipient_id != currentUserId ? friend.recipient_name : friend.sender_name}</h3>
-              <p className="text-xs text-gray-500">{friend.request_send_time}</p>
+              <h3 className="text-sm font-medium">{friend.recipient_id !== currentUserId ? friend.recipient_name : friend.sender_name}</h3>
+              <p className="text-xs text-gray-500">{friend.streetAddress+", "+friend.city+", "+friend.state+", "+friend.zipCode}</p>
             </div>
           </div>
   

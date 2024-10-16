@@ -3,11 +3,13 @@
 import Head from 'next/head';
 import { useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
+if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+  throw new Error('Google Maps API key is not defined');
+}
 function Map(location: google.maps.LatLng) {
     return (
      <LoadScript
-       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}
+       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.toString() || ''}
        libraries={['places']}
      >
         <GoogleMap
@@ -21,7 +23,7 @@ function Map(location: google.maps.LatLng) {
     );
   }
 
-export default async function midpointFinder() {
+export default  function midpointFinder() {
     const [address, setAddress] = useState('');
     const [location, setLocation] = useState<google.maps.LatLng | null>(null);
 

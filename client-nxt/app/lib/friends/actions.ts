@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';  // Make sure to configure Firebase
+import { stat } from 'fs';
 
 // Update the schema to include sender, recipient, status, and request_send_time
 const FriendSchema = z.object({
@@ -53,6 +54,10 @@ export async function addFriend(id: string) {
       request_send_time: new Date().toISOString(),
       is_deleted: false,
     });
+    return {
+      status: 200,
+      message: 'Friend Request Created Successfully',
+    }
   } catch (error) {
     return {
       message: 'Firestore Error: Failed to Create Friend Request.',
@@ -77,7 +82,7 @@ export async function sendFriendRequest(formData: FormData) {
     request_send_time: formData.get('request_send_time'),
     is_deleted: false,
   });
-  console.log(validatedFields, ' ', formData);
+  // console.log(validatedFields, ' ', formData);
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -99,6 +104,7 @@ export async function sendFriendRequest(formData: FormData) {
       request_send_time,
       is_deleted: false,
     });
+    return { status: 200, message: 'Friend Request Sent.' };
   } catch (error) {
     return { message: 'Firestore Error: Failed to send Friend Request.' };
   }
@@ -111,6 +117,7 @@ export async function sendFriendRequest(formData: FormData) {
 export async function deleteFriend(id: string) {
   try {
     await firebaseFirestore.collection('friends').doc(id).update({ is_deleted: true });
+    return { status: 200, message: 'Friend Request Cancelled.' };
   } catch (error) {
     return {
       message: 'Firestore Error: Failed to Delete Friend Request.',
