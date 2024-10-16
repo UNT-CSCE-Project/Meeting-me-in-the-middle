@@ -29,12 +29,14 @@ export function Card({request, fetchPendingRequests} : {request : any, fetchPend
       }
     };
     console.log(request);
+    const firstName = request.sender_name.split(' ')[0]
+    const lastName = request.sender_name.split(' ')[1]
     return (
       
       <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
       <div className="flex items-start">
         {/* Avatar Section */}
-        <UserAvatar firstName={request.sender_id!==currentUserId ? request.sender_name : request.recipient_name} lastName={request.sender_id!==currentUserId ? request.sender_name : request.recipient_name} />
+        <UserAvatar firstName={firstName} lastName={lastName} />
 
         {/* Name, Title and Address Section */}
         <div className="ml-4">
