@@ -18,15 +18,19 @@ export default function SideNav() {
   const {signOutUser, currentUser} = useUser();
   
   // Determine if the user is authenticated based on the stored value
-  const isAuthPage =  pathname === '/login' ||   pathname === '/signup' ||   pathname === '/forgot-password'; // Check if a user exists
+  const isAuthPage =  pathname === '/login' ||   pathname === '/registration' ||   pathname === '/forgot-password'; // Check if a user exists
 
-  // console.log('Is Auth Page:', isAuthPage); // Debug: Log the auth page status
+  console.log('Is Auth Page:', isAuthPage); // Debug: Log the auth page status
  
   const router = useRouter();
+  if(!currentUser && !isAuthPage) {
+    router.push('/login');
+  }
+
 
 
   return (
-    !isAuthPage ? (
+    !isAuthPage && currentUser ? (
       <div className="w-full flex-none md:w-64">
         <div className="flex h-full flex-col px-3 py-4 md:px-2" style={{ background: "#2c2c2c" }}>
           <Link
