@@ -34,6 +34,7 @@ function MyMap() {
   const [placeType, setPlaceType] = useState("restaurant");
   const [newDirections, setNewDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+  const [distanceInMiles, setDistanceInMiles] = useState(0);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -131,28 +132,47 @@ function MyMap() {
   };
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
-  console.log("handlePlaceSelect called");
-  setSelectedPlace(place);
-  if (place.geometry && place.geometry.location) {
-    const newRequest: google.maps.DirectionsRequest = {
-      origin: originLocation,
-      destination: place.geometry.location,
-      travelMode: google.maps.TravelMode.DRIVING,
-    };
-    const directionsService = new google.maps.DirectionsService();
-    directionsService.route(newRequest, (newResult, newStatus) => {
-      console.log("directionsService.route callback called");
-      if (newStatus === google.maps.DirectionsStatus.OK && newResult !== null) {
-        console.log("newResult:", newResult);
-        setNewDirections(newResult);
-      } else {
-        console.error("Error calculating new route:", newStatus);
-      }
-    });
-  } else {
-    console.error("Place geometry is not available");
-  }
-};
+    console.log("handlePlaceSelect called");
+    setSelectedPlace(place);
+    if (place.geometry && place.geometry.location) {
+      const newRequest: google.maps.DirectionsRequest = {
+        origin: originLocation,
+        destination: place.geometry.location,
+        travelMode: google.maps.TravelMode.DRIVING,
+      };
+      const directionsService = new google.maps.DirectionsService();
+      directionsService.route(newRequest, (newResult, newStatus) => {
+        console.log("directionsService.route callback called");
+        if (
+          newStatus === google.maps.DirectionsStatus.OK &&
+          newResult !== null
+        ) {
+          console.log("newResult:", newResult);
+          if (
+            newResult.routes &&
+            newResult.routes[0] &&
+            newResult.routes[0].legs &&
+            newResult.routes[0].legs[0] &&
+            newResult.routes[0].legs[0].distance
+          ) {
+            const distance = newResult.routes[0].legs[0].distance.value;
+            console.log("Distance:", distance);
+            // Convert distance to kilometers
+            const distanceInMilesValue = (distance / 1000) * 0.621371;
+            console.log("Distance in miles:", distanceInMilesValue);
+            setDistanceInMiles(distanceInMilesValue);
+          } else {
+            console.error("Unable to retrieve distance from newResult");
+          }
+          setNewDirections(newResult);
+        } else {
+          console.error("Error calculating new route:", newStatus);
+        }
+      });
+    } else {
+      console.error("Place geometry is not available");
+    }
+  };
 
   const calculateMidpoint = () => {
     // Clear the directions and midpoint
@@ -311,6 +331,33 @@ function MyMap() {
     }
   };
 
+  const calculateDistance = (
+    origin: string,
+    destination: google.maps.LatLng,
+    place: google.maps.places.PlaceResult
+  ) => {
+    const directionsService = new google.maps.DirectionsService();
+    const request = {
+      origin: origin,
+      destination: destination,
+      travelMode: google.maps.TravelMode.DRIVING,
+    };
+    directionsService.route(request, (result, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        const distance = result?.routes?.[0]?.legs?.[0]?.distance;
+        if (distance) {
+          const distanceInKm = distance.value / 1000;
+          const distanceInMiles = distanceInKm * 0.621371;
+          return { place, distance: `Miles: ${distanceInMiles.toFixed(2)}` };
+        } else {
+          return { place, distance: "" };
+        }
+      } else {
+        return { place, distance: "" };
+      }
+    });
+  };
+
   if (!apiKey) {
     throw new Error("Google Maps API key is not set");
   }
@@ -332,17 +379,20 @@ function MyMap() {
           }}
           className="flex flex-col justify-start items-start border-2 border-black p-4 w-64 h-48 rounded-md"
         >
+          <h1 style={{marginLeft: "210px"}} className="text-lg font-bold">Midpoint Finder</h1>
+          <p className="text-md font-bold">Your Location:</p>
           <input
             type="text"
             value={originLocation}
             onChange={(e) => setOriginLocation(e.target.value)}
             placeholder="Enter origin location"
             style={{
-              marginTop: "20px",
+              marginTop: "10px",
               boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
             }}
             className="w-full p-2 mb-2 rounded-md"
           />
+          <p className="text-md font-bold">Friend's Location:</p>
           <input
             type="text"
             value={destinationLocation}
@@ -354,18 +404,7 @@ function MyMap() {
             }}
             className="w-full p-2 mb-2 rounded-md"
           />
-          <button
-            onClick={calculateMidpoint}
-            style={{
-              marginTop: "20px",
-              marginLeft: "175px",
-              width: "200px",
-              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-            }}
-            className="bg-white text-black p-2 rounded-md"
-          >
-            Calculate Midpoint
-          </button>
+          <p className="text-md font-bold">Select Location Type:</p>
           <select
             value={placeType}
             onChange={(e) => {
@@ -373,7 +412,7 @@ function MyMap() {
               updatePlaces(e.target.value);
             }}
             style={{
-              marginTop: "20px",
+              marginTop: "10px",
               width: "200px",
               boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
             }}
@@ -382,8 +421,22 @@ function MyMap() {
             <option value="restaurant">Restaurant</option>
             <option value="store">Store</option>
             <option value="cafe">Cafe</option>
-            <option value="bar">Bar</option>
+            <option value="park">Park</option>
           </select>
+          <button
+            onClick={calculateMidpoint}
+            style={{
+              marginTop: "60px",
+              marginLeft: "460px",
+              width: "100px",
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+              backgroundColor: "black",
+              borderRadius: "20px",
+            }}
+            className="text-white p-2 rounded-md"
+          >
+            Search
+          </button>
         </div>
         <div
           style={{ marginLeft: "50px", height: "400px" }}
@@ -442,7 +495,7 @@ function MyMap() {
                 <div>
                   <h2>{selectedPlace.name}</h2>
                   <p>{selectedPlace.formatted_address}</p>
-                  <p>Rating: {selectedPlace.rating}</p>
+                  <p>Miles: {distanceInMiles.toFixed(2)}</p>
                 </div>
               </InfoWindow>
             )}
@@ -494,6 +547,7 @@ function MyMap() {
                 onClick={() => handlePlaceSelect(place)}
               >
                 <h3 className="text-lg font-bold">{place.name}</h3>
+                <p>{place.vicinity}</p>
               </div>
             ))}
           </div>
@@ -510,7 +564,33 @@ function MyMap() {
                 flex: 1, // take up the full width of the column
               }}
             >
+              {selectedPlace.photos && selectedPlace.photos.length > 0 ? (
+                <img
+                  src={selectedPlace.photos[0].getUrl()}
+                  alt={selectedPlace.name}
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                    borderRadius: "10px",
+                  }}
+                />
+              ) : (
+                <p
+                  style={{
+                    textAlign: "center",
+                    fontSize: "18px",
+                    padding: "20px",
+                  }}
+                >
+                  Photo not available
+                </p>
+              )}
               <h2 className="text-lg font-bold">{selectedPlace.name}</h2>
+              <p>{selectedPlace.vicinity}</p>
+              <p>Miles: {distanceInMiles.toFixed(2)}</p>
+              <p>Rating: {selectedPlace.rating}/5</p>
+              <h2 className="text-md font-bold">Reviews</h2>
             </div>
           )}
         </div>
