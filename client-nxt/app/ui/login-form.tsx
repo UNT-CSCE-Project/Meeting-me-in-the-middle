@@ -22,8 +22,15 @@ export default function LoginForm() {
 
     try {
       
-          const result = await emailSignIn(email, password);
+          const result = await emailSignIn(email, password) as any;
+          console.log(result);
+          if (result?.error) {
+            setIsPending(false);
+            setErrorMessage(result.error);
+            return;
+          }
           if ('user' in result && result.user === null) {
+            setIsPending(false);
             setErrorMessage('Invalid email or password');
             return;
           }
@@ -36,12 +43,12 @@ export default function LoginForm() {
               setErrorMessage(response.message);
             }
           }
-            
-            
+          setIsPending(false);            
+          setErrorMessage('');
             router.push('/midpoint-finder');
          }
+         setIsPending(false);
 
-         setErrorMessage('');
               // Store the user information in local storage
   //            localStorage.setItem('user', JSON.stringify(userData));
           
@@ -91,7 +98,7 @@ export default function LoginForm() {
             <button 
               type="submit" // Ensure this is a submit button
               aria-disabled={isPending}
-              className="bg-blue-500 text-white rounded p-2 w-full"
+              className={`bg-blue-500 text-white rounded p-2 w-full ${isPending && 'opacity-50 cursor-not-allowed'}`}
             >
               Sign in
             </button>

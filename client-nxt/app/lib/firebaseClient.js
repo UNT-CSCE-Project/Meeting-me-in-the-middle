@@ -47,7 +47,7 @@ export const emailSignIn = async (email, password) => {
       const user = userCredential.user;
       return user;
     } else{
-      return {error: 'Invalid email or password'}
+      return {user: null, error: 'Invalid email or password'}
     }
   } catch (error) {
     return {error: 'Invalid email or password'}
