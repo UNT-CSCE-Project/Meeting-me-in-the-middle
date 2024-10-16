@@ -210,6 +210,10 @@ function MyMap() {
               if (
                 (result as google.maps.GeocoderResult).types.includes(
                   "locality"
+                ) || (result as google.maps.GeocoderResult).types.includes(
+                  "postal_code"
+                ) || (result as google.maps.GeocoderResult).types.includes(
+                  "administrative_area_level_3"
                 )
               ) {
                 console.log("Result is a locality");
