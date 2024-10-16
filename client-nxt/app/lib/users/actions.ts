@@ -1,11 +1,9 @@
 
 "use server";
 import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { redirect } from 'next/navigation';
-import {auth, db } from '@/app/lib/firebaseAdmin.js';  // Make sure to configure Firebase
-import bcrypt from 'bcrypt';
+
+import { db } from '@/app/lib/firebaseAdmin.js';  // Make sure to configure Firebase
+;
 const UserSchema = z.object({
   email: z.string({
     invalid_type_error: 'Please provide a valid email.',
