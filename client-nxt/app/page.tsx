@@ -9,13 +9,8 @@ export default function Home() {
   const {signOutUser, currentUser} = useUser();
   const router = useRouter();
   const pathname = usePathname(); // Get the current route
-    if(pathname === '/login' || pathname === '/registration' || pathname === '/forgot-password'){
-     signOutUser();
-      
-  }
-  if(!currentUser){
-    router.push('/login');
-  } 
+  
+
   
   return (
     <div className="flex h-screen flex-col md:flex-row ">

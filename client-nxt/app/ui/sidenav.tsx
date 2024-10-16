@@ -23,14 +23,12 @@ export default function SideNav() {
   console.log('Is Auth Page:', isAuthPage); // Debug: Log the auth page status
  
   const router = useRouter();
-  if(!currentUser && !isAuthPage) {
-    router.push('/login');
-  }
+  
 
 
 
   return (
-    !isAuthPage && currentUser ? (
+    !isAuthPage ? (
       <div className="w-full flex-none md:w-64">
         <div className="flex h-full flex-col px-3 py-4 md:px-2" style={{ background: "#2c2c2c" }}>
           <Link
