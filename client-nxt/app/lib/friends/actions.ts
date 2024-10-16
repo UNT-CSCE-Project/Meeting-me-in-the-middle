@@ -73,24 +73,7 @@ export async function addFriend(id: string) {
 const sendRequest = FriendSchema.omit({ id: true });
 
 export async function sendFriendRequest(formData: FormData) {
-  const validatedFields = sendRequest.safeParse({
-    sender_id: formData.get('sender_id'),
-    sender_name: formData.get('sender_name'),
-    recipient_id: formData.get('recipient_id'),
-    recipient_name: formData.get('recipient_name'),
-    status: formData.get('status'),
-    request_send_time: formData.get('request_send_time'),
-    is_deleted: false,
-  });
-  // console.log(validatedFields, ' ', formData);
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to send Friend Request.',
-    };
-  }
-
-  const { sender_id, sender_name, recipient_id, recipient_name, status, request_send_time } = validatedFields.data;
+  const { sender_id, sender_name, recipient_id, recipient_name, status, request_send_time } = sendRequest.parse(Object.fromEntries(formData));
 
   // create friend request in Firestore
   try {

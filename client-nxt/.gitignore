@@ -37,3 +37,6 @@ next-env.d.ts
 
 
 .././server
+/.env
+/pnpm-local.yaml
+/package-lock.json

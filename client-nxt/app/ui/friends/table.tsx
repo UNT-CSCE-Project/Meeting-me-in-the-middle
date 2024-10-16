@@ -27,6 +27,7 @@ export default function Table({
   useEffect(() => {
     fetchData();
   }, [query, currentUserId]);
+  console.log(searchList);
   const handleOps = () => {
     fetchData(); // Call fetchData() after sendRequest is successful
   };

@@ -6,17 +6,18 @@ import { deleteFriend,  sendFriendRequest, addFriend } from '@/app/lib/friends/a
 
 import {  useState } from 'react';
 import { useUser } from '@/app/UserContext';
-export function SendRequest({ request, onSendRequest  }: { request: friend, onSendRequest: () => void }) {  
+export function SendRequest({ request, onSendRequest  }: { request: any, onSendRequest: () => void }) {  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userData } = useUser();
 
   const formData = new FormData();
+  console.log(request)
 
   formData.append('sender_id', userData?.uid);
   formData.append('sender_name', userData?.firstName+" "+userData?.lastName);
-  formData.append('recipient_id', request.recipient_id);
-  formData.append('recipient_name', request?.recipient_name);
+  formData.append('recipient_id', request.uid);
+  formData.append('recipient_name', request?.name);
   formData.append('status', 'pending');
   formData.append('request_send_time', new Date().toISOString());
   const connectRequest = async () => {

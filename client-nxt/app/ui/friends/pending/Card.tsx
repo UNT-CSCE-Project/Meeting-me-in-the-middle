@@ -28,6 +28,7 @@ export function Card({request, fetchPendingRequests} : {request : any, fetchPend
         setLoading(false);
       }
     };
+    console.log(request);
     return (
       
       <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">

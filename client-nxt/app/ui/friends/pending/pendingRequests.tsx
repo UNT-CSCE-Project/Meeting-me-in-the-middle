@@ -31,7 +31,7 @@ export default function PendingRequests() {
     
     fetchPendingRequests();
   }, currentUserId)
-
+    console.log(pendingRequests)
     return (
       <Suspense fallback={<CardSkeleton />}>
         {pendingRequests?.length === 0 ? (
