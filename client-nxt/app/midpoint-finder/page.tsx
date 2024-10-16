@@ -87,15 +87,15 @@ function MyMap() {
               <Marker
                 key={index}
                 position={leg.start_location}
-                title={`Leg ${index + 1}`}
+                title={`Midpoint ${index + 1}`}
               >
                 <InfoWindow position={midpoint}>
                   <div>
-                    <h2>Leg {index + 1}</h2>
+                    <h2>Midpoint {index + 1}</h2>
                     <p>Start Address: {leg.start_address}</p>
                     <p>End Address: {leg.end_address}</p>
-                    <p>Distance: {leg.distance?.text}</p>
-                    <p>Duration: {leg.duration?.text}</p>
+                    {/* <p>Distance: {leg.distance?.text}</p>
+                    <p>Duration: {leg.duration?.text}</p> */}
                   </div>
                 </InfoWindow>
               </Marker>
