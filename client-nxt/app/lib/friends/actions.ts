@@ -104,6 +104,7 @@ export async function sendFriendRequest(formData: FormData) {
       request_send_time,
       is_deleted: false,
     });
+    return { status: 200, message: 'Friend Request Sent.' };
   } catch (error) {
     return { message: 'Firestore Error: Failed to send Friend Request.' };
   }
@@ -138,7 +139,7 @@ export async function cancelFriendRequest(sender_id: string, recipient_id: strin
   try {
 
 
-    await firebaseFirestore.collection('friends').doc(sender_id).update({ status: 'not connected' }).delete();
+    await firebaseFirestore.collection('friends').doc(sender_id).delete();
   } catch (error) {
     return {
       message: 'Firestore Error: Failed to Cancel Friend Request.',

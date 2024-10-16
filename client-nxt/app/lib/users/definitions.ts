@@ -1,7 +1,7 @@
 export type User = {
     id: string;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     userName: string;
     password: string;
@@ -10,16 +10,15 @@ export type User = {
     city: string | null;
     state: string | null;
     zipCode: string | null;
-    country: string | null; 
-    created_at: string | null; 
-    updated_at: string | null;
-    deleted_at: string | null;
+    uid : string;
 };
 
 
 export type UserInfoWithStatus = {
     uid: string;
     name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     status: string;
     requestId: string | null;

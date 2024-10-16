@@ -12,7 +12,7 @@ import Link from "next/link";
 import { CardGridProps } from '../definitions';
 import { useUser } from '@/app/UserContext';
 export default function PendingRequests() {
-  const [pendingRequests, setPendingRequests] = useState([])
+  const [pendingRequests, setPendingRequests] = useState<any>([])
   const {currentUser} = useUser();
   const currentUserId = currentUser?.uid
   const fetchPendingRequests = async () => {

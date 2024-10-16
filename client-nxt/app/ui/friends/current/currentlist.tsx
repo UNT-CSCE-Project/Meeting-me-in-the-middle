@@ -8,7 +8,7 @@ import { useUser } from '@/app/UserContext';
 import { useEffect, useState } from 'react';
 export default function CurrentList() {
     
-    const [friendData, setFriendData] = useState([])
+    const [friendData, setFriendData] = useState<any>([])
     const {currentUser} = useUser();
     const currentUserId = currentUser?.uid
     useEffect(() => {

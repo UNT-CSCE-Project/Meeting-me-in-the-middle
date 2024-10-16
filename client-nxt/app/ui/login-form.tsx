@@ -20,21 +20,22 @@ export default function LoginForm() {
     setErrorMessage(''); // Reset previous errors
 
     try {
-     
-         const result = await emailSignIn(email, password)
-         if(result?.error) {
-             setErrorMessage('Invalid email or password');
-             return
-         } 
-         const user = result;
-         if(user) {
-          const response = await fetchUserByUidAndEmail(user?.uid, user?.email);
-          if(response?.message) {
-            setErrorMessage(response.message);
+      
+          const result = await emailSignIn(email, password);
+          if ('user' in result && result.user === null) {
+            setErrorMessage('Invalid email or password');
             return;
           }
-          
-            localStorage.setItem('user', JSON.stringify(response)); 
+         const user = result;
+         if(user) {
+          const user = result;
+          if (user && 'uid' in user && 'email' in user) {
+            const response = await fetchUserByUidAndEmail(user.uid, user.email || "");
+            if (response?.message) {
+              setErrorMessage(response.message);
+            }
+          }
+            
             
             router.push('/midpoint-finder');
          }
@@ -47,9 +48,9 @@ export default function LoginForm() {
               // Use router to redirect
             // Use the user object as needed
           
-    } catch (error) {
+    } catch (error : any) {
       console.error(error);
-      setErrorMessage(error.message); // Handle any errors
+      setErrorMessage(error?.message); // Handle any errors
     } finally {
       setIsPending(false); // Reset pending state
     }

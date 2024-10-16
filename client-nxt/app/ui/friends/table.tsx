@@ -15,7 +15,7 @@ export default function Table({
   currentPage: number;
 }) {
   const { currentUser } = useUser();
-  const [searchList, setSearchList] = useState<any[]>([]);
+  const [searchList, setSearchList] = useState<any>([]);
   const currentUserId = currentUser?.uid; // Replace with authenticated user ID
   const fetchData = async () => {
     if (currentUserId) {
@@ -59,7 +59,7 @@ export default function Table({
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {searchList.map((item) => (
+                {searchList.map((item : any) => (
                   <tr
                     key={item.id}
                     className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"

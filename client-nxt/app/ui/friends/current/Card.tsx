@@ -4,7 +4,7 @@ import { friend } from "../definitions";
 import { deleteFriend } from "@/app/lib/friends/actions";
 import { UserAvatar } from "../../userAvatar";
 import { useUser } from "@/app/UserContext";
-export async function Card({ friend } : friend) {
+export async function Card({ friend } : {friend: friend}) {
   const { currentUser } = useUser();
 
   const currentUserId = currentUser?.uid || "";
@@ -24,12 +24,15 @@ export async function Card({ friend } : friend) {
       }
     };
     console.log("curre nt user id", currentUserId)
+    const name = friend.recipient_id !== currentUserId ? friend.recipient_name : friend.sender_name
+    const firstName = name.split(' ')[0]
+    const lastName = name.split(' ')[1]
     return (
       <>
         <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-start">
             {/* Avatar Section */}
-            <UserAvatar firstName={friend.recipient_id != currentUserId ? friend.recipient_name : friend.sender_name} />
+            <UserAvatar firstName={firstName} lastName={lastName}/>
   
             {/* Name, Title and Address Section */}
             <div className="ml-4">

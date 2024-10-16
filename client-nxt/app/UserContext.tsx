@@ -26,9 +26,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        const fetchedUserData = await fetchUserByUidAndEmail(user.uid, user.email);
+        const fetchedUserData = await fetchUserByUidAndEmail(user.uid, user.email || "");
         setUserData(fetchedUserData);
-        localStorage.setItem('user', JSON.stringify(fetchedUserData));
       } else {
         setCurrentUser(null);
         setUserData(null);

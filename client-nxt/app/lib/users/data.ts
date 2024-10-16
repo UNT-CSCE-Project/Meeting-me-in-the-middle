@@ -2,7 +2,7 @@
 import {db, auth} from '@/app/lib/firebaseAdmin.js';  
 
 import { UserInfoWithStatus } from './definitions';
-
+import { User } from './definitions';
 
 export async function fetchUserById(id: string) {
     try {
@@ -22,7 +22,7 @@ export async function fetchUsersByQuery(query: string, currentUserId: string) {
           .map(doc => ({
               id: doc.id,
               ...doc.data(),
-          }))
+          }) as User)
           .filter(user =>
               user.uid !== currentUserId &&
               (
@@ -104,10 +104,10 @@ export async function fetchUserByUidAndEmail(uid: string, email: string) {
     if (userSnapshot.docs.length > 0) {
       const user = userSnapshot.docs[0].data();
       return user;
-    } else {
-      return {
-        message : 'User not found'
-      };
+    } 
+    return {
+      message : 'User not found'
+      
     }
   } catch (error) {
     //console.error('Error fetching user:', error);

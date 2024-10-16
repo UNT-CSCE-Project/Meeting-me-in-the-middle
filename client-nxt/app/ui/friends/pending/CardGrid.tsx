@@ -6,7 +6,7 @@ export function CardGrid({ requests, fetchPendingRequests }: {requests: any, fet
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 px-3">
 
-        {requests?.map((request) => (
+        {requests.map((request : any) => (
           <Card key={request.id} request={request} fetchPendingRequests={fetchPendingRequests}/>
         ))} 
 

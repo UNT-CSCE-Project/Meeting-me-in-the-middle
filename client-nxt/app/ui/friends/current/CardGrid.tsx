@@ -1,5 +1,5 @@
 import { Card } from "./Card"
-import {CardGridProps} from "./definitions";
+import {CardGridProps} from "@/app/ui/friends/definitions";
 
 export default async function CardGrid({ friends }: CardGridProps) {
     return (

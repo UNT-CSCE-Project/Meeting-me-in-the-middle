@@ -7,7 +7,7 @@ import { friend } from "../definitions";
 import { useUser } from '@/app/UserContext';
 import { UserAvatar } from "../../userAvatar";
 import { Connect } from "../buttons";
-export function Card({request, fetchPendingRequests} : {friend, fetchPendingRequests: any}) {
+export function Card({request, fetchPendingRequests} : {request : any, fetchPendingRequests: any}) {
     const { currentUser } = useUser();
 
     const currentUserId = currentUser?.uid || "";
@@ -46,7 +46,10 @@ export function Card({request, fetchPendingRequests} : {friend, fetchPendingRequ
 
       {/* Connect and Deny Buttons */}
       <div className="mt-4 flex justify-end">
-        <Connect request_id={request.id} onConnect={handleConnect} />
+        <Connect
+          request_id={request.id}
+          onConnect={() => handleConnect(request.id)} // Correctly pass the requestId here
+        />
         <button 
           onClick={() => handleCancel(request.id)}
           disabled={loading}

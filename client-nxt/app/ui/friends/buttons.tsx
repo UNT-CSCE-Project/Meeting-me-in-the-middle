@@ -18,19 +18,19 @@ export function SendRequest({ request, onSendRequest  }: { request: friend, onSe
 
   formData.append('sender_id', userData?.uid);
   formData.append('sender_name', userData?.firstName+" "+userData?.lastName);
-  formData.append('recipient_id', request.uid);
-  formData.append('recipient_name', request?.name);
+  formData.append('recipient_id', request.recipient_id);
+  formData.append('recipient_name', request?.recipient_name);
   formData.append('status', 'pending');
   formData.append('request_send_time', new Date().toISOString());
   const connectRequest = async () => {
     setLoading(true);
     try {
       const response = await sendFriendRequest(formData);
-      if (response.message === 'Friend Request Sent.') {
+      if (response.status === 200) {
         onSendRequest(); // Call the callback function
       }
-    } catch (error) {
-      setError(error.message);
+    } catch (error : any) {
+      setError(error.message || 'An error occurred while sending the friend request.');
     } finally {
       setLoading(false);
     }
@@ -82,9 +82,8 @@ export function DeleteFriend({ request_id, onDelete }: { request_id: string, onD
       if (response?.status === 200) {
         onDelete();
       }
-    } catch (error) {
-      console.error('An error occurred:', error);
-      setError(error?.message);
+    } catch (error : any) {
+      setError(error.message || 'An error occurred while deleting the friend.');
     } finally {
       setLoading(false);
     }
@@ -108,37 +107,47 @@ export function DeleteFriend({ request_id, onDelete }: { request_id: string, onD
   );
 }
 
-export function Connect({request_id, onConnect}: {request_id: string, onConnect: () => void}) {
+
+
+interface ConnectProps {
+  request_id: string;
+  onConnect: () => void;
+}
+
+export function Connect({ request_id, onConnect }: ConnectProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const handleConnect = async () => {
     setLoading(true);
+    setError(null); // Reset error before making a request
     try {
-         const response = await addFriend(request_id);
-         if (response?.status === 200) {
-          console.log('Friend request created successfully:', request_id);
-          setError('');
-          setLoading(false);
-           onConnect();
-         }
-         
-    } catch (error) {
-      setError(error?.message);
+      const response = await addFriend(request_id);
+      if (response?.status === 200) {
+        console.log('Friend request created successfully:', request_id);
+        onConnect(); // Call onConnect after success
+      } else {
+        setError('Failed to create friend request');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred while creating the friend request.');
       console.error('An error occurred:', error);
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <form >
-        <button 
-          onClick={handleConnect}
-          type='button'
-          disabled={loading}
-          className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600">
-          {loading ? 'Connecting...' : 'Connect'} 
-          {error && <span className="text-red-500">{error}</span>}
-        </button>
-    </form>
-  )
+    <form onSubmit={(e) => e.preventDefault()}> {/* Prevent default form submission */}
+    <button
+      onClick={handleConnect} // Trigger the connection logic
+      type="button"
+      disabled={loading}
+      className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600"
+    >
+      {loading ? 'Connecting...' : 'Connect'}
+    </button>
+    {error && <span className="text-red-500">{error}</span>} {/* Display error if any */}
+  </form>
+  );
 }
