@@ -13,12 +13,14 @@ export async function getFriends(currentUserId: string) {
       .where('sender_id', '==', currentUserId)
       .where('status', '==', 'connected')
       .where('is_deleted', '==', false)
+      .orderBy('request_send_time', 'desc')
       .get();
 
     const recipientSnapshot = await db.collection('friends')
       .where('recipient_id', '==', currentUserId)
       .where('status', '==', 'connected')
       .where('is_deleted', '==', false)
+      .orderBy('request_send_time', 'desc')
       .get();
 
     // Combine results from both sender and recipient queries
@@ -64,6 +66,7 @@ export async function getPendingRequests(currentUserId: string) {
         .where('status', '==', 'pending')
         .where('recipient_id', '==', currentUserId)
         .where('is_deleted', '==', false)
+        .orderBy('request_send_time', 'desc')
         .get();
   
       // Map the results to an array of objects with the document ID and data
@@ -105,7 +108,9 @@ export async function fetchFriendRequestIdBySenderIdAndRecipientId(sender_id: st
   try{
     const requestSnapshot = await db.collection('friends')
     .where('sender_id', '==', sender_id)
-    .where('recipient_id', '==', recipient_id).get();
+    .where('recipient_id', '==', recipient_id)
+    .orderBy('request_send_time', 'desc')
+    .get();
 
     if (requestSnapshot.empty) {
       return null;
