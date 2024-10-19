@@ -103,6 +103,7 @@ export async function deleteFriend(id: string) {
     return { status: 200, message: 'Friend Request Cancelled.' };
   } catch (error) {
     return {
+      status: 500,
       message: 'Firestore Error: Failed to Delete Friend Request.',
     };
   }

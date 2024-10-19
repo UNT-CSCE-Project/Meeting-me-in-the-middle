@@ -1,42 +1,24 @@
-"use client";
-import Link from "next/link";
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { addFriend, deleteFriend } from '@/app/lib/friends/actions';
-import { friend } from "../definitions";
-import { useUser } from '@/app/UserContext';
 import { UserAvatar } from "../../userAvatar";
 import { Connect } from "../buttons";
-export function Card({request, fetchPendingRequests} : {request : any, fetchPendingRequests: any}) {
-    const { currentUser } = useUser();
-
-    const currentUserId = currentUser?.uid || "";
-    const [loading, setLoading] = useState(false);
-    
-    const handleConnect = async (requestId: string) => {
-      fetchPendingRequests(requestId)
-    };
-    const handleCancel = async (requestId: string) => {
-      setLoading(true);
-      try {
-    
-        await deleteFriend(requestId);
-    
-      } catch (error) {
-        console.error('An error occurred:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    console.log(request);
-    const firstName = request.sender_name.split(' ')[0]
-    const lastName = request.sender_name.split(' ')[1]
-    return (
-      
-      <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
+import { pendingFriendItem } from "@/app/lib/friends/definitions";
+import { Cancel } from "../buttons";
+export function Card({
+  request,
+  onAcceptRequest,
+  onCancelRequest,
+  isLoading,
+}: {
+  request: pendingFriendItem,
+  onAcceptRequest: Function,
+  onCancelRequest: Function,
+  isLoading: boolean
+}) {
+  console.log(JSON.stringify(request) + " ada ")
+  return (
+    <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
       <div className="flex items-start">
         {/* Avatar Section */}
-        <UserAvatar firstName={firstName} lastName={lastName} />
+        <UserAvatar firstName={request.sender_name.split(" ")[0]} lastName={request.sender_name.split(" ")[1]} />
 
         {/* Name, Title and Address Section */}
         <div className="ml-4">
@@ -45,22 +27,18 @@ export function Card({request, fetchPendingRequests} : {request : any, fetchPend
         </div>
       </div>
 
-      
-
-      {/* Connect and Deny Buttons */}
+      {/* Connect and Cancel Buttons */}
       <div className="mt-4 flex justify-end">
-        <Connect
-          request_id={request.id}
-          onConnect={() => handleConnect(request.id)} // Correctly pass the requestId here
+        <Connect request={request}
+          onConnect={() => onAcceptRequest(request)}
+          isLoading={isLoading}
         />
-        <button 
-          onClick={() => handleCancel(request.id)}
-          disabled={loading}
-          className="w-20 ml-2 rounded-lg bg-red-500 text-white py-2 hover:bg-red-600">
-          {loading ? 'Cancelling...' : 'Cancel'}
-        </button>
+        <Cancel request={request}
+          onCancel={() => onCancelRequest(request)
+          }
+          isLoading = {isLoading}
+        />
       </div>
     </div>
-    );
-  }
-  
+  );
+}

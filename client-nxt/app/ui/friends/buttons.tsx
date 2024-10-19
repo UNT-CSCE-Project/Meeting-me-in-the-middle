@@ -1,11 +1,11 @@
 "use client";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { friend } from "./definitions";
 import { deleteFriend,  sendFriendRequest, addFriend } from '@/app/lib/friends/actions';
-
+import { connectedFriendItem } from '@/app/lib/friends/definitions';
 import {  useState } from 'react';
 import { useUser } from '@/app/UserContext';
+import { pendingFriendItem } from '@/app/lib/friends/definitions';
 export function SendRequest({ request, onSendRequest  }: { request: any, onSendRequest: () => void }) {  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,45 +105,96 @@ export function DeleteFriend({ request_id, onDelete }: { request_id: string, onD
 
 
 
-interface ConnectProps {
-  request_id: string;
-  onConnect: () => void;
-}
 
-export function Connect({ request_id, onConnect }: ConnectProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleConnect = async () => {
-    setLoading(true);
-    setError(null); // Reset error before making a request
-    try {
-      const response = await addFriend(request_id);
-      if (response?.status === 200) {
-        // console.log('Friend request created successfully:', request_id);
-        onConnect(); // Call onConnect after success
-      } else {
-        setError('Failed to create friend request');
-      }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred while creating the friend request.');
-      console.error('An error occurred:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export function Connect({
+  request,
+  onConnect,
+  isLoading,
+}: {
+  request: pendingFriendItem,
+  onConnect: Function,
+  isLoading: boolean,
+}) {
   return (
-    <form onSubmit={(e) => e.preventDefault()}> {/* Prevent default form submission */}
-    <button
-      onClick={handleConnect} // Trigger the connection logic
-      type="button"
-      disabled={loading}
-      className="w-20 mr-2 rounded-lg bg-green-500 text-white py-2 hover:bg-green-600"
-    >
-      {loading ? 'Connecting...' : 'Connect'}
-    </button>
-    {error && <span className="text-red-500">{error}</span>} {/* Display error if any */}
-  </form>
+    <ActionButton
+      request={request}
+      onClick={onConnect}
+      isLoading={isLoading}
+      label="Connect"
+      className="bg-blue-600"
+    />
   );
 }
+
+export function Cancel({
+  request,
+  onCancel,
+  isLoading,
+}: {
+  request: pendingFriendItem,
+  onCancel: Function,
+  isLoading: boolean,
+}) {
+  return (
+    <ActionButton
+      request={request}
+      onClick={onCancel}
+      isLoading={isLoading}
+      label="Cancel"
+      className="bg-red-600"
+    />
+  );
+}
+
+
+export function Remove({
+  request,
+  onRemoveFriend,
+  isLoading,
+}: {
+  request: connectedFriendItem,
+  onRemoveFriend: Function,
+  isLoading: boolean,
+}) {
+  
+  return (
+    <ActionButton
+      request={request}
+      onClick={onRemoveFriend}
+      isLoading={isLoading}
+      label="Remove"
+      className="bg-red-600"
+    />
+  );
+}
+
+
+export function ActionButton({
+  request,
+  onClick,
+  isLoading,
+  label,
+  className,
+}: {
+  request: pendingFriendItem | connectedFriendItem,
+  onClick: Function,
+  isLoading: boolean,
+  label: string,
+  className: string,
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onClick();
+      }}
+      disabled={isLoading}
+      className={`w-20 mr-2 rounded-lg ${className} text-white py-2 hover:${className.replace('600', '500')} 
+      ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+
