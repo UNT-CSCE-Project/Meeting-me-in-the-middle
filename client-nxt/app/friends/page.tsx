@@ -1,13 +1,8 @@
 
 import Table from "@/app/ui/friends/table";
 import React, { Suspense } from "react";
-
-
 import Navbar from "@/app/ui/Navbar";
-import PendingRequests from "@/app/ui/friends/pending/pendingRequests";
-import CurrentList from "@/app/ui/friends/current/currentlist";
-
-
+import FriendsList from "@/app/ui/friends/list";
 export default async function friends( {searchParams,
 }: {
   searchParams?: {
@@ -15,8 +10,11 @@ export default async function friends( {searchParams,
     page?: string;
   };
 }) {
+    
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
+
+    
     return (
         <main>
             <Navbar />
@@ -26,12 +24,10 @@ export default async function friends( {searchParams,
               {query !== '' ? (
                 <Table query={query} currentPage={currentPage} />
               ) : (
-                <>
-                  <PendingRequests />     
-                  <CurrentList />    
-                </>
+               <FriendsList />
               )}
             </Suspense>
+            
         </main>
             
     );

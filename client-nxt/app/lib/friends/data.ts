@@ -3,6 +3,9 @@ import {db} from '@/app/lib/firebaseAdmin.js';  // Make sure to configure Fireba
 
 export async function getFriends(currentUserId: string) {
   try {
+    if(!currentUserId) {
+      throw new Error('No user ID found in getFriends');
+    }
     
     
     // Fetch friends where the user is either the sender or recipient and the status is 'connected'
@@ -31,7 +34,11 @@ export async function getFriends(currentUserId: string) {
         const userDoc = userData.docs[0]; // Get the first document (assuming there's only one)
         return {
           id: doc.id,
-          ...doc.data(),
+          friend_uid: uid,
+          friend_name: userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName,
+          status: doc.data().status,
+          request_send_time: doc.data().request_send_time,
+          is_deleted: doc.data().is_deleted,
           streetAddress: userDoc?.data()?.streetAddress,
           city: userDoc?.data()?.city,
           state: userDoc?.data()?.state,
@@ -41,14 +48,17 @@ export async function getFriends(currentUserId: string) {
     );
     return friendsList; // Return the list of friends
   } catch (error) {
-    console.error('Error fetching friends:', error);
-    return []; // Return an empty array in case of an error
+    return {
+      error: 'Error fetching friends',}
   }
 }
 
 export async function getPendingRequests(currentUserId: string) {
     try {
-
+      if(!currentUserId) {
+        throw new Error('No user ID found in getPendingRequests');
+      }
+  
       // Query Firestore to get documents where status is 'pending'
       const friendsSnapshot = await db.collection('friends')
         .where('status', '==', 'pending')
@@ -66,18 +76,28 @@ export async function getPendingRequests(currentUserId: string) {
               const userDoc = userData.docs[0]; // Get the first document (assuming there's only one)
               return {
                 id: doc.id,
-                ...doc.data(),
+                friend_uid: doc.data().uid,
+                friend_name: userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName,
+                status: doc.data().status,
+                request_send_time: doc.data().request_send_time,
                 streetAddress: userDoc?.data()?.streetAddress,
                 city: userDoc?.data()?.city,
                 state: userDoc?.data()?.state,
                 zipCode: userDoc?.data()?.zipCode,
+                is_deleted: false,
+                sender_id: doc.data().sender_id,
+                sender_name: userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName,
+                recipient_id: doc.data().recipient_id,
+                recipient_name: doc.data().recipient_name,
               };
         })
 );
       return pendingFriends; // Return the filtered list of pending requests
     } catch (error) {
-      console.error('Error fetching pending friend requests:', error);
-      return []; // Return an empty array in case of an error
+      
+      return {
+        error: 'error fetching pending requests',
+      }; // Return an empty array in case of an error
     }
 }
 
