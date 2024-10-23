@@ -1,24 +1,48 @@
+"use client"; // Make this a client component
+
+import { fetchUsersByQuery } from "@/app/lib/users/data";
 import { SendRequest, DeleteFriend, UpdateFriend } from "./buttons";
 import FriendStatus from "./status";
+import { useUser } from "@/app/UserContext";
+import { useEffect, useState } from "react";
+import { UserAvatar } from "../userAvatar";
 
-export default async function Table({
-    query,
-    currentPage,
-  }: {
-    query: string;
-    currentPage: number;
-  }) {
-    const friends = [
-      { id: 1, name: 'Avijeet', email: 'S6Q6f@example.com', date: '2023-03-02', status: 'pending' },
-      { id: 2, name: 'Nikhil', email: 'OYkZD@example.com',  date: '2023-03-02', status: 'connected' },
-      { id: 3, name: 'Sahil', email: 'jzKu7@example.com',  date: '2023-03-02', status: 'not connected' },];
+export default function Table({
+  query,
+  currentPage,
+}: {
+  query: string;
+  currentPage: number;
+}) {
+  const { currentUser } = useUser();
+  const [searchList, setSearchList] = useState<any>([]);
+  const currentUserId = currentUser?.uid; // Replace with authenticated user ID
+  const fetchData = async () => {
+    if (currentUserId) {
+      const result = await fetchUsersByQuery(query, currentUserId);
+      // console.log(result);
+      setSearchList(result);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [query, currentUserId]);
+  console.log(searchList);
+  const handleOps = () => {
+    fetchData(); // Call fetchData() after sendRequest is successful
+  };
   
-    return (
-      <div className="mt-6 flow-root">
-        <div className="inline-block min-w-full align-middle">
-          <div className="rounded-lg bg-blue-50 p-2 md:pt-0 ml-4 mr-4">
-           
-            <table className="hidden min-w-full text-gray-900 md:table">
+  return (
+    <div className="mt-6 flow-root">
+      <div className="inline-block min-w-full align-middle">
+        <div className="rounded-lg bg-blue-50 p-2 md:pt-0 ml-4 mr-4">
+          {
+            searchList.length === 0 ? (
+              <div className="w-full text-center">
+                No users found
+              </div>
+            ) : (
+              <table className="hidden min-w-full text-gray-900 md:table">
               <thead className="rounded-lg text-left text-sm font-normal">
                 <tr>
                   <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
@@ -27,65 +51,63 @@ export default async function Table({
                   <th scope="col" className="px-3 py-5 font-medium">
                     Email
                   </th>
-                  
-                  <th scope="col" className="px-3 py-5 font-medium">
-                    Date
-                  </th>
                   <th scope="col" className="px-3 py-5 font-medium">
                     Status
                   </th>
                   <th scope="col" className="relative py-3 pl-6 pr-3 ">
-                  Edit
+                    Edit
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {friends?.map((friend) => (
+                {searchList.map((item : any) => (
                   <tr
-                    key={friend.id}
+                    key={item.id}
                     className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                   >
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                        <div className="flex items-center gap-3">
-                            <img
-                            className="h-20 w-20 rounded-full overflow-hidden"
-                            src={"https://picsum.photos/200/300"} // Add dynamic avatar URL
-                            alt="Avatar"
-                            />
-                            <div className="text-sm font-medium text-gray-900">{friend.name}</div>
+                      <div className="flex items-center gap-3">
+                        <UserAvatar firstName={item.firstName} lastName={item.lastName} />
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.name}
                         </div>
+                      </div>
                     </td>
-
-                      
+  
                     <td className="whitespace-nowrap px-3 py-3">
-                      {friend.email}
+                      {item.email}
                     </td>
-                    
+  
                     <td className="whitespace-nowrap px-3 py-3">
-                      {(friend.date)}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3">
-                      <FriendStatus status={friend.status} />
+                      <FriendStatus status={item.status} />
                     </td>
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                      
-                      {friend.status === 'pending' || friend.status === 'connected' ? (
+                      {item.status === 'pending' || item.status === 'connected' ? (
                     <div className="flex justify-start gap-3">
-                        <DeleteFriend id={friend.id} />
+                        {item.requestId !== null && (
+                          <DeleteFriend request_id={item.requestId} onDelete={handleOps}/>
+                        )}
                         </div>
                     ) : (
                     <div className="flex justify-start gap-3">
-                        <SendRequest request={friend} />
-                    </div> 
+                      {
+                        item !== null && (
+                        <SendRequest request={item} onSendRequest={handleOps}/>                          
+                        )
+                      }
+
+                    </div>
               )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+            )
+          }
+         
         </div>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

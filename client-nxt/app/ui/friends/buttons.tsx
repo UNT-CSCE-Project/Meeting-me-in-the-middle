@@ -1,58 +1,45 @@
 "use client";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { friend } from "./definitions";
-import { deleteFriend,  sendFriendRequest } from '@/app/lib/friends/actions';
-import {addNotification} from '@/app/lib/notifications/actions';
-import { useState } from 'react';
-export function SendRequest({ request }: { request: friend }) {
+import { deleteFriend,  sendFriendRequest, addFriend } from '@/app/lib/friends/actions';
+import { connectedFriendItem } from '@/app/lib/friends/definitions';
+import {  useState } from 'react';
+import { useUser } from '@/app/UserContext';
+import { pendingFriendItem } from '@/app/lib/friends/definitions';
+export function SendRequest({ request, onSendRequest  }: { request: any, onSendRequest: () => void }) {  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const handleClick = async () => {
-    setLoading(true);
-    setError(null);
+  const { userData } = useUser();
 
+  const formData = new FormData();
+  console.log(request)
+
+  formData.append('sender_id', userData?.uid);
+  formData.append('sender_name', userData?.firstName+" "+userData?.lastName);
+  formData.append('recipient_id', request.uid);
+  formData.append('recipient_name', request?.name);
+  formData.append('status', 'pending');
+  formData.append('request_send_time', new Date().toISOString());
+  const connectRequest = async () => {
+    setLoading(true);
     try {
-      console.log(`Sending friend request to ${request.name}: ${request.name}`);
-      const formData = new FormData();
-      formData.append('sender_id', "1");
-      formData.append('sender_name', "Avijeet Shil");
-      formData.append('recipient', request.id);
-      formData.append('recipient_name', request.name);
-      formData.append('status', 'pending');
-      formData.append('request_send_time', new Date().toISOString());
-      
-      console.log(`formData: ${formData}`);
-      let response = await sendFriendRequest( formData);
-      if (response?.message) {
-        setError(response?.message);
-      } 
-      /* TODO: Add notification */
-      /* Start
-      const notificationData = new FormData();
-      notificationData.append('type', 'friend_request');
-      notificationData.append('sender_id', "1");
-      notificationData.append('sender_name', "Avijeet Shil");
-      notificationData.append('message', `Friend request sent to ${request.name}`);
-      try {
-        await addNotification(notificationData);
-      } catch (error) {
-        setError('Failed to send notification.');
+      const response = await sendFriendRequest(formData);
+      if (response.status === 200) {
+        onSendRequest(); // Call the callback function
       }
-      End */
-      // Optionally, handle success (e.g., show a success message)
-    } catch (err) {
-      setError('Failed to send friend request.'); // Handle error appropriately
+    } catch (error : any) {
+      setError(error.message || 'An error occurred while sending the friend request.');
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <button
-      onClick={handleClick}
-      disabled={loading} // Disable button while loading
+
+    <form onSubmit={connectRequest}>
+        <button
+      type='button'
+      onClick={connectRequest}
+    // Disable button while loading
       className={`flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
         loading ? 'opacity-50 cursor-not-allowed' : ''
       }`}
@@ -67,6 +54,7 @@ export function SendRequest({ request }: { request: friend }) {
       )}
       {error && <span className="text-red-500">{error}</span>} {/* Display error message */}
     </button>
+    </form>
   );
 }
 
@@ -81,18 +69,132 @@ export function UpdateFriend({ id }: { id: string }) {
   );
 }
 
-export function DeleteFriend({ id }: { id: string }) {
-  const deleteFriendWithId = deleteFriend.bind(null, id);
- 
+export function DeleteFriend({ request_id, onDelete }: { request_id: string, onDelete: () => void }) {  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+ const deleteFriendWithId = async () => {
+    setLoading(true);
+    try {
+      const response = await deleteFriend(request_id);
+      // console.log(response);
+      if (response?.status === 200) {
+        onDelete();
+      }
+    } catch (error : any) {
+      setError(error.message || 'An error occurred while deleting the friend.');
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
-    <form action={deleteFriendWithId}>
+    <form onSubmit={deleteFriendWithId}>
       <button type="submit"
       
       className="flex h-10 items-center rounded-lg bg-red-600 px-4 text-sm font-medium text-white transition-colors hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
->
+>{loading ? (
+        <span>Loading...</span>
+      ) : (<>
         <span>Delete</span>
         <TrashIcon className="w-4" />
+      </>
+      )}
       </button>
     </form>
   );
 }
+
+
+
+
+export function Connect({
+  request,
+  onConnect,
+  isLoading,
+}: {
+  request: pendingFriendItem,
+  onConnect: Function,
+  isLoading: boolean,
+}) {
+  return (
+    <ActionButton
+      request={request}
+      onClick={onConnect}
+      isLoading={isLoading}
+      label="Connect"
+      className="bg-blue-600"
+    />
+  );
+}
+
+export function Cancel({
+  request,
+  onCancel,
+  isLoading,
+}: {
+  request: pendingFriendItem,
+  onCancel: Function,
+  isLoading: boolean,
+}) {
+  return (
+    <ActionButton
+      request={request}
+      onClick={onCancel}
+      isLoading={isLoading}
+      label="Cancel"
+      className="bg-red-600"
+    />
+  );
+}
+
+
+export function Remove({
+  request,
+  onRemoveFriend,
+  isLoading,
+}: {
+  request: connectedFriendItem,
+  onRemoveFriend: Function,
+  isLoading: boolean,
+}) {
+  
+  return (
+    <ActionButton
+      request={request}
+      onClick={onRemoveFriend}
+      isLoading={isLoading}
+      label="Remove"
+      className="bg-red-600"
+    />
+  );
+}
+
+
+export function ActionButton({
+  request,
+  onClick,
+  isLoading,
+  label,
+  className,
+}: {
+  request: pendingFriendItem | connectedFriendItem,
+  onClick: Function,
+  isLoading: boolean,
+  label: string,
+  className: string,
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onClick();
+      }}
+      disabled={isLoading}
+      className={`w-20 mr-2 rounded-lg ${className} text-white py-2 hover:${className.replace('600', '500')} 
+      ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+
