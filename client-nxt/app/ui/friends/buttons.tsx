@@ -6,6 +6,9 @@ import { connectedFriendItem } from '@/app/lib/friends/definitions';
 import {  useState } from 'react';
 import { useUser } from '@/app/UserContext';
 import { pendingFriendItem } from '@/app/lib/friends/definitions';
+import { addNotification } from '@/app/lib/notifications/actions';
+import { NotificationType } from '@/app/lib/notifications/definitions';
+import { Timestamp } from 'firebase/firestore';
 export function SendRequest({ request, onSendRequest  }: { request: any, onSendRequest: () => void }) {  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,13 +22,19 @@ export function SendRequest({ request, onSendRequest  }: { request: any, onSendR
   formData.append('recipient_id', request.uid);
   formData.append('recipient_name', request?.name);
   formData.append('status', 'pending');
-  formData.append('request_send_time', new Date().toISOString());
+  const requestSendTime = new Date().toISOString();
+  const timestamp = Timestamp.fromDate(new Date(requestSendTime));
+  formData.append('request_send_time', timestamp.toString());
   const connectRequest = async () => {
     setLoading(true);
     try {
       const response = await sendFriendRequest(formData);
+     
       if (response.status === 200) {
-        onSendRequest(); // Call the callback function
+        onSendRequest();
+        setError(null);
+      } else {
+        setError(response.message || 'An error occurred while sending the friend request.');  
       }
     } catch (error : any) {
       setError(error.message || 'An error occurred while sending the friend request.');

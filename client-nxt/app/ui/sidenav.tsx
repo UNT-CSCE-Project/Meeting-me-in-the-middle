@@ -20,10 +20,6 @@ export default function SideNav() {
   // Determine if the user is authenticated based on the stored value
   const isAuthPage =  pathname === '/login' ||   pathname === '/registration' ||   pathname === '/forgot-password'; // Check if a user exists
 
-  console.log('Is Auth Page:', isAuthPage); // Debug: Log the auth page status
- 
-  const router = useRouter();
-  
 
 
 

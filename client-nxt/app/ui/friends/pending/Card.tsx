@@ -13,7 +13,7 @@ export function Card({
   onCancelRequest: Function,
   isLoading: boolean
 }) {
-  console.log(JSON.stringify(request) + " ada ")
+  // console.log(JSON.stringify(request) + " ada ")
   return (
     <div className="rounded-xl bg-blue-50 p-4 shadow-sm flex flex-col justify-between">
       <div className="flex items-start">
@@ -23,7 +23,7 @@ export function Card({
         {/* Name, Title and Address Section */}
         <div className="ml-4">
           <h3 className="text-sm font-medium">{request.sender_name}</h3>
-          <p className="text-xs text-gray-500">{request.request_send_time}</p>
+          <p className="text-xs text-gray-500">{request.streetAddress+", "+request.city+", "+request.state+", "+request.zipCode }</p>
         </div>
       </div>
 

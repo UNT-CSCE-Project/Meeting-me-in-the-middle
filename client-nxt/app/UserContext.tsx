@@ -6,7 +6,7 @@ import { auth } from '@/app/lib/firebaseClient';
 import "@/app/ui/global.css";
 import { fetchUserByUidAndEmail } from '@/app/lib/users/data';
 import { useRouter } from 'next/navigation'; // Use the correct import for Next.js 13+
-
+import { usePathname } from 'next/navigation';
 // Define the user context interface
 interface UserContextType {
   currentUser: any;
@@ -22,17 +22,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const router = useRouter(); // Move useRouter here
-
+  const pathname = usePathname(); // Get the current route
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
         const fetchedUserData =  await fetchUserByUidAndEmail(user.uid, user.email || "");
         setUserData(fetchedUserData);
+        // console.log('User signed in:', user);
       } else {
         setCurrentUser(null);
         setUserData(null);
-        localStorage.removeItem('user');
+        if(pathname !== '/registration')
+        router.push('/login');
+        // console.log('User signed out');
       }
     });
 
@@ -46,6 +49,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUserData(null);
       router.push('/login'); // Redirect after signing out
     } catch (error) {
+      
       console.error('Error signing out:', error);
     }
   };

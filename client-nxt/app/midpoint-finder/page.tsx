@@ -10,6 +10,7 @@ import {
   DirectionsRenderer,
   InfoWindow,
 } from "@react-google-maps/api";
+import Navbar from "../ui/Navbar";
 //import { Geocoder } from "@react-google-maps/api/dist/utils/Geocoder";
 
 const mapStyles = {
@@ -132,7 +133,7 @@ function MyMap() {
   };
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
-    console.log("handlePlaceSelect called");
+    // console.log("handlePlaceSelect called");
     setSelectedPlace(place);
     if (place.geometry && place.geometry.location) {
       const newRequest: google.maps.DirectionsRequest = {
@@ -142,12 +143,12 @@ function MyMap() {
       };
       const directionsService = new google.maps.DirectionsService();
       directionsService.route(newRequest, (newResult, newStatus) => {
-        console.log("directionsService.route callback called");
+        // console.log("directionsService.route callback called");
         if (
           newStatus === google.maps.DirectionsStatus.OK &&
           newResult !== null
         ) {
-          console.log("newResult:", newResult);
+          // console.log("newResult:", newResult);
           if (
             newResult.routes &&
             newResult.routes[0] &&
@@ -156,10 +157,10 @@ function MyMap() {
             newResult.routes[0].legs[0].distance
           ) {
             const distance = newResult.routes[0].legs[0].distance.value;
-            console.log("Distance:", distance);
+            // console.log("Distance:", distance);
             // Convert distance to kilometers
             const distanceInMilesValue = (distance / 1000) * 0.621371;
-            console.log("Distance in miles:", distanceInMilesValue);
+            // console.log("Distance in miles:", distanceInMilesValue);
             setDistanceInMiles(distanceInMilesValue);
           } else {
             console.error("Unable to retrieve distance from newResult");
@@ -198,15 +199,15 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
-        console.log(`Finding nearest city to midpoint: ${midpoint}`);
+        // console.log(`Finding nearest city to midpoint: ${midpoint}`);
         if (status === "OK" && results !== null) {
-          console.log("Results:", results);
+          // console.log("Results:", results);
           let nearestCity: google.maps.GeocoderResult | null = null;
           let minDistance: number = Infinity;
           if (Array.isArray(results)) {
-            console.log("Results is an array");
+            // console.log("Results is an array");
             for (const result of results) {
-              console.log("Result:", result);
+              // console.log("Result:", result);
               if (
                 (result as google.maps.GeocoderResult).types.includes(
                   "locality"
@@ -216,48 +217,48 @@ function MyMap() {
                   "administrative_area_level_3"
                 )
               ) {
-                console.log("Result is a locality");
+                // console.log("Result is a locality");
                 const cityLocation = result.geometry.location;
-                console.log("City location:", cityLocation);
+                // console.log("City location:", cityLocation);
                 const distance =
                   google.maps.geometry.spherical.computeDistanceBetween(
                     midpoint,
                     cityLocation
                   );
-                console.log("Distance:", distance);
+                // console.log("Distance:", distance);
                 if (distance < minDistance) {
-                  console.log("New nearest city found");
+                  // console.log("New nearest city found");
                   minDistance = distance;
                   nearestCity = result as google.maps.GeocoderResult;
                 }
               }
             }
           } else {
-            console.log("Results is not an array");
+            // console.log("Results is not an array");
             if (
               (results as google.maps.GeocoderResult).types.includes("locality")
             ) {
-              console.log("Result is a locality");
+              // console.log("Result is a locality");
               const cityLocation = (results as google.maps.GeocoderResult)
                 .geometry.location;
-              console.log("City location:", cityLocation);
+              // console.log("City location:", cityLocation);
               const distance =
                 google.maps.geometry.spherical.computeDistanceBetween(
                   midpoint,
                   cityLocation
                 );
-              console.log("Distance:", distance);
+              // console.log("Distance:", distance);
               if (distance < minDistance) {
-                console.log("New nearest city found");
+                // console.log("New nearest city found");
                 minDistance = distance;
                 nearestCity = results as google.maps.GeocoderResult;
               }
             }
           }
-          console.log("Nearest city:", nearestCity);
-          console.log("Min distance:", minDistance);
+          // console.log("Nearest city:", nearestCity);
+          // console.log("Min distance:", minDistance);
           if (nearestCity) {
-            console.log("Setting nearest city");
+            // console.log("Setting nearest city");
             setNearestCity(nearestCity.formatted_address);
             zoomInOnCity(nearestCity.formatted_address);
             findPlacesAroundCity(nearestCity.formatted_address);
@@ -275,14 +276,14 @@ function MyMap() {
         results: google.maps.GeocoderResult[] | null,
         status: google.maps.GeocoderStatus
       ) => {
-        console.log(`Zooming in on city: ${city}`);
+        // console.log(`Zooming in on city: ${city}`);
         if (status === "OK" && results !== null) {
           const cityResult = results[0];
-          console.log("Geocoder result:", JSON.stringify(cityResult, null, 2));
+          // console.log("Geocoder result:", JSON.stringify(cityResult, null, 2));
           if (cityResult.geometry.location) {
             map?.setCenter(cityResult.geometry.location);
             map?.setZoom(12);
-            console.log(`Map center set to: ${map?.getCenter()}`);
+            // console.log(`Map center set to: ${map?.getCenter()}`);
           }
         }
       }
@@ -295,7 +296,7 @@ function MyMap() {
   ) => {
     if (map) {
       const service = new google.maps.places.PlacesService(map);
-      console.log("Zooming in on:", city);
+      // console.log("Zooming in on:", city);
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ address: city }, (results, status) => {
         if (status === "OK" && results !== null) {
@@ -323,7 +324,7 @@ function MyMap() {
                 };
                 service.getDetails(request, (result, status) => {
                   if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    console.log(result);
+                    // console.log(result);
                   }
                 });
               });
@@ -374,6 +375,7 @@ function MyMap() {
 
   return (
     <div className="flex flex-col h-screen">
+      <Navbar />
       <div className="flex flex-row">
         <div
           style={{
