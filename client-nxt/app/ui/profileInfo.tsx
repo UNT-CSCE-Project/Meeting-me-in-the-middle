@@ -2,16 +2,17 @@
 import { useUser } from "@/app/UserContext";
 import {UserAvatar} from "./userAvatar";
 import { useRouter } from "next/navigation";
-export default function ProfileInfo() {
-    const {  userData } = useUser();
-    
+import { useState, useEffect } from "react";
+
+export default function ProfileInfo({firstName, lastName}:{firstName: string, lastName: string}) {
+
     
     return (
         <>
-            {userData && (
+            {firstName && lastName && (
                 <>
-                <UserAvatar firstName={userData.firstName} lastName={userData.lastName} />
-                <p className="mt-2 mr-4 text-white">{userData.firstName + " " + userData.lastName}</p>
+                    <UserAvatar firstName={firstName} lastName={lastName} />
+                    <p className="mt-2 mr-4 text-white">{firstName + " " + lastName}</p>
                 </>
             )}
         </>

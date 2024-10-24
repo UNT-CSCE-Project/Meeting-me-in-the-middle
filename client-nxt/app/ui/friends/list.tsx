@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import {  getPendingRequests, getFriends } from "@/app/lib/friends/data";
 import { addFriend, deleteFriend } from "@/app/lib/friends/actions";
 import { pendingFriendItem, connectedFriendItem } from "@/app/lib/friends/definitions";
@@ -7,9 +7,11 @@ import { useUser } from "@/app/UserContext";
 import { friendRequest, friend } from "@/app/lib/friends/definitions";
 import PendingRequests from "@/app/ui/friends/pending/pendingRequests";
 import CurrentList from "@/app/ui/friends/current/currentlist";
+import { addNotification } from "@/app/lib/notifications/actions";
+import { NotificationType } from "@/app/lib/notifications/definitions";
 export default function FriendsList() {
 
-    const { currentUser } = useUser();
+    const { currentUser, userData } = useUser();
     // state for pending request and current friend list
     const [pendingRequests, setPendingRequests] = useState<pendingFriendItem[]>([]);
     /* TODO  add type for currentList*/
@@ -17,42 +19,53 @@ export default function FriendsList() {
     const [error, setError] = useState<string |null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isRemoving, setIsRemoving] = useState(false);
+    const [curUserId, setCurUserId] = useState("");
+
     useEffect(() => {
-        if(!currentUser) {
-            return;
+        if(currentUser?.uid) {
+            setCurUserId(currentUser?.uid);
         }
-        const fetchPendingRequests = async () => {
-            const pendingRequests = await getPendingRequests(currentUser?.uid);
-            ;
-            if ('error' in pendingRequests) {
-                setError(pendingRequests.error);
-                return;
-            } 
-            setPendingRequests(pendingRequests);
-        };
-    
-        const fetchCurrentList = async () => {
-            const currentList = await getFriends(currentUser?.uid);
-            if('error' in currentList) {
-                setError(currentList.error);
-                return;
-            }
-            setCurrentList(currentList);
-         
-        }
-
-        fetchPendingRequests();
-        fetchCurrentList();
     }, [currentUser]);
-
+    useEffect(() => {
+      const fetchPendingRequests = async () => {
+          const pendingRequests = await getPendingRequests(curUserId.toString());
+          // console.log(pendingRequests);
+          if ('error' in pendingRequests) {
+              setError(pendingRequests.error);
+              return;
+          }
+          setPendingRequests(pendingRequests);
+      }
+  
+      const fetchCurrentList = async () => {
+          if (!curUserId) {
+              return;
+          }
+          const currentList = await getFriends(curUserId.toString());
+          if ('error' in currentList) {
+              setError(currentList.error);
+              return;
+          }
+          console.log(currentList);
+          setCurrentList(currentList);
+      }
+  
+      fetchPendingRequests();
+      fetchCurrentList();
+  }, [curUserId]);
+  
     const handleAcceptRequest = async (request : friendRequest) => {
         setPendingRequests(pendingRequests.filter((r) => r.id !== request.id));
         setCurrentList([...currentList, request]);
         setIsLoading(true);
 
         try {
-            await addFriend(request.id); 
-            setError(null);
+            const response = await addFriend(request.id); 
+            if(response?.status === 500) {
+              setError(response?.message);
+              return;
+            } 
+
           } catch (error) {
             setPendingRequests([...pendingRequests, request]);
             setCurrentList(currentList.filter((r) => r.id !== request.id));
@@ -77,7 +90,7 @@ export default function FriendsList() {
     }
 
     const handleRemoveFriend = async (request : connectedFriendItem) => {
-        console.log( JSON.stringify(request) + " is being deleted");
+        // console.log( JSON.stringify(request) + " is being deleted");
         setIsRemoving(true);
         try{
           setCurrentList(currentList.filter((f) => f.id !== request.id));
