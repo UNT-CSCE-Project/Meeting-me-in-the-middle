@@ -3,34 +3,45 @@ import Search from "./search";
 import Error from "../ui/error";
 import { lusitana } from '@/app/ui/fonts';
 import { getNotificationCount } from '@/app/lib/notifications/data';
-
-
+import Notification from "@/app/ui/Notification";
+ 
 import { useUser } from "@/app/UserContext";
 import Image from "next/image";
-import {  BellIcon, PowerIcon } from '@heroicons/react/24/outline';
+import {  BellIcon, ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 import ProfileInfo from "./profileInfo";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { ProfileInfoSkeleton } from "@/app/ui/skeletons";
+import { useState, useEffect } from "react";
 export default function Navbar() {
-    const { signOutUser } = useUser();
-    
+    const { signOutUser, userData } = useUser();
+    const [notificationCount, setNotificationCount] = useState(0);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    useEffect(() => {
+        setFirstName(userData?.firstName);
+        setLastName(userData?.lastName);
+        getNotificationCount(userData?.uid).then((count) => {
+            setNotificationCount(count);
+            console.log('Notification count:', count);
+        })  
+           
+    }, [userData, notificationCount]);
+
     return (
       <div className=" bg-[#2c2c2c] px-4">
                 
                 <div className="ml-20 mr-4 pt-4">
                     <div className="w-25 ml-8 flex items-center justify-between ">
                             <Search placeholder="Search for friends" />
-                            
-                            <Suspense fallback={<ProfileInfoSkeleton />}>
-                                <div className="relative flex ml-4 items-center justify-center h-10 w-10 bg-gray-200 rounded-full">
-                                    <BellIcon className="h-6 w-6 text-gray-500 cursor-pointer hover:text-gray-900" />
-                                    <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">1</span>
-                                </div>
-                                <ProfileInfo />
+
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <Notification notificationCount={notificationCount} />
+                                
+                                <ProfileInfo firstName = {firstName} lastName = {lastName}/>
                                 <form>
                                 {/* Uncomment and implement the sign-out functionality if needed */}
                                 <button type="button" onClick={signOutUser} className="text-white">
-                                    <PowerIcon className="h-5 w-5" />
+                                    <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
                                 </button>
                                 </form>
                             </Suspense>
