@@ -13,14 +13,14 @@ export async function getFriends(currentUserId: string) {
       .where('sender_id', '==', currentUserId)
       .where('status', '==', 'connected')
       .where('is_deleted', '==', false)
-      .orderBy('request_send_time', 'desc')
+      //.orderBy('request_send_time', 'desc')
       .get();
 
     const recipientSnapshot = await db.collection('friends')
       .where('recipient_id', '==', currentUserId)
       .where('status', '==', 'connected')
       .where('is_deleted', '==', false)
-      .orderBy('request_send_time', 'desc')
+      //.orderBy('request_send_time', 'desc')
       .get();
 
     // Combine results from both sender and recipient queries
@@ -39,7 +39,7 @@ export async function getFriends(currentUserId: string) {
           friend_uid: uid,
           friend_name: userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName,
           status: doc.data().status,
-          request_send_time: doc.data().request_send_time,
+          request_send_time: doc.data().request_send_time.toDate(),
           is_deleted: doc.data().is_deleted,
           streetAddress: userDoc?.data()?.streetAddress,
           city: userDoc?.data()?.city,
@@ -57,32 +57,31 @@ export async function getFriends(currentUserId: string) {
 
 export async function getPendingRequests(currentUserId: string) {
     try {
-      if(!currentUserId) {
-        throw new Error('No user ID found in getPendingRequests');
-      }
-  
+      
       // Query Firestore to get documents where status is 'pending'
       const friendsSnapshot = await db.collection('friends')
         .where('status', '==', 'pending')
         .where('recipient_id', '==', currentUserId)
         .where('is_deleted', '==', false)
-        .orderBy('request_send_time', 'desc')
+       // .orderBy('request_send_time', 'desc')
         .get();
-  
+      
       // Map the results to an array of objects with the document ID and data
       const pendingFriends = await Promise.all(
         friendsSnapshot.docs.map(async (doc) => {
-          const uid = doc.data().sender_id;
+              // console.log("doc.data():", doc.data());
+              const uid = doc.data().sender_id;
               const userRef = db.collection('users').where('uid', '==', uid);
               const userData = await userRef.get();
           
               const userDoc = userData.docs[0]; // Get the first document (assuming there's only one)
               return {
                 id: doc.id,
-                friend_uid: doc.data().uid,
-                friend_name: userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName,
+                friend_uid: doc.data().sender_id == currentUserId ? doc.data().recipient_id : doc.data().sender_id,
+                friend_name: doc.data().sender_id == currentUserId ?  doc.data().recipient_name : 
+                userDoc?.data()?.firstName + ' ' + userDoc?.data()?.lastName ,
                 status: doc.data().status,
-                request_send_time: doc.data().request_send_time,
+                request_send_time: doc.data().request_send_time.toDate(),
                 streetAddress: userDoc?.data()?.streetAddress,
                 city: userDoc?.data()?.city,
                 state: userDoc?.data()?.state,
@@ -94,7 +93,8 @@ export async function getPendingRequests(currentUserId: string) {
                 recipient_name: doc.data().recipient_name,
               };
         })
-);
+);    
+      // console.log("pendingFriends:", pendingFriends);
       return pendingFriends; // Return the filtered list of pending requests
     } catch (error) {
       

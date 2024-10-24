@@ -1,26 +1,42 @@
 'use server';
 
 import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { NotificationData } from './definitions';
 import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';
+import * as admin  from "firebase-admin";
+const notificationSchema = z.object({
+  type: z.string(),
+  sender_uid: z.string(),
+  sender_name: z.string(),
+  recipient_uid: z.string(),
+  recipient_name: z.string(),
+  message: z.string(),
+});
+export async function addNotification(formData: NotificationData) {
+  try {
+    const parsedFormData = notificationSchema.parse(formData);
 
-export async function addNotification(formData: FormData) {
-    try {
+
     const notificationRef = firebaseFirestore.collection('notifications').doc();
     await notificationRef.set({
-      type: formData.get('type'),
-      sender_id: formData.get('sender'),
-      sender_name: formData.get('sender_name'),
-      recipient_id: formData.get('recipient'),
-      recipient_name: formData.get('recipient_name'),
-      message: formData.get('message'),
-      timestamp: new Date().toISOString(),
+      type: parsedFormData.type,
+      sender_uid: parsedFormData.sender_uid,
+      sender_name: parsedFormData.sender_name,
+      recipient_uid: parsedFormData.recipient_uid,
+      recipient_name: parsedFormData.recipient_name,
+      message: parsedFormData.message,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
       is_read: false,
     });
-  } catch (error) {
     return {
-      message: 'Firestore Error: Failed to Create Friend Request.',
+      status: 200,
+      message: 'Notification sent successfully.',
+    };
+  } catch (error) {
+    // console.log(error + " asdas ");
+    return {
+      status: 500,
+      message: 'Firestore Error: Failed to send notification.',
     };
   }
 }

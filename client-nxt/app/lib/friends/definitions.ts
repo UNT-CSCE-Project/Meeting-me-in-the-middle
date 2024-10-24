@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type friendRequest = {
     id: string;
     sender_id: string;
@@ -7,7 +9,7 @@ export type friendRequest = {
     recipient_id: string;
     recipient_name: string;
     status: 'pending' | 'connected' | 'not connected';
-    request_send_time: string;
+    request_send_time: Timestamp;
     streetAddress: string;
     city: string;
     state: string;
@@ -22,7 +24,7 @@ export type friend = {
     friend_uid: string;
     friend_name: string;
     status:  'connected';
-    request_send_time: string;
+    request_send_time: Timestamp;
     is_deleted: boolean;
     streetAddress: string;
     city: string;
@@ -35,7 +37,7 @@ export type friendItem = {
     friend_uid: string;
     friend_name: string;
     status: 'pending' | 'connected' | 'not connected';
-    request_send_time: string;
+    request_send_time: Timestamp;
     streetAddress: string;
     city: string;
     state: string;

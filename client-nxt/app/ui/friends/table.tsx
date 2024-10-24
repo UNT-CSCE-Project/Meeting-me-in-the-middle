@@ -20,7 +20,7 @@ export default function Table({
   const fetchData = async () => {
     if (currentUserId) {
       const result = await fetchUsersByQuery(query, currentUserId);
-      // console.log(result);
+      // // console.log(result);
       setSearchList(result);
     }
   };
