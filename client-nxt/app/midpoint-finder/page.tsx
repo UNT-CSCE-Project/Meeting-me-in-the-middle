@@ -90,7 +90,7 @@ function MidpointFinderInner() {
             Search
           </button>
         </div>
-        <div className="h-2/3">
+        <div className="h-2/3 w-full">
           <SuggestedPlaces />
         </div>
       </div>
