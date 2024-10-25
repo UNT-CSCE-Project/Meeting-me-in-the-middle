@@ -4,7 +4,9 @@ import { SuggestedPlaces } from "./SuggestedPlaces";
 import { useSharedState, SharedStateProvider } from "./sharedState";
 import useDirections from "./Midpoint"; // Import the hook
 import usePlaceOperations from "./usePlaceSelect"; // Import the custom hook
-import Navbar from "../ui/Navbar";
+import { MapPinIcon } from '@heroicons/react/24/outline';
+
+import { Position, GeocodeResponse } from "@/app/lib/locations/definitions";
 
 export default function MidpointFinder() {
   return (
@@ -28,10 +30,42 @@ function MidpointFinderInner() {
   const { calculateMidpoint } = useDirections(); // Use the hook
   const { updatePlaces } = usePlaceOperations(); // Use the hook
 
+  const getAddress = async (latitude: number, longitude: number): Promise<void> => {
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+        );
+        const data: GeocodeResponse = await response.json();
+        console.log(latitude, longitude);
+        if (data.status === 'OK' && data.results[0]) {
+          const addressComponents = data.results[0].address_components;
+          const streetNumber = addressComponents.find(comp => comp.types.includes('street_number'))?.long_name || '';
+          const street = addressComponents.find(comp => comp.types.includes('route'))?.long_name || '';
+          const city = addressComponents.find(comp => comp.types.includes('locality'))?.long_name || '';
+          const state = addressComponents.find(comp => comp.types.includes('administrative_area_level_1'))?.long_name || '';
+          const zip = addressComponents.find(comp => comp.types.includes('postal_code'))?.long_name || '';
+          console.log(data.results[0]);
+
+          setOriginLocation(`${streetNumber} ${street}, ${city}, ${state} ${zip}`);
+        } else {
+          console.error('No address found');
+        }
+      } catch (error) {
+        console.error('Error fetching address:', error);
+      }
+    };
+  const handleLocationClick = () => {
+    setOriginLocation(`Loading...`);
+    navigator.geolocation.getCurrentPosition((position: Position) => {
+
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      getAddress(latitude, longitude);
+    });
+  };  
+  
   return (
-    <>
-      <Navbar />
-      <div className="flex flex-row h-screen w-full">
+    <div className="flex flex-row h-screen w-full px-4  py-4">
       <div
         style={{
           backgroundColor: "lightGray",
@@ -41,16 +75,25 @@ function MidpointFinderInner() {
         <div className="h-1/2 w-full">
           <h1 className="text-lg font-bold">Midpoint Finder</h1>
           <p className="text-md font-bold">Your Location:</p>
-          <input
-            type="text"
-            value={originLocation}
-            onChange={(e) => setOriginLocation(e.target.value)}
-            placeholder="Enter origin location"
-            style={{
-              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-            }}
-            className="w-full p-2 mb-2 rounded-md"
-          />
+
+          <div className="relative flex flex-1 flex-shrink-0">
+            <label htmlFor="search" className="sr-only">
+              Search
+            </label>
+            <input
+              type="text"
+              value={originLocation}
+              onChange={(e) => setOriginLocation(e.target.value)}
+              placeholder="Enter origin location"
+              style={{
+                boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+              }}
+              className="w-full p-2 mb-2 rounded-md"
+            />
+            <MapPinIcon className="absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-blue-500  hover:text-red-700 focus:text-blue-700 peer-focus:text-blue-900" 
+             onClick={handleLocationClick}
+              />
+          </div>
           <p className="text-md font-bold">Friend's Location:</p>
           <input
             type="text"
@@ -93,6 +136,7 @@ function MidpointFinderInner() {
             Search
           </button>
         </div>
+        
         <div className="h-2/3 w-full">
           <SuggestedPlaces />
         </div>
@@ -100,8 +144,6 @@ function MidpointFinderInner() {
       <div className="w-1/2 h-full">
         <MyMap />
       </div>
-      </div>
-    </>
-    
+    </div>
   );
 }
