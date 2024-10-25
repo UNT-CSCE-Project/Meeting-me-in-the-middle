@@ -15,7 +15,7 @@ export async function getNotificationCount(uid: string) {
         
         return unreadCount;
     } catch (error) {
-      console.error('Error fetching pending notifications:', error);
+      console.error('Error fetching pending notifications:', error?.message);
       return 0; // Return an empty array in case of an error
     }
 }

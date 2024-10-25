@@ -12,8 +12,10 @@ import ProfileInfo from "./profileInfo";
 import { Suspense, use } from "react";
 import { ProfileInfoSkeleton } from "@/app/ui/skeletons";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 export default function Navbar() {
     const { signOutUser, userData } = useUser();
+    const pathname = usePathname();
     const [notificationCount, setNotificationCount] = useState(0);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -28,7 +30,8 @@ export default function Navbar() {
     }, [userData, notificationCount]);
 
     return (
-      <div className=" bg-[#2c2c2c] px-4">
+      pathname === '/login' || pathname === '/registration' ? null : (
+        <div className=" bg-[#2c2c2c] px-4">
                 
                 <div className="ml-20 mr-4 pt-4">
                     <div className="w-25 ml-8 flex items-center justify-between ">
@@ -55,6 +58,7 @@ export default function Navbar() {
                 <div className="mt-5 flex w-full justify-center">
                     {/* <Pagination totalPages={totalPages} /> */}
                 </div>
-      </div>
+        </div>
+      )
     );
 }
