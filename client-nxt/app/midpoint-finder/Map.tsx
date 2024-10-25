@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import usePlaceOperations from "./usePlaceSelect"; // Import the custom hook
 import { useSharedStateDestructured } from "./sharedState";
-
+import MapWithDirections from "../ui/midpointfinder/customMarker";
 const mapStyles = {
   height: "100%",
   width: "100%",
@@ -61,17 +61,7 @@ export function MyMap() {
         onUnmount={onUnmount}
       >
         {directions && (
-          <DirectionsRenderer
-            directions={directions}
-            options={{
-              polylineOptions: {
-                strokeColor: "#FF0000",
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-              },
-              preserveViewport: true,
-            }}
-          />
+          <MapWithDirections directions={directions} />
         )}
         {newDirections && (
           <DirectionsRenderer
@@ -93,6 +83,7 @@ export function MyMap() {
                 key={index}
                 position={place.geometry.location}
                 title={place.name}
+                
                 onClick={() => handlePlaceSelect(place)}
               />
             )

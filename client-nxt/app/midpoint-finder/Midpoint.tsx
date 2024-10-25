@@ -53,7 +53,7 @@ const useDirections = () => {
               const newMarkers = newLegs.map((leg, index) => (
                 <Marker
                   key={index}
-                  position={leg.start_location}
+                  position={midpoint}
                   title={`Midpoint ${index + 1}`}
                 >
                   <InfoWindow position={midpoint}>
@@ -76,7 +76,7 @@ const useDirections = () => {
         const markers = legs.map((leg, index) => (
           <Marker
             key={index}
-            position={leg.start_location}
+            position={midpoint}
             title={`Midpoint ${index + 1}`}
           >
             <InfoWindow position={midpoint}>
