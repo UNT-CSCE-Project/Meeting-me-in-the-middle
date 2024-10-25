@@ -4,6 +4,7 @@ import { SuggestedPlaces } from "./SuggestedPlaces";
 import { useSharedState, SharedStateProvider } from "./sharedState";
 import useDirections from "./Midpoint"; // Import the hook
 import usePlaceOperations from "./usePlaceSelect"; // Import the custom hook
+import Navbar from "../ui/Navbar";
 
 export default function MidpointFinder() {
   return (
@@ -28,7 +29,9 @@ function MidpointFinderInner() {
   const { updatePlaces } = usePlaceOperations(); // Use the hook
 
   return (
-    <div className="flex flex-row h-screen w-full">
+    <>
+      <Navbar />
+      <div className="flex flex-row h-screen w-full">
       <div
         style={{
           backgroundColor: "lightGray",
@@ -97,6 +100,8 @@ function MidpointFinderInner() {
       <div className="w-1/2 h-full">
         <MyMap />
       </div>
-    </div>
+      </div>
+    </>
+    
   );
 }
