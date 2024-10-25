@@ -36,17 +36,11 @@ function MidpointFinderInner() {
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
         );
         const data: GeocodeResponse = await response.json();
-        console.log(latitude, longitude);
+        console.log(latitude, longitude, data.results[0]);
         if (data.status === 'OK' && data.results[0]) {
-          const addressComponents = data.results[0].address_components;
-          const streetNumber = addressComponents.find(comp => comp.types.includes('street_number'))?.long_name || '';
-          const street = addressComponents.find(comp => comp.types.includes('route'))?.long_name || '';
-          const city = addressComponents.find(comp => comp.types.includes('locality'))?.long_name || '';
-          const state = addressComponents.find(comp => comp.types.includes('administrative_area_level_1'))?.long_name || '';
-          const zip = addressComponents.find(comp => comp.types.includes('postal_code'))?.long_name || '';
-          console.log(data.results[0]);
+          
 
-          setOriginLocation(`${streetNumber} ${street}, ${city}, ${state} ${zip}`);
+          setOriginLocation(`${data.results[0].formatted_address}`);
         } else {
           console.error('No address found');
         }
