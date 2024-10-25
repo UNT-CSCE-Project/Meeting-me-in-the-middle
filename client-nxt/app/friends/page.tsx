@@ -17,7 +17,7 @@ export default async function friends( {searchParams,
     
     return (
         <main>
-            <Navbar />
+
             
                    
             <Suspense fallback={<div>Loading...</div>}>

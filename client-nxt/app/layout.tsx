@@ -1,26 +1,32 @@
 
 
 import SideNav from '@/app/ui/sidenav';
-
-
+import Navbar from '@/app/ui/Navbar';
 import '@/app/ui/global.css';
 import { lusitana } from '@/app/ui/fonts';
 
 import { UserProvider } from '@/app/UserContext';
+import { usePathname } from 'next/navigation';
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   
+ 
   return (
     <UserProvider>
       <html lang="en">
           <body className={`${lusitana.className} antialiased`}>
-            <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-              <SideNav /> 
-              <div className="flex-grow bg-gray-100">{children}</div>
+          <div className="flex flex-col h-screen">
+            <div className="flex flex-row h-screen">
+              <SideNav />
+              <div className="flex flex-col flex-grow">
+                <Navbar />
+                <div className="flex-grow bg-gray-100">{children}</div>
+              </div>
             </div>
+          </div>
       </body>
       </html>
     </UserProvider>
