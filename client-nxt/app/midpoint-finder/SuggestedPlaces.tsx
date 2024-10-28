@@ -4,7 +4,7 @@ import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
 
 export function SuggestedPlaces() {
-  const { places, selectedPlace, setSelectedPlace, distanceInMiles } =
+  const { places, selectedPlace, setSelectedPlace, distanceInMiles, userInfo, friendInfo } =
     useSharedStateDestructured();
   const { handlePlaceSelect } = usePlaceOperations();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -125,8 +125,10 @@ export function SuggestedPlaces() {
             </div>
           )}
         </Modal>
+      
       </div>
       )}
+      
       
     </>
     

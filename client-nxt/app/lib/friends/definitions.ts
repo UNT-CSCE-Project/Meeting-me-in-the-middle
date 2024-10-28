@@ -56,3 +56,10 @@ export type friendItem = {
     friend_uid: string;
     friend_name: string;
   }
+
+  export type friendInfo = {
+    id: string;
+    uid: string;
+    name: string;
+    location: string; 
+  }

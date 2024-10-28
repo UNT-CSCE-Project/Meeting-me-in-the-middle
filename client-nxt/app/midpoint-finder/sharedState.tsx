@@ -1,4 +1,6 @@
-import { createContext, useState, useMemo, useContext } from "react";
+import { createContext, useState, useMemo, useContext, use } from "react";
+import { set } from "zod";
+import { friendInfo } from "../lib/friends/definitions";
 
 interface SharedState {
   originLocation: string;
@@ -14,6 +16,8 @@ interface SharedState {
   map: google.maps.Map | null;
   directions: google.maps.DirectionsResult | null;
   error: string | null;
+  userInfo : friendInfo | null;
+  friendInfo : friendInfo | null;
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
   setMidpoint: (midpoint: google.maps.LatLng | null) => void;
@@ -31,6 +35,8 @@ interface SharedState {
   setMap: (map: google.maps.Map | null) => void;
   setDirections: (directions: google.maps.DirectionsResult | null) => void;
   setError: (error: string | null) => void;
+  setUserInfo : (userInfo : friendInfo | null) => void;
+  setFriendInfo : (friendInfo : friendInfo | null) => void;
 }
 
 const SharedStateContext = createContext<SharedState | null>(null);
@@ -53,6 +59,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
     useState<google.maps.DirectionsResult | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<friendInfo | null>(null);
+  const [friendInfo, setFriendInfo] = useState<friendInfo | null>(null);
 
   const value = useMemo(
     () => ({
@@ -81,7 +89,11 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       directions,
       setDirections,
       error,
-      setError
+      setError,
+      userInfo,
+      setUserInfo,
+      friendInfo,
+      setFriendInfo
     }),
     [
       map,
@@ -144,6 +156,10 @@ const useSharedStateDestructured = () => {
       setMarkers: sharedState.setMarkers,
       error : sharedState.error,
       setError: sharedState.setError,
+      userInfo : sharedState.userInfo,
+      setUserInfo : sharedState.setUserInfo,
+      friendInfo : sharedState.friendInfo,
+      setFriendInfo : sharedState.setFriendInfo
     };
   };
 

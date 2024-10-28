@@ -19,11 +19,11 @@ export default function RootLayout({
       <html lang="en">
           <body className={`${lusitana.className} antialiased`}>
           <div className="flex flex-col h-full">
-            <div className="flex flex-row h-screen">
+            <div className="flex flex-row h-full">
               <SideNav />
               <div className="flex flex-col flex-grow">
                 <Navbar />
-                <div className="flex-grow bg-gray-100">{children}</div>
+                <div className="flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">{children}</div>
               </div>
             </div>
           </div>

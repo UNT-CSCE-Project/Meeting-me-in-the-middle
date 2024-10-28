@@ -1,12 +1,8 @@
 import { DirectionsRenderer, Marker } from '@react-google-maps/api';
 import { LatLngLiteral } from '@googlemaps/google-maps-services-js';
+import { friendInfo } from "@/app/lib/friends/definitions";
 
 
-interface MapProps {
-  directions: google.maps.DirectionsResult | null;
-  startName: string;
-  endName: string;
-}
 
 // Function to generate a marker icon with the first letter of the name
 function createCustomMarkerIcon(firstName: string, lastName: string): any {
@@ -34,7 +30,7 @@ function createCustomMarkerIcon(firstName: string, lastName: string): any {
     return canvas.toDataURL();
 }
 
-function MapWithDirections({ directions}: {directions: google.maps.DirectionsResult | null}) {
+function MapWithDirections({ directions, userInfo, friendInfo}: {directions: google.maps.DirectionsResult | null, userInfo: friendInfo | null, friendInfo: friendInfo | null}) {
   const startPoint: LatLngLiteral | undefined = directions?.routes[0].legs[0].start_location?.toJSON();
   const endPoint: LatLngLiteral | undefined = directions?.routes[0].legs[0].end_location?.toJSON();
 
@@ -62,7 +58,7 @@ function MapWithDirections({ directions}: {directions: google.maps.DirectionsRes
             <Marker
               position={startPoint}
               icon={{
-                url: createCustomMarkerIcon("", ""),
+                url: createCustomMarkerIcon(userInfo?.name.split(" ")[0] || "", userInfo?.name.split(" ")[1] || ""),
                 scaledSize: new google.maps.Size(40, 40),
               }}
             />
@@ -71,7 +67,7 @@ function MapWithDirections({ directions}: {directions: google.maps.DirectionsRes
             <Marker
               position={endPoint}
               icon={{
-                url: createCustomMarkerIcon("", ""),
+                url: createCustomMarkerIcon(friendInfo?.name.split(" ")[0] || "", friendInfo?.name.split(" ")[1] || ""),
                 scaledSize: new google.maps.Size(40, 40),
               }}
             />

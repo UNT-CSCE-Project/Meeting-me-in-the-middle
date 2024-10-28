@@ -58,6 +58,9 @@ const useDirections = () => {
                   key={index}
                   position={midpoint}
                   title={`Midpoint ${index + 1}`}
+                  icon={{
+                    url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                  }}
                 >
                   <InfoWindow position={midpoint}>
                     <div>
@@ -82,6 +85,9 @@ const useDirections = () => {
             key={index}
             position={midpoint}
             title={`Midpoint ${index + 1}`}
+            icon={{
+              url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            }}
           >
             <InfoWindow position={midpoint}>
               <div>

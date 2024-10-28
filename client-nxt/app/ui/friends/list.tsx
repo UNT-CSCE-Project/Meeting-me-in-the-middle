@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, Suspense } from "react";
 import {  getPendingRequests, getFriends } from "@/app/lib/friends/data";
 import { addFriend, deleteFriend } from "@/app/lib/friends/actions";
 import { pendingFriendItem, connectedFriendItem } from "@/app/lib/friends/definitions";
@@ -113,17 +113,22 @@ export default function FriendsList() {
 
   return (
     <div>
-      <PendingRequests
-        pendingRequests={pendingRequests}
-        onAcceptRequest={handleAcceptRequest}
-        onCancelRequest={handleCancelRequest}
-        isLoading={isLoading}
-      />
-      <CurrentList
-        items={currentList}
-        onRemoveFriend={handleRemoveFriend}
-        isRemoving={isRemoving}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <PendingRequests
+          pendingRequests={pendingRequests}
+          onAcceptRequest={handleAcceptRequest}
+          onCancelRequest={handleCancelRequest}
+          isLoading={isLoading}
+        />
+      </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+      
+        <CurrentList
+          items={currentList}
+          onRemoveFriend={handleRemoveFriend}
+          isRemoving={isRemoving}
+        />
+      </Suspense>
     </div>
   );
 }

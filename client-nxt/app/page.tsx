@@ -13,7 +13,7 @@ export default function Home() {
 
   
   return (
-    <div className="flex h-screen flex-col md:flex-row ">
+    <div className="flex h-full flex-col md:flex-row ">
       <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
         {/* You can add your main content here */}
         {

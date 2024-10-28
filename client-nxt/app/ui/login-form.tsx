@@ -66,7 +66,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex h-screen">
+      <div className="flex h-full">
       <div className="flex flex-col justify-center items-center bg-teal-400 w-2/5">
           <div className="bg-white p-4 rounded shadow-md">
             <Image src={logo} alt="Logo" width={200} height={200} />

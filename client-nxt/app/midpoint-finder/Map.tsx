@@ -37,6 +37,8 @@ export function MyMap() {
     selectedPlace,
     setSelectedPlace,
     distanceInMiles,
+    userInfo,
+    friendInfo
   } = sharedState;
 
   const { handlePlaceSelect } = usePlaceOperations(); // Use the custom hook
@@ -61,7 +63,7 @@ export function MyMap() {
         onUnmount={onUnmount}
       >
         {directions && (
-          <MapWithDirections directions={directions} />
+          <MapWithDirections directions={directions} userInfo={userInfo} friendInfo={friendInfo}/>
         )}
         {newDirections && (
           <DirectionsRenderer

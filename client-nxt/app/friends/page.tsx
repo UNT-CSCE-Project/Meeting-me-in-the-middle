@@ -15,7 +15,7 @@ export default async function friends( {searchParams,
     const currentPage = Number(searchParams?.page) || 1;
     
     return (
-        <main>
+        <>
 
             
                    
@@ -27,7 +27,7 @@ export default async function friends( {searchParams,
               )}
             </Suspense>
             
-        </main>
+        </>
             
     );
 }
