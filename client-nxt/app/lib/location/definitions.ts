@@ -11,6 +11,7 @@ export interface AddressComponent {
   
 export interface GeocodeResult {
     address_components: AddressComponent[];
+    formatted_address: string;
   }
   
 export interface GeocodeResponse {

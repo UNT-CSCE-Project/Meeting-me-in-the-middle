@@ -6,7 +6,7 @@ import useDirections from "./Midpoint"; // Import the hook
 import usePlaceOperations from "./usePlaceSelect"; // Import the custom hook
 import { MapPinIcon } from '@heroicons/react/24/outline';
 
-import { Position, GeocodeResponse } from "@/app/lib/locations/definitions";
+import { Position, GeocodeResponse } from "@/app/lib/location/definitions";
 
 export default function MidpointFinder() {
   return (
@@ -38,9 +38,7 @@ function MidpointFinderInner() {
         const data: GeocodeResponse = await response.json();
         console.log(latitude, longitude, data.results[0]);
         if (data.status === 'OK' && data.results[0]) {
-          
-
-          setOriginLocation(`${data.results[0].formatted_address}`);
+          setOriginLocation(`${data.results[0]?.formatted_address}`);
         } else {
           console.error('No address found');
         }

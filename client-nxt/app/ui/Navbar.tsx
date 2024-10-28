@@ -35,9 +35,10 @@ export default function Navbar() {
                 
                 <div className="ml-20 mr-4 pt-4">
                     <div className="w-25 ml-8 flex items-center justify-between ">
-                            <Search placeholder="Search for friends" />
-
                             <Suspense fallback={<div>Loading...</div>}>
+                                <Search placeholder="Search for friends" />
+
+                            
                                 <Notification notificationCount={notificationCount} />
                                 
                                 <ProfileInfo firstName = {firstName} lastName = {lastName}/>
