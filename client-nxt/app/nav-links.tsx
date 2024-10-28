@@ -13,10 +13,18 @@ import clsx from 'clsx';
  
 export default function NavLinks() {
   const pathname = usePathname();
- 
+  const links = [
+    { name: 'Mid Point Finder', href: '/midpoint-finder'},
+    {name: 'Manage Friends',  href: '/friends'},
+    { name: 'Location Approval', href: '/location-approval', },
+    { name: 'Travel History', href: '/travel-history', },
+    { name: 'Reviews', href: '/reviews', },
+    
+  
+  ] as any;
   return (
     <>
-      {links.map((link) => {
+      {links.map(({link}:{link:any}) => {
         const LinkIcon = link.icon;
         return (
           <Link

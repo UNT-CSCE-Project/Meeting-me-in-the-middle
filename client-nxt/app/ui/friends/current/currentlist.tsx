@@ -20,24 +20,26 @@ export default function CurrentList({items,
           Current Friends
         </h1>
         <Suspense fallback={<CardSkeleton />}>
-          {items.length === 0 ? (
-            <h1 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-sm`}>
-              No Friends Found
+        {
+          isRemoving ? <CardSkeleton/> : items?.length === 0 ? (
+            <h6 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-sm`}>
+              No Record Found
+            </h6>
+          ) : (            <>
+            <h1 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-md`}>
+              Total Friends: {items.length}
             </h1>
-          ) : (
-            <>
-              <h1 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-md`}>
-                Total Friends: {items.length}
-              </h1>
-              
-              <CardGrid 
-                friends={items} 
-                onRemoveFriend={onRemoveFriend}
-                isRemoving={isRemoving}
-              />
-              
-            </>
-          )}
+            
+            <CardGrid 
+              friends={items} 
+              onRemoveFriend={onRemoveFriend}
+              isRemoving={isRemoving}
+            />
+            
+          </>
+          )
+        }
+          
         </Suspense>
       </>
       

@@ -1,4 +1,6 @@
-import { createContext, useState, useMemo, useContext } from "react";
+import { createContext, useState, useMemo, useContext, use } from "react";
+import { set } from "zod";
+import { friendInfo } from "../lib/friends/definitions";
 
 interface SharedState {
   originLocation: string;
@@ -13,6 +15,9 @@ interface SharedState {
   distanceInMiles: number;
   map: google.maps.Map | null;
   directions: google.maps.DirectionsResult | null;
+  error: string | null;
+  userInfo : friendInfo | null;
+  friendInfo : friendInfo | null;
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
   setMidpoint: (midpoint: google.maps.LatLng | null) => void;
@@ -29,6 +34,9 @@ interface SharedState {
   setDistanceInMiles: (distanceInMiles: number) => void;
   setMap: (map: google.maps.Map | null) => void;
   setDirections: (directions: google.maps.DirectionsResult | null) => void;
+  setError: (error: string | null) => void;
+  setUserInfo : (userInfo : friendInfo | null) => void;
+  setFriendInfo : (friendInfo : friendInfo | null) => void;
 }
 
 const SharedStateContext = createContext<SharedState | null>(null);
@@ -49,6 +57,10 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+
+  const [error, setError] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<friendInfo | null>(null);
+  const [friendInfo, setFriendInfo] = useState<friendInfo | null>(null);
 
   const value = useMemo(
     () => ({
@@ -76,6 +88,12 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       setDistanceInMiles,
       directions,
       setDirections,
+      error,
+      setError,
+      userInfo,
+      setUserInfo,
+      friendInfo,
+      setFriendInfo
     }),
     [
       map,
@@ -90,6 +108,7 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       newDirections,
       distanceInMiles,
       directions,
+      error
     ]
   );
 
@@ -135,6 +154,12 @@ const useSharedStateDestructured = () => {
       setPlaces: sharedState.setPlaces,
       markers: sharedState.markers,
       setMarkers: sharedState.setMarkers,
+      error : sharedState.error,
+      setError: sharedState.setError,
+      userInfo : sharedState.userInfo,
+      setUserInfo : sharedState.setUserInfo,
+      friendInfo : sharedState.friendInfo,
+      setFriendInfo : sharedState.setFriendInfo
     };
   };
 
