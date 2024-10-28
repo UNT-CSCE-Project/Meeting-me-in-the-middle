@@ -13,6 +13,7 @@ interface SharedState {
   distanceInMiles: number;
   map: google.maps.Map | null;
   directions: google.maps.DirectionsResult | null;
+  error: string | null;
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
   setMidpoint: (midpoint: google.maps.LatLng | null) => void;
@@ -29,6 +30,7 @@ interface SharedState {
   setDistanceInMiles: (distanceInMiles: number) => void;
   setMap: (map: google.maps.Map | null) => void;
   setDirections: (directions: google.maps.DirectionsResult | null) => void;
+  setError: (error: string | null) => void;
 }
 
 const SharedStateContext = createContext<SharedState | null>(null);
@@ -49,6 +51,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
+
+  const [error, setError] = useState<string | null>(null);
 
   const value = useMemo(
     () => ({
@@ -76,6 +80,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       setDistanceInMiles,
       directions,
       setDirections,
+      error,
+      setError
     }),
     [
       map,
@@ -90,6 +96,7 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       newDirections,
       distanceInMiles,
       directions,
+      error
     ]
   );
 
@@ -135,6 +142,8 @@ const useSharedStateDestructured = () => {
       setPlaces: sharedState.setPlaces,
       markers: sharedState.markers,
       setMarkers: sharedState.setMarkers,
+      error : sharedState.error,
+      setError: sharedState.setError,
     };
   };
 

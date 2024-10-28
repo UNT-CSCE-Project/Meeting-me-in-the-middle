@@ -25,11 +25,13 @@ function MidpointFinderInner() {
     setDestinationLocation,
     placeType,
     setPlaceType,
+    error,
+    setError
   } = sharedState;
 
   const { calculateMidpoint } = useDirections(); // Use the hook
   const { updatePlaces } = usePlaceOperations(); // Use the hook
-
+  console.log("error", error)
   const getAddress = async (latitude: number, longitude: number): Promise<void> => {
       try {
         const response = await fetch(
@@ -41,9 +43,11 @@ function MidpointFinderInner() {
           setOriginLocation(`${data.results[0]?.formatted_address}`);
         } else {
           console.error('No address found');
+          setError('No address found')
         }
       } catch (error) {
         console.error('Error fetching address:', error);
+        setError('Error fetching address')
       }
     };
   const handleLocationClick = () => {
@@ -128,7 +132,7 @@ function MidpointFinderInner() {
             Search
           </button>
         </div>
-        
+        { error && <p className="text-red-500">{error}</p> }
         <div className="h-2/3 w-full">
           <SuggestedPlaces />
         </div>

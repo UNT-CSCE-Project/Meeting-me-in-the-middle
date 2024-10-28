@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { Marker, InfoWindow } from "@react-google-maps/api";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
+import { set } from "zod";
 
 const useDirections = () => {
   const sharedState = useSharedStateDestructured();
@@ -14,6 +15,8 @@ const useDirections = () => {
     setMarkers,
     setNewDirections,
     destinationLocation,
+    error,
+    setError
   } = sharedState;
 
   const { findNearestCity } = usePlaceOperations(); // Import the function
@@ -69,6 +72,7 @@ const useDirections = () => {
               setNewDirections(newResult);
             } else {
               console.error("Error calculating new route:", newStatus);
+              setError("Error calculating new route");
             }
           });
         }
@@ -93,6 +97,7 @@ const useDirections = () => {
         setMarkers(markers);
       } else {
         console.error("Error calculating directions:", status);
+        setError("Error calculating directions");
       }
     },
     [
@@ -100,8 +105,10 @@ const useDirections = () => {
       setMidpoint,
       selectedPlace,
       originLocation,
+      error,
       setMarkers,
       setNewDirections,
+      setError
     ]
   );
 
@@ -110,13 +117,14 @@ const useDirections = () => {
       setDirections,
       setMidpoint,
       setMarkers,
+      setError,
       originLocation,
       destinationLocation,
     } = sharedState;
     setDirections(null);
     setMidpoint(null);
     setMarkers([]);
-
+    setError("");
     const directionsService = new google.maps.DirectionsService();
 
     if (originLocation && destinationLocation) {
@@ -130,6 +138,7 @@ const useDirections = () => {
       );
     } else {
       console.error("Origin or destination location is null");
+      setError("Origin or destination location is null");
     }
   }, [
     sharedState,
@@ -139,6 +148,7 @@ const useDirections = () => {
     setMarkers,
     originLocation,
     destinationLocation,
+    setError
   ]);
 
   return { calculateMidpoint };
