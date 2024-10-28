@@ -1,11 +1,11 @@
 "use client";
+
 import { MyMap } from "./Map";
 import { SuggestedPlaces } from "./SuggestedPlaces";
 import { useSharedState, SharedStateProvider } from "./sharedState";
-import useDirections from "./Midpoint"; // Import the hook
-import usePlaceOperations from "./usePlaceSelect"; // Import the custom hook
+import useDirections from "./Midpoint";
+import usePlaceOperations from "./usePlaceSelect";
 import { MapPinIcon } from '@heroicons/react/24/outline';
-
 import { Position, GeocodeResponse } from "@/app/lib/location/definitions";
 
 export default function MidpointFinder() {
@@ -26,118 +26,99 @@ function MidpointFinderInner() {
     placeType,
     setPlaceType,
     error,
-    setError
+    setError,
   } = sharedState;
 
-  const { calculateMidpoint } = useDirections(); // Use the hook
-  const { updatePlaces } = usePlaceOperations(); // Use the hook
-  console.log("error", error)
-  const getAddress = async (latitude: number, longitude: number): Promise<void> => {
-      try {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-        );
-        const data: GeocodeResponse = await response.json();
-        console.log(latitude, longitude, data.results[0]);
-        if (data.status === 'OK' && data.results[0]) {
-          setOriginLocation(`${data.results[0]?.formatted_address}`);
-        } else {
-          console.error('No address found');
-          setError('No address found')
-        }
-      } catch (error) {
-        console.error('Error fetching address:', error);
-        setError('Error fetching address')
-      }
-    };
-  const handleLocationClick = () => {
-    setOriginLocation(`Loading...`);
-    navigator.geolocation.getCurrentPosition((position: Position) => {
+  const { calculateMidpoint } = useDirections();
+  const { updatePlaces } = usePlaceOperations();
 
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
+  const getAddress = async (latitude: number, longitude: number): Promise<void> => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+      );
+      const data: GeocodeResponse = await response.json();
+      if (data.status === 'OK' && data.results[0]) {
+        setOriginLocation(data.results[0].formatted_address);
+      } else {
+        setError("No address found");
+      }
+    } catch (error) {
+      setError("Error fetching address");
+    }
+  };
+
+  const handleLocationClick = () => {
+    setOriginLocation("Loading...");
+    navigator.geolocation.getCurrentPosition((position: Position) => {
+      const { latitude, longitude } = position.coords;
       getAddress(latitude, longitude);
     });
-  };  
-  
-  return (
-    <div className="flex flex-row h-screen w-full px-4  py-4">
-      <div
-        style={{
-          backgroundColor: "lightGray",
-        }}
-        className="w-1/2 h-full flex flex-col items-start border-2 border-black p-4 rounded-md"
-      >
-        <div className="h-1/2 w-full">
-          <h1 className="text-lg font-bold">Midpoint Finder</h1>
-          <p className="text-md font-bold">Your Location:</p>
+  };
 
-          <div className="relative flex flex-1 flex-shrink-0">
-            <label htmlFor="search" className="sr-only">
-              Search
-            </label>
-            <input
-              type="text"
-              value={originLocation}
-              onChange={(e) => setOriginLocation(e.target.value)}
-              placeholder="Enter origin location"
-              style={{
-                boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-              }}
-              className="w-full p-2 mb-2 rounded-md"
+  return (
+    <div className="flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">
+      <div className="w-full lg:w-1/2 flex flex-col gap-6 p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Midpoint Finder</h1>
+        
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="origin-location" className="block text-lg font-medium text-gray-700">Your Location:</label>
+            <MapPinIcon
+              onClick={handleLocationClick}
+              className="h-6 w-6 text-blue-500 hover:text-red-500 cursor-pointer"
             />
-            <MapPinIcon className="absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-blue-500  hover:text-red-700 focus:text-blue-700 peer-focus:text-blue-900" 
-             onClick={handleLocationClick}
-              />
           </div>
-          <p className="text-md font-bold">Friend's Location:</p>
           <input
+            id="origin-location"
+            type="text"
+            value={originLocation}
+            onChange={(e) => setOriginLocation(e.target.value)}
+            placeholder="Enter origin location"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <label htmlFor="destination-location" className="block text-lg font-medium text-gray-700">Friend's Location:</label>
+          <input
+            id="destination-location"
             type="text"
             value={destinationLocation}
             onChange={(e) => setDestinationLocation(e.target.value)}
             placeholder="Enter destination location"
-            style={{
-              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-            }}
-            className="w-full p-2 mb-2 rounded-md"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="text-md font-bold">Select Location Type:</p>
+
+          <label htmlFor="place-type" className="block text-lg font-medium text-gray-700">Select Location Type:</label>
           <select
+            id="place-type"
             value={placeType}
             onChange={(e) => {
               setPlaceType(e.target.value);
               updatePlaces(e.target.value);
             }}
-            style={{
-              width: "200px",
-              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-            }}
-            className="bg-white text-black p-2 rounded-md"
+            className="w-full p-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="restaurant">Restaurant</option>
             <option value="store">Store</option>
             <option value="cafe">Cafe</option>
             <option value="park">Park</option>
           </select>
+
           <button
             onClick={calculateMidpoint}
-            style={{
-              width: "100px",
-              boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
-              backgroundColor: "black",
-              borderRadius: "20px",
-            }}
-            className="text-white p-2 rounded-md"
+            className="mt-4 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Search
+            Find Midpoint
           </button>
         </div>
-        { error && <p className="text-red-500">{error}</p> }
-        <div className="h-2/3 w-full">
+
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        <div className="mt-6 overflow-y-auto border border-gray-300 rounded-md p-2">
           <SuggestedPlaces />
         </div>
       </div>
-      <div className="w-1/2 h-full">
+
+      <div className="w-full lg:w-1/2 h-full mt-6 lg:mt-0 lg:ml-6">
         <MyMap />
       </div>
     </div>

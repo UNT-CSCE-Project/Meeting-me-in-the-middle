@@ -18,7 +18,7 @@ export default function RootLayout({
     <UserProvider>
       <html lang="en">
           <body className={`${lusitana.className} antialiased`}>
-          <div className="flex flex-col h-screen">
+          <div className="flex flex-col h-full">
             <div className="flex flex-row h-screen">
               <SideNav />
               <div className="flex flex-col flex-grow">
