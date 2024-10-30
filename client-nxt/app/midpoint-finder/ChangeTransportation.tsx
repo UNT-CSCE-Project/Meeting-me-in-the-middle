@@ -1,5 +1,5 @@
-import React from 'react';
-import { MdDirectionsCar, MdDirectionsBus, MdTrain } from 'react-icons/md';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBus, faCar, faTrain } from '@fortawesome/free-solid-svg-icons';
 import { useState } from "react";
 
 const ToggleButton = ({ children, onClick, isActive }) => {
@@ -30,20 +30,20 @@ export const ChangeTransportation = () => {
         onClick={() => setCarActive(!carActive)}
         isActive={carActive}
       >
-        Button 1
+        <FontAwesomeIcon icon={faCar} />
       </ToggleButton>
       <ToggleButton
         onClick={() => setBusActive(!busActive)}
         isActive={busActive}
       >
-        Button 2
+        <FontAwesomeIcon icon={faBus} />
       </ToggleButton>
 
       <ToggleButton
         onClick={() => setTrainActive(!trainActive)}
         isActive={trainActive}
       >
-        Button 3
+        <FontAwesomeIcon icon={faTrain} />
       </ToggleButton>
     </div>
   );
