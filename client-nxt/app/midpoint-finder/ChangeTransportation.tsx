@@ -1,13 +1,19 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBus, faCar, faTrain } from '@fortawesome/free-solid-svg-icons';
-import { useState } from "react";
+import { useState, MouseEventHandler } from "react";
 
-const ToggleButton = ({ children, onClick, isActive }) => {
+interface ToggleButtonProps {
+    children: React.ReactNode;
+    onClick: MouseEventHandler;
+    isActive: boolean;
+  }  
+
+const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, isActive }) => {
     return (
       <button
         style={{
-          backgroundColor: isActive ? '#007bff' : '#ccc',
-          border: 'none',
+          backgroundColor: isActive ? '#ccc' : 'white',
+          border: '1px solid #000',
           padding: '10px 20px',
           cursor: 'pointer',
           color: isActive ? '#fff' : '#000',
