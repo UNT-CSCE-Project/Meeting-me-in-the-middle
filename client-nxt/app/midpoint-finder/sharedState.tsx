@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo, useContext, use } from "react";
+import { createContext, useState, useMemo, useContext } from "react";
 import { set } from "zod";
 import { friendInfo } from "../lib/friends/definitions";
 
@@ -16,8 +16,9 @@ interface SharedState {
   map: google.maps.Map | null;
   directions: google.maps.DirectionsResult | null;
   error: string | null;
-  userInfo : friendInfo | null;
-  friendInfo : friendInfo | null;
+  userInfo: friendInfo | null;
+  friendInfo: friendInfo | null;
+  travelMode: string;
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
   setMidpoint: (midpoint: google.maps.LatLng | null) => void;
@@ -35,8 +36,9 @@ interface SharedState {
   setMap: (map: google.maps.Map | null) => void;
   setDirections: (directions: google.maps.DirectionsResult | null) => void;
   setError: (error: string | null) => void;
-  setUserInfo : (userInfo : friendInfo | null) => void;
-  setFriendInfo : (friendInfo : friendInfo | null) => void;
+  setUserInfo: (userInfo: friendInfo | null) => void;
+  setFriendInfo: (friendInfo: friendInfo | null) => void;
+  setTravelMode: (mode: string) => void;
 }
 
 const SharedStateContext = createContext<SharedState | null>(null);
@@ -61,6 +63,9 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<friendInfo | null>(null);
   const [friendInfo, setFriendInfo] = useState<friendInfo | null>(null);
+  const [travelMode, setTravelMode] = useState<string>(
+    'DRIVING'
+  );
 
   const value = useMemo(
     () => ({
@@ -93,7 +98,9 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       userInfo,
       setUserInfo,
       friendInfo,
-      setFriendInfo
+      setFriendInfo,
+      travelMode,
+      setTravelMode
     }),
     [
       map,
@@ -108,7 +115,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       newDirections,
       distanceInMiles,
       directions,
-      error
+      error,
+      travelMode
     ]
   );
 
@@ -128,39 +136,41 @@ const useSharedState = () => {
 };
 
 const useSharedStateDestructured = () => {
-    const sharedState = useSharedState();
-    return {
-      originLocation: sharedState.originLocation,
-      setOriginLocation: sharedState.setOriginLocation,
-      selectedPlace: sharedState.selectedPlace,
-      setSelectedPlace: sharedState.setSelectedPlace,
-      destinationLocation: sharedState.destinationLocation,
-      setDestinationLocation: sharedState.setDestinationLocation,
-      placeType: sharedState.placeType,
-      setPlaceType: sharedState.setPlaceType,
-      newDirections: sharedState.newDirections,
-      setNewDirections: sharedState.setNewDirections,
-      distanceInMiles: sharedState.distanceInMiles,
-      setDistanceInMiles: sharedState.setDistanceInMiles,
-      map: sharedState.map,
-      setMap: sharedState.setMap,
-      directions: sharedState.directions,
-      setDirections: sharedState.setDirections,
-      midpoint: sharedState.midpoint,
-      setMidpoint: sharedState.setMidpoint,
-      nearestCity: sharedState.nearestCity,
-      setNearestCity: sharedState.setNearestCity,
-      places: sharedState.places,
-      setPlaces: sharedState.setPlaces,
-      markers: sharedState.markers,
-      setMarkers: sharedState.setMarkers,
-      error : sharedState.error,
-      setError: sharedState.setError,
-      userInfo : sharedState.userInfo,
-      setUserInfo : sharedState.setUserInfo,
-      friendInfo : sharedState.friendInfo,
-      setFriendInfo : sharedState.setFriendInfo
-    };
+  const sharedState = useSharedState();
+  return {
+    originLocation: sharedState.originLocation,
+    setOriginLocation: sharedState.setOriginLocation,
+    selectedPlace: sharedState.selectedPlace,
+    setSelectedPlace: sharedState.setSelectedPlace,
+    destinationLocation: sharedState.destinationLocation,
+    setDestinationLocation: sharedState.setDestinationLocation,
+    placeType: sharedState.placeType,
+    setPlaceType: sharedState.setPlaceType,
+    newDirections: sharedState.newDirections,
+    setNewDirections: sharedState.setNewDirections,
+    distanceInMiles: sharedState.distanceInMiles,
+    setDistanceInMiles: sharedState.setDistanceInMiles,
+    map: sharedState.map,
+    setMap: sharedState.setMap,
+    directions: sharedState.directions,
+    setDirections: sharedState.setDirections,
+    midpoint: sharedState.midpoint,
+    setMidpoint: sharedState.setMidpoint,
+    nearestCity: sharedState.nearestCity,
+    setNearestCity: sharedState.setNearestCity,
+    places: sharedState.places,
+    setPlaces: sharedState.setPlaces,
+    markers: sharedState.markers,
+    setMarkers: sharedState.setMarkers,
+    error: sharedState.error,
+    setError: sharedState.setError,
+    userInfo: sharedState.userInfo,
+    setUserInfo: sharedState.setUserInfo,
+    friendInfo: sharedState.friendInfo,
+    setFriendInfo: sharedState.setFriendInfo,
+    travelMode: sharedState.travelMode,
+    setTravelMode: sharedState.setTravelMode,
   };
+};
 
 export { SharedStateProvider, useSharedState, useSharedStateDestructured };

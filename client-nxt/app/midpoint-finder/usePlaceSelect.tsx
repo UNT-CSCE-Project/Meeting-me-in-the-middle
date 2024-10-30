@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useSharedStateDestructured } from "./sharedState";
+import {getTravelMode} from "./ChangeTransportation"
 
 const usePlaceOperations = () => {
   const sharedState = useSharedStateDestructured();
@@ -12,7 +13,7 @@ const usePlaceOperations = () => {
     setNearestCity,
     map,
     setPlaces,
-    places,
+    travelMode,
   } = sharedState;
 
   const handlePlaceSelect = useCallback(
@@ -23,7 +24,7 @@ const usePlaceOperations = () => {
         const newRequest: google.maps.DirectionsRequest = {
           origin: originLocation,
           destination: place.geometry.location,
-          travelMode: google.maps.TravelMode.DRIVING,
+          travelMode: getTravelMode(travelMode),
         };
         const directionsService = new google.maps.DirectionsService();
         directionsService.route(newRequest, (newResult, newStatus) => {

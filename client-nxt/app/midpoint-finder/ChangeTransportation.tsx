@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBus, faCar } from "@fortawesome/free-solid-svg-icons";
-import { useState, MouseEventHandler } from "react";
+import { useEffect, MouseEventHandler } from "react";
 import { useSharedStateDestructured } from "./sharedState";
 
 interface ToggleButtonProps {
@@ -8,6 +8,17 @@ interface ToggleButtonProps {
   onClick: MouseEventHandler;
   isActive: boolean;
 }
+
+export const getTravelMode = (mode: string): google.maps.TravelMode => {
+  switch (mode) {
+    case "DRIVING":
+      return google.maps.TravelMode.DRIVING;
+    case "TRANSIT":
+      return google.maps.TravelMode.TRANSIT;
+    default:
+      return google.maps.TravelMode.DRIVING;
+  }
+};
 
 const ToggleButton: React.FC<ToggleButtonProps> = ({
   children,
@@ -40,41 +51,56 @@ export const ChangeTransportation = () => {
     selectedPlace,
   } = sharedState;
 
-  const handleTransportationChange = (mode: google.maps.TravelMode) => {
+  const handleTransportationChange = (mode: string) => {
+    if (!selectedPlace) {
+      console.error("No destination selected.");
+      return;
+    }
     setTravelMode(mode);
-    // Update the directions request with the new travel mode
+  };
+  
+  useEffect(() => {
+    if (!selectedPlace) {
+      console.error("No destination selected.");
+      return;
+    }
+    console.log("Selected place:", selectedPlace?.geometry?.location);
+    console.log("originLocation:", originLocation);
     const newRequest: google.maps.DirectionsRequest = {
       origin: originLocation,
-      destination: selectedPlace?.formatted_address ?? "",
-      travelMode: mode,
+      destination: selectedPlace?.geometry?.location ?? {
+        lat: 0,
+        lng: 0,
+      },
+      travelMode: google.maps.TravelMode[getTravelMode(travelMode)],
     };
-    // Call the directions service with the new request
     const directionsService = new google.maps.DirectionsService();
     directionsService.route(newRequest, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result !== null) {
-        // Update the directions result
         setNewDirections(result);
+      } else if (status === google.maps.DirectionsStatus.NOT_FOUND) {
+        console.error("No route found between the specified locations.");
       } else {
         console.error("Error updating directions:", status);
       }
     });
-  };
+  }, [travelMode]);
 
   return (
     <div className="flex justify-start">
       <ToggleButton
         onClick={() => {
-          handleTransportationChange(google.maps.TravelMode.DRIVING);
+          handleTransportationChange("DRIVING");
         }}
-        isActive={travelMode === google.maps.TravelMode.DRIVING}
+        isActive={travelMode === "DRIVING"}
       >
         <FontAwesomeIcon icon={faCar} />
       </ToggleButton>
       <ToggleButton
         onClick={() => {
-          handleTransportationChange(google.maps.TravelMode.TRANSIT);
+          handleTransportationChange("TRANSIT");
         }}
-        isActive={travelMode === google.maps.TravelMode.TRANSIT}
+        isActive={travelMode === "TRANSIT"}
       >
         <FontAwesomeIcon icon={faBus} />
       </ToggleButton>
