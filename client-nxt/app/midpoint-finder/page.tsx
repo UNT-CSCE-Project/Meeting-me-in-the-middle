@@ -7,10 +7,11 @@ import useDirections from "./Midpoint";
 import usePlaceOperations from "./usePlaceSelect";
 import { MapPinIcon } from '@heroicons/react/24/outline';
 import { Position, GeocodeResponse } from "@/app/lib/location/definitions";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getFriends } from "../lib/friends/data";
 import { useUser } from "../UserContext";
 import { friendInfo } from "../lib/friends/definitions";
+import { ChangeTransportation } from "./ChangeTransportation";
 import { set } from "zod";
 
 
@@ -180,6 +181,8 @@ function MidpointFinderInner() {
             <option value="cafe">Cafe</option>
             <option value="park">Park</option>
           </select>
+
+          <ChangeTransportation />
 
           <button
             onClick={calculateMidpoint}
