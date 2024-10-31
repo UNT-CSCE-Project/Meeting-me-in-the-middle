@@ -7,6 +7,7 @@ interface ToggleButtonProps {
   children: React.ReactNode;
   onClick: MouseEventHandler;
   isActive: boolean;
+  mode: string;
 }
 
 export const getTravelMode = (mode: string): google.maps.TravelMode => {
@@ -24,10 +25,26 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({
   children,
   onClick,
   isActive,
+  mode,
 }) => {
+  const styles = {
+    driving: {
+      borderRadius: "5px 0px 0px 5px",
+    },
+    transit: {
+      boarderRadius: "0px 5px 5px 0px",
+    },
+  };
+
+  const validModes = ["driving", "transit"];
+  if (!validModes.includes(mode)) {
+    throw new Error(`Invalid mode: ${mode}`);
+  }
+
   return (
     <button
       style={{
+        ...styles[mode as keyof typeof styles],
         backgroundColor: isActive ? "#ccc" : "white",
         border: "1px solid #000",
         padding: "10px 20px",
@@ -93,6 +110,7 @@ export const ChangeTransportation = () => {
           handleTransportationChange("DRIVING");
         }}
         isActive={travelMode === "DRIVING"}
+        mode="driving"
       >
         <FontAwesomeIcon icon={faCar} />
       </ToggleButton>
@@ -101,6 +119,7 @@ export const ChangeTransportation = () => {
           handleTransportationChange("TRANSIT");
         }}
         isActive={travelMode === "TRANSIT"}
+        mode="transit"
       >
         <FontAwesomeIcon icon={faBus} />
       </ToggleButton>

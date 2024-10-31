@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { getFriends } from "../lib/friends/data";
 import { useUser } from "../UserContext";
 import { friendInfo } from "../lib/friends/definitions";
-import { ChangeTransportation } from "./ChangeTransportation";
 import { set } from "zod";
 
 
@@ -181,8 +180,6 @@ function MidpointFinderInner() {
             <option value="cafe">Cafe</option>
             <option value="park">Park</option>
           </select>
-
-          <ChangeTransportation />
 
           <button
             onClick={calculateMidpoint}

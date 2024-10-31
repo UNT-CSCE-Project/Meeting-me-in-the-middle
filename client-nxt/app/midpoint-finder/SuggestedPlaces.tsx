@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
+import { ChangeTransportation } from "./ChangeTransportation";
 
 export function SuggestedPlaces() {
   const { places, selectedPlace, setSelectedPlace, distanceInMiles, userInfo, friendInfo } =
@@ -27,6 +28,7 @@ export function SuggestedPlaces() {
             ? `${places.length} Places Found`
             : "Search for Places"}
         </h2>
+        <ChangeTransportation />
         <div
           style={{
             display: "grid",
