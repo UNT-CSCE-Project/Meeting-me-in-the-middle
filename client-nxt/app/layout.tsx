@@ -23,7 +23,7 @@ export default function RootLayout({
               <SideNav />
               <div className="flex flex-col flex-grow">
                 <Navbar />
-                <div className="flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">{children}</div>
+                <div className="flex flex-col lg:flex-row h-screen w-full bg-gray-100">{children}</div>
               </div>
             </div>
           </div>

@@ -13,12 +13,14 @@ import { Suspense, use } from "react";
 import { ProfileInfoSkeleton } from "@/app/ui/skeletons";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { set } from "zod";
 export default function Navbar() {
     const { signOutUser, userData } = useUser();
     const pathname = usePathname();
     const [notificationCount, setNotificationCount] = useState(0);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isPending, setIsPending] = useState(true);
     useEffect(() => {
         if(userData){
             console.log(userData);
@@ -28,14 +30,17 @@ export default function Navbar() {
                 setNotificationCount(count);
                 console.log('Notification count:', count);
             })  
+            setIsPending(false);
     
         }
            
     }, [userData, notificationCount]);
 
     return (
-     ( pathname === '/login' || pathname === '/registration'  && userData)? null : (
-        <div className=" bg-[#2c2c2c] px-4">
+     ( pathname === '/login' || pathname === '/registration'  ) ? <></> : (
+        isPending ? 
+            <></>:(
+                <div className=" bg-[#2c2c2c] px-4">
                 
                 <div className="ml-20 mr-4 pt-4">
                     <div className="w-25 ml-8 flex items-center justify-between ">
@@ -54,8 +59,8 @@ export default function Navbar() {
                                 </button>
                                 </form>
                             </Suspense>
-
-
+    
+    
                     </div>
                 </div>
                 {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
@@ -65,6 +70,10 @@ export default function Navbar() {
                     {/* <Pagination totalPages={totalPages} /> */}
                 </div>
         </div>
-      )
-    );
+            )
+    
+          )
+            )
+           
+    
 }

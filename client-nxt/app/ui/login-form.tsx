@@ -65,14 +65,10 @@ export default function LoginForm() {
   };
 
   return (
+    
     <form onSubmit={handleSubmit}>
-      <div className="flex h-full">
-      <div className="flex flex-col justify-center items-center bg-teal-400 w-2/5">
-          <div className="bg-white p-4 rounded shadow-md">
-            <Image src={logo} alt="Logo" width={200} height={200} />
-          </div>
-        </div>
-        <div className="flex-grow p-6 md:p-12 flex items-center justify-center">
+
+        <div className="flex-grow p-6 md:p-12 flex flex-col justify-center items-center">
           <div>
             <h1 className="text-2xl font-bold mb-4">Sign in to Meet Me in the Middle</h1>
             <input
@@ -116,7 +112,7 @@ export default function LoginForm() {
             )}
           </div>
         </div>
-      </div>
+ 
     </form>
   );
 }
