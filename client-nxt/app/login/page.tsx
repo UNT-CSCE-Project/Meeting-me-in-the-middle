@@ -14,7 +14,7 @@ export default async function Login() {
         </div>
         <div className="flex flex-col justify-center items-center w-3/5 bg-white p-8">
         <div className="w-128">
-          <h2 className="text-center text-blue-600 text-3xl font-semibold mb-4">Create your account</h2>
+          
 
           <LoginForm />
           
