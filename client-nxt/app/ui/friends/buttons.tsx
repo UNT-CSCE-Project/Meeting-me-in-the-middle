@@ -12,7 +12,7 @@ import { useUser } from "@/app/UserContext";
 import { pendingFriendItem } from "@/app/lib/friends/definitions";
 import { invitationApproval } from "@/app/lib/locationApproval/actions";
 import { any, set } from "zod";
-import { placeInfo } from "@/app/lib/locationApproval/definitions";
+import  {placeInfo}  from "@/app/lib/locationApproval/definitions";
 
 export function SendRequest({
   request,
@@ -36,9 +36,7 @@ export function SendRequest({
   formData.append("recipient_id", request.uid);
   formData.append("recipient_name", request?.name);
   formData.append("status", "pending");
-  const requestSendTime = new Date().toISOString();
-  const timestamp = Timestamp.fromDate(new Date(requestSendTime));
-  formData.append("request_send_time", timestamp.toString());
+
   const connectRequest = async () => {
     setLoading(true);
     try {
