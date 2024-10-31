@@ -1,5 +1,7 @@
 export enum NotificationType {
     FRIEND_REQUEST = 'friend_request',
+    INVITATION_REQUEST = 'invitation_request',
+    INVITATION_RESPONSE = 'invitation_response',
     // Add other notification types as needed
   }
 

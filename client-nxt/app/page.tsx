@@ -10,7 +10,7 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname(); // Get the current route
   
-
+  
   
   return (
     <div className="flex h-full flex-col md:flex-row ">
@@ -19,7 +19,7 @@ export default function Home() {
         {
           currentUser ? (
             <h1 className="text-2xl font-bold">Welcome to Meet Me in the Middle!</h1>            
-          ) : <></>
+          ) : <h1 className="text-2xl font-bold">Please log in to access Meet Me in the Middle!</h1>
         }
 
         {/* You can add more content or components here */}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
+import { InviteFriend } from "../ui/friends/buttons";
 
 export function SuggestedPlaces() {
   const { places, selectedPlace, setSelectedPlace, distanceInMiles, userInfo, friendInfo } =
@@ -17,7 +18,7 @@ export function SuggestedPlaces() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
+  console.log("places", places);
   return (
     <>
       { places.length > 0 && (
@@ -117,14 +118,22 @@ export function SuggestedPlaces() {
                   Photo not available
                 </p>
               )}
-              <h2 className="text-lg font-bold">{selectedPlace.name}</h2>
+              <h2 className="text-lg font-bold mt-4">{selectedPlace.name}</h2>
               <p>{selectedPlace.vicinity}</p>
               <p>Miles: {distanceInMiles.toFixed(2)}</p>
               <p>Rating: {selectedPlace.rating}/5</p>
-              <h2 className="text-md font-bold">Reviews</h2>
+              <h2 className="text-md font-bold mt-4 flex items-center">
+                Reviews
+                { 
+                  userInfo && friendInfo && selectedPlace &&
+                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } />
+                }
+                </h2>
+                      
             </div>
           )}
         </Modal>
+
       
       </div>
       )}
