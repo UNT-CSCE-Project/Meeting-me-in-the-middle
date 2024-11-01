@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, MouseEventHandler } from "react";
 import { useSharedStateDestructured } from "./sharedState";
+import { setErrorMap } from "zod";
 
 interface ToggleButtonProps {
   children: React.ReactNode;
@@ -90,13 +91,17 @@ export const ChangeTransportation = () => {
     tripDuration,
     setTripDuration,
     setDistanceInMiles,
+    error,
+    setError,
   } = sharedState;
 
   const handleTransportationChange = (mode: string) => {
     if (!selectedPlace) {
-      console.error("No destination selected.");
+      console.error("No place selected.");
+      setError("No place selected.");
       return;
     }
+    setError(null);
     setTravelMode(mode);
   };
 

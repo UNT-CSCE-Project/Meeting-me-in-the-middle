@@ -67,6 +67,7 @@ export function MyMap() {
           <MapWithDirections directions={directions} userInfo={userInfo} friendInfo={friendInfo}/>
         )}
         {newDirections && (
+          // Render the DirectionsRenderer with custom polyline options
           <DirectionsRenderer
             directions={newDirections}
             options={{
@@ -75,8 +76,9 @@ export function MyMap() {
                 strokeOpacity: 0.5,
                 strokeWeight: 5,
               },
+              suppressMarkers: true, // add this option
             }}
-          />
+          /> 
         )}
         {markers}
         {places.map(

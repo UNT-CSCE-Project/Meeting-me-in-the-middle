@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
-<<<<<<< HEAD
 import { ChangeTransportation } from "./ChangeTransportation";
 import { Filters } from "./Filters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faWheelchair } from "@fortawesome/free-solid-svg-icons";
 import { FilterTabs, AccessibilityTabFilter } from "./FilterTabs";
-=======
 import { InviteFriend } from "../ui/friends/buttons";
->>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
+import { set } from "zod";
 
 export function SuggestedPlaces() {
   const {
@@ -29,7 +27,10 @@ export function SuggestedPlaces() {
     setAccessibilityFilter,
     tripDuration,
     setTripDuration,
+    error,
+    setError,
   } = useSharedStateDestructured();
+
   const { handlePlaceSelect, updatePlaces, updatePrice } = usePlaceOperations();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -41,15 +42,16 @@ export function SuggestedPlaces() {
   const handlePlaceClick = (place: google.maps.places.PlaceResult) => {
     handlePlaceSelect(place);
     setIsModalOpen(true);
+    setError(null);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
-<<<<<<< HEAD
 
   const handleFiltersClick = () => {
     setIsFiltersOpen(true);
+    setError(null);
   };
 
   useEffect(() => {
@@ -80,9 +82,6 @@ export function SuggestedPlaces() {
     updatePrice();
   }, [selectedPlace, placeTypeFilters, priceLevelFilters, accessibilityFilter]);
 
-=======
-  console.log("places", places);
->>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
   return (
     <>
       {places.length > 0 && (
@@ -158,7 +157,7 @@ export function SuggestedPlaces() {
                 <div
                   key={index}
                   style={{
-                    backgroundColor: "white",
+                    backgroundColor: selectedPlace?.name === place?.name ? "lightblue" : "white",
                     borderRadius: "10px",
                     padding: "10px",
                     marginBottom: "10px",
@@ -166,7 +165,8 @@ export function SuggestedPlaces() {
                     flex: 1,
                     display: "flex",
                     alignItems: "center",
-                  }}
+                  }} 
+                  onClick={() => handlePlaceSelect(place)}
                 >
                   {place.photos && place.photos[0] && (
                     <img
@@ -228,8 +228,8 @@ export function SuggestedPlaces() {
             isOpen={isModalOpen}
             onClose={closeModal}
             style={{
-              width: "900px",
-              height: "600px",
+              // width: "900px",
+              // height: "600px",
               margin: "auto",
               padding: "20px",
               borderRadius: "10px",
@@ -269,14 +269,19 @@ export function SuggestedPlaces() {
                 <p>{selectedPlace.vicinity}</p>
                 <p>Miles: {distanceInMiles.toFixed(2)} ({tripDuration})</p>
                 <p>Rating: {selectedPlace.rating}/5</p>
-                <h2 className="text-md font-bold">Reviews</h2>
+                <h2 className="text-md font-bold mt-4 flex items-center">
+                Reviews
+                { 
+                  userInfo && friendInfo && selectedPlace &&
+                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } />
+                }
+                </h2>
                 <div
                   style={{
                     display: "grid",
                     flexDirection: "column",
                   }}
                 >
-<<<<<<< HEAD
                   <div
                     style={{
                       flex: 1,
@@ -317,29 +322,6 @@ export function SuggestedPlaces() {
             )}
           </Modal>
         </div>
-=======
-                  Photo not available
-                </p>
-              )}
-              <h2 className="text-lg font-bold mt-4">{selectedPlace.name}</h2>
-              <p>{selectedPlace.vicinity}</p>
-              <p>Miles: {distanceInMiles.toFixed(2)}</p>
-              <p>Rating: {selectedPlace.rating}/5</p>
-              <h2 className="text-md font-bold mt-4 flex items-center">
-                Reviews
-                { 
-                  userInfo && friendInfo && selectedPlace &&
-                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } />
-                }
-                </h2>
-                      
-            </div>
-          )}
-        </Modal>
-
-      
-      </div>
->>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
       )}
     </>
   );

@@ -64,13 +64,23 @@ function MapWithDirections({ directions, userInfo, friendInfo}: {directions: goo
             />
           )}
           {endPoint && (
-            <Marker
+             friendInfo ? (
+              <Marker
               position={endPoint}
+              
               icon={{
                 url: createCustomMarkerIcon(friendInfo?.name.split(" ")[0] || "", friendInfo?.name.split(" ")[1] || ""),
                 scaledSize: new google.maps.Size(40, 40),
               }}
             />
+             ) : 
+             <Marker
+              position={endPoint}
+               icon = {{
+                url : 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+               }}
+              />
+            
           )}
         </>
       )}
