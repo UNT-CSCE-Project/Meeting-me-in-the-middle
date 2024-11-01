@@ -42,7 +42,7 @@ function MidpointFinderInner() {
 
   // State for handling friend selection
   const [friends, setFriends] = useState<any>([]); // Example friends
-  const [selectedFriend, setSelectedFriend] = useState<friendInfo | null>(null);
+  const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
   const [showFriendModal, setShowFriendModal] = useState(false);
   const {userData} = useUser();
   const [isFetching, setIsFetching] = useState(false);
@@ -103,7 +103,7 @@ function MidpointFinderInner() {
 
   const fetchFriendLocation = (friend: friendInfo) => {
     setDestinationLocation(friend.location); // Set the destination location to friend's location
-    setSelectedFriend(friend);
+    setSelectedFriend(friend.uid);
     setFriendInfo(friend);
     setShowFriendModal(false); // Close the modal
   };
@@ -157,7 +157,7 @@ function MidpointFinderInner() {
           <input
             id="destination-location"
             type="text"
-            value={destinationLocation}
+            value={destinationLocation} disabled={selectedFriend? true : false}
             onChange={(e) => setDestinationLocation(e.target.value)}
             placeholder="Enter destination location"
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
+<<<<<<< HEAD
 import { ChangeTransportation } from "./ChangeTransportation";
 import { Filters } from "./Filters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faWheelchair } from "@fortawesome/free-solid-svg-icons";
 import { FilterTabs, AccessibilityTabFilter } from "./FilterTabs";
+=======
+import { InviteFriend } from "../ui/friends/buttons";
+>>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
 
 export function SuggestedPlaces() {
   const {
@@ -42,6 +46,7 @@ export function SuggestedPlaces() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+<<<<<<< HEAD
 
   const handleFiltersClick = () => {
     setIsFiltersOpen(true);
@@ -75,6 +80,9 @@ export function SuggestedPlaces() {
     updatePrice();
   }, [selectedPlace, placeTypeFilters, priceLevelFilters, accessibilityFilter]);
 
+=======
+  console.log("places", places);
+>>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
   return (
     <>
       {places.length > 0 && (
@@ -268,6 +276,7 @@ export function SuggestedPlaces() {
                     flexDirection: "column",
                   }}
                 >
+<<<<<<< HEAD
                   <div
                     style={{
                       flex: 1,
@@ -308,6 +317,29 @@ export function SuggestedPlaces() {
             )}
           </Modal>
         </div>
+=======
+                  Photo not available
+                </p>
+              )}
+              <h2 className="text-lg font-bold mt-4">{selectedPlace.name}</h2>
+              <p>{selectedPlace.vicinity}</p>
+              <p>Miles: {distanceInMiles.toFixed(2)}</p>
+              <p>Rating: {selectedPlace.rating}/5</p>
+              <h2 className="text-md font-bold mt-4 flex items-center">
+                Reviews
+                { 
+                  userInfo && friendInfo && selectedPlace &&
+                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } />
+                }
+                </h2>
+                      
+            </div>
+          )}
+        </Modal>
+
+      
+      </div>
+>>>>>>> SCRUM-69-add-invite-button-in-mid-pointer-page
       )}
     </>
   );

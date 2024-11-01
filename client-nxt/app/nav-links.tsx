@@ -8,20 +8,19 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
- 
+import { useUser } from '@/app/UserContext';
 // ...
  
 export default function NavLinks() {
   const pathname = usePathname();
+
+  const {userData} = useUser();
   const links = [
     { name: 'Mid Point Finder', href: '/midpoint-finder'},
-    {name: 'Manage Friends',  href: '/friends'},
-    { name: 'Location Approval', href: '/location-approval', },
-    { name: 'Travel History', href: '/travel-history', },
-    { name: 'Reviews', href: '/reviews', },
     
-  
   ] as any;
+
+  
   return (
     <>
       {links.map(({link}:{link:any}) => {
@@ -34,6 +33,7 @@ export default function NavLinks() {
               'flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
               {
                 'bg-sky-100 text-blue-600': pathname === link.href,
+                'disabled:bg-gray-50 disabled:text-gray-400 bg-pink-100': userData,
               },
             )}
           >
