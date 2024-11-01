@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useSharedStateDestructured } from "./sharedState";
+import { getTravelMode } from "./ChangeTransportation";
 
 const usePlaceOperations = () => {
   const sharedState = useSharedStateDestructured();
@@ -12,7 +13,10 @@ const usePlaceOperations = () => {
     setNearestCity,
     map,
     setPlaces,
-    places,
+    travelMode,
+    placeTypeFilters,
+    priceLevelFilters,
+    accessibilityFilter,
   } = sharedState;
 
   const handlePlaceSelect = useCallback(
@@ -23,12 +27,15 @@ const usePlaceOperations = () => {
         const newRequest: google.maps.DirectionsRequest = {
           origin: originLocation,
           destination: place.geometry.location,
-          travelMode: google.maps.TravelMode.DRIVING,
+          travelMode: getTravelMode(travelMode),
         };
         const directionsService = new google.maps.DirectionsService();
         directionsService.route(newRequest, (newResult, newStatus) => {
           console.log("directionsService.route callback called");
-          if (newStatus === google.maps.DirectionsStatus.OK && newResult !== null) {
+          if (
+            newStatus === google.maps.DirectionsStatus.OK &&
+            newResult !== null
+          ) {
             console.log("newResult:", newResult);
             const distance = newResult.routes[0]?.legs[0]?.distance?.value;
             if (distance !== undefined) {
@@ -68,10 +75,11 @@ const usePlaceOperations = () => {
               ) {
                 const cityLocation = result.geometry?.location;
                 if (cityLocation) {
-                  const distance = google.maps.geometry.spherical.computeDistanceBetween(
-                    midpoint,
-                    cityLocation
-                  );
+                  const distance =
+                    google.maps.geometry.spherical.computeDistanceBetween(
+                      midpoint,
+                      cityLocation
+                    );
                   if (distance < minDistance) {
                     minDistance = distance;
                     nearestCity = result;
@@ -83,7 +91,12 @@ const usePlaceOperations = () => {
           if (nearestCity && map) {
             setNearestCity(nearestCity.formatted_address ?? "");
             zoomInOnCity(nearestCity.formatted_address ?? "");
-            findPlacesAroundCity(nearestCity.formatted_address ?? "");
+            findPlacesAroundCity(
+              nearestCity.formatted_address ?? "",
+              placeTypeFilters,
+              priceLevelFilters,
+              accessibilityFilter
+            );
           }
         }
       });
@@ -108,43 +121,161 @@ const usePlaceOperations = () => {
     [map]
   );
 
-  const findPlacesAroundCity = useCallback(
-    (city: string, placeType: string = "restaurant") => {
-      if (map) {
-        const service = new google.maps.places.PlacesService(map);
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address: city }, (results, status) => {
-          if (status === "OK" && results !== null) {
-            const cityLocation = results[0]?.geometry?.location;
-            if (cityLocation) {
+  const findPlacesAroundCity = (
+    city: string,
+    placeTypeFilters: {
+      restaurant: boolean;
+      store: boolean;
+      cafe: boolean;
+      park: boolean;
+    },
+    priceLevel: {
+      "0": boolean;
+      "1": boolean;
+      "2": boolean;
+      "3": boolean;
+      "4": boolean;
+    },
+    accessibilityFilter: boolean
+  ) => {
+    if (map) {
+      const service = new google.maps.places.PlacesService(map);
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: city }, (results, status) => {
+        if (status === "OK" && results !== null) {
+          const cityLocation = results[0]?.geometry?.location;
+          if (cityLocation) {
+            const allPlaceTypesFalse = Object.values(placeTypeFilters).every(
+              (value) => value === false
+            );
+            const allPriceTypesFalse = Object.values(priceLevel).every(
+              (value) => value === false
+            );
+            if (!allPlaceTypesFalse && !allPriceTypesFalse) {
+              Object.keys(placeTypeFilters).forEach((placeType) => {
+                Object.keys(priceLevelFilters).forEach((priceLevel) => {
+                  if (
+                    placeTypeFilters[
+                      placeType as keyof typeof placeTypeFilters
+                    ] &&
+                    priceLevelFilters[
+                      priceLevel as keyof typeof priceLevelFilters
+                    ]
+                  ) {
+                    const request: google.maps.places.PlaceSearchRequest = {
+                      location: cityLocation,
+                      radius: 5000,
+                      type: placeType,
+                      maxPriceLevel: +priceLevel,
+                      minPriceLevel: +priceLevel,
+                      keyword: accessibilityFilter
+                        ? "wheelchair_accessible"
+                        : "",
+                    };
+                    service.nearbySearch(request, (results, status) => {
+                      if (
+                        status === google.maps.places.PlacesServiceStatus.OK &&
+                        results !== null
+                      ) {
+                        setPlaces(results);
+                      }
+                    });
+                  }
+                });
+              });
+            } else if (!allPlaceTypesFalse && allPriceTypesFalse) {
+              Object.keys(placeTypeFilters).forEach((placeType) => {
+                if (
+                  placeTypeFilters[placeType as keyof typeof placeTypeFilters]
+                ) {
+                  const request: google.maps.places.PlaceSearchRequest = {
+                    location: cityLocation,
+                    radius: 5000,
+                    type: placeType,
+                    keyword: accessibilityFilter ? "wheelchair_accessible" : "",
+                  };
+                  service.nearbySearch(request, (results, status) => {
+                    if (
+                      status === google.maps.places.PlacesServiceStatus.OK &&
+                      results !== null
+                    ) {
+                      setPlaces(results);
+                    }
+                  });
+                }
+              });
+            } else if (allPlaceTypesFalse && !allPriceTypesFalse) {
+              Object.keys(priceLevelFilters).forEach((priceLevel) => {
+                if (
+                  priceLevelFilters[
+                    priceLevel as keyof typeof priceLevelFilters
+                  ]
+                ) {
+                  const request: google.maps.places.PlaceSearchRequest = {
+                    location: cityLocation,
+                    radius: 5000,
+                    maxPriceLevel: +priceLevel,
+                    minPriceLevel: +priceLevel,
+                    keyword: accessibilityFilter ? "wheelchair_accessible" : "",
+                  };
+                  service.nearbySearch(request, (results, status) => {
+                    if (
+                      status === google.maps.places.PlacesServiceStatus.OK &&
+                      results !== null
+                    ) {
+                      setPlaces(results);
+                    }
+                  });
+                }
+              });
+            } else {
               const request: google.maps.places.PlaceSearchRequest = {
                 location: cityLocation,
                 radius: 5000,
-                type: placeType,
+                keyword: accessibilityFilter ? "wheelchair_accessible" : "",
               };
               service.nearbySearch(request, (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && results !== null) {
+                if (
+                  status === google.maps.places.PlacesServiceStatus.OK &&
+                  results !== null
+                ) {
                   setPlaces(results);
                 }
               });
             }
           }
-        });
-      }
-    },
-    [map, setPlaces]
-  );
+        }
+      });
+    }
+  };
 
-  const updatePlaces = useCallback(
-    (newPlaceType: string) => {
-      if (nearestCity) {
-        findPlacesAroundCity(nearestCity, newPlaceType);
-      } else {
-        setPlaces([]);
-      }
-    },
-    [nearestCity, findPlacesAroundCity, setPlaces]
-  );
+  const updatePlaces = () => {
+    console.log("Update places function called");
+    if (nearestCity) {
+      console.log("in nearest city");
+      findPlacesAroundCity(
+        nearestCity,
+        placeTypeFilters,
+        priceLevelFilters,
+        accessibilityFilter
+      );
+    } else {
+      setPlaces([]);
+    }
+  };
+
+  const updatePrice = () => {
+    if (nearestCity) {
+      findPlacesAroundCity(
+        nearestCity,
+        placeTypeFilters,
+        priceLevelFilters,
+        accessibilityFilter
+      );
+    } else {
+      setPlaces([]);
+    }
+  };
 
   return {
     handlePlaceSelect,
@@ -152,6 +283,7 @@ const usePlaceOperations = () => {
     zoomInOnCity,
     findPlacesAroundCity,
     updatePlaces,
+    updatePrice,
   };
 };
 
