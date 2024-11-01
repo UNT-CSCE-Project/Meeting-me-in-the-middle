@@ -38,7 +38,8 @@ export function MyMap() {
     setSelectedPlace,
     distanceInMiles,
     userInfo,
-    friendInfo
+    friendInfo,
+    tripDuration,
   } = sharedState;
 
   const { handlePlaceSelect } = usePlaceOperations(); // Use the custom hook
@@ -98,7 +99,7 @@ export function MyMap() {
             <div>
               <h2>{selectedPlace.name}</h2>
               <p>{selectedPlace.formatted_address}</p>
-              <p>Miles: {distanceInMiles?.toFixed(2)}</p>
+              <p>Miles: {distanceInMiles?.toFixed(2)} ({tripDuration})</p>
             </div>
           </InfoWindow>
         )}

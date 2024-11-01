@@ -29,8 +29,6 @@ function MidpointFinderInner() {
     setOriginLocation,
     destinationLocation,
     setDestinationLocation,
-    placeType,
-    setPlaceType,
     error,
     setError,
     places,
@@ -41,7 +39,6 @@ function MidpointFinderInner() {
   } = sharedState;
 
   const { calculateMidpoint } = useDirections();
-  const { updatePlaces } = usePlaceOperations();
 
   // State for handling friend selection
   const [friends, setFriends] = useState<any>([]); // Example friends
@@ -133,6 +130,7 @@ function MidpointFinderInner() {
               onClick={handleLocationClick}
               className="h-6 w-6 text-blue-500 hover:text-red-500 cursor-pointer"
             />
+            
           </div>
           <input
             id="origin-location"
@@ -164,22 +162,6 @@ function MidpointFinderInner() {
             placeholder="Enter destination location"
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-
-          <label htmlFor="place-type" className="block text-lg font-medium text-gray-700">Select Location Type:</label>
-          <select
-            id="place-type"
-            value={placeType}
-            onChange={(e) => {
-              setPlaceType(e.target.value);
-              updatePlaces(e.target.value);
-            }}
-            className="w-full p-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="restaurant">Restaurant</option>
-            <option value="store">Store</option>
-            <option value="cafe">Cafe</option>
-            <option value="park">Park</option>
-          </select>
 
           <button
             onClick={calculateMidpoint}
