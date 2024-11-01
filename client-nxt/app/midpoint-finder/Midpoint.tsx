@@ -126,11 +126,19 @@ const useDirections = () => {
       setError,
       originLocation,
       destinationLocation,
+      setAccessibilityFilter,
+      setPlaceTypeFilters,
+      setPriceLevelFilters,
+      setSelectedPlace
     } = sharedState;
     setDirections(null);
     setMidpoint(null);
     setMarkers([]);
     setError("");
+    setSelectedPlace(null);
+    setAccessibilityFilter(false);
+    setPlaceTypeFilters({ restaurant: false, store: false, cafe: false, park: false });
+    setPriceLevelFilters({ "0": false, "1": false, "2": false, "3": false, "4": false });
     const directionsService = new google.maps.DirectionsService();
 
     if (originLocation && destinationLocation) {

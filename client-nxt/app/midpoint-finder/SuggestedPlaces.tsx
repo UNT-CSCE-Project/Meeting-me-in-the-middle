@@ -136,6 +136,8 @@ export function SuggestedPlaces() {
           !accessibilityFilter ? (
             <p>No filters added</p>
           ) : null}
+
+          { !selectedPlace && <p>No place selected</p> }
           <div
             style={{
               display: "grid",

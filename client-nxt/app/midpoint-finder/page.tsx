@@ -35,7 +35,7 @@ function MidpointFinderInner() {
     userInfo,
     setUserInfo,
     friendInfo,
-    setFriendInfo
+    setFriendInfo,
   } = sharedState;
 
   const { calculateMidpoint } = useDirections();
@@ -46,6 +46,8 @@ function MidpointFinderInner() {
   const [showFriendModal, setShowFriendModal] = useState(false);
   const {userData} = useUser();
   const [isFetching, setIsFetching] = useState(false);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isWheelChairAccessible, setIsWheelChairAccessible] = useState(false);
   const fetchFriends = async () => {
     setIsFetching(true);
     if (userData) {
