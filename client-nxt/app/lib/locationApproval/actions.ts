@@ -53,6 +53,25 @@ export async function updateStatus(id: string, status: string) {
             status: status,
             updated_at: admin.firestore.FieldValue.serverTimestamp(),
         });
+
+        // add notification
+        await docRef.get().then(async (doc) => {
+            const notificationResponse = await addNotification({
+                sender_uid: doc.data()?.inviter.uid,
+                recipient_uid: doc.data()?.invitee.uid,
+                sender_name: doc.data()?.inviter.name,
+                recipient_name: doc.data()?.invitee.name,
+                message: `Your invitation to meet in ${doc.data()?.place.name} has been ${status}.`,
+                type: NotificationType.INVITATION_REQUEST,
+                isRead: false
+            } as any) 
+
+            if (notificationResponse.status === 500) {
+                return { status: 500, message: 'Failed to send notification.' }
+            } else {
+                return { status: 200, message: 'Status updated successfully.' }
+            }
+        })
         return { status: 200, message: 'Status updated successfully.' };
     } catch (error) {
         console.error("Error updating status:", error);
