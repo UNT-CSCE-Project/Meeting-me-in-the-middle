@@ -61,7 +61,7 @@ export const AccessibilityTabFilter = ({
   };
 
   return (
-    <div>
+    <div className="flex flex-wrap gap-2">
       {accessibilityFilter && (
         <div
           key="accessibility"

@@ -61,115 +61,128 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
   };
 
   return (
-    <div>
-      <h1 className="w-full text-2xl font-bold text-center">Change Filters</h1>
-      <div>
-        <h2 className="text-xl font-bold">Location Type:</h2>
-        <ul>
-          <li>
-            <input
-              type="checkbox"
-              name="restaurant"
-              checked={newPlaceTypeFilters.restaurant}
-              onChange={handlePlaceTypeFilterChange}
-            />
-            <span className="text-lg font-normal">Restaurants</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="store"
-              checked={newPlaceTypeFilters.store}
-              onChange={handlePlaceTypeFilterChange}
-            />
-            <span className="text-lg font-normal">Stores</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="cafe"
-              checked={newPlaceTypeFilters.cafe}
-              onChange={handlePlaceTypeFilterChange}
-            />
-            <span className="text-lg font-normal">Cafes</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="park"
-              checked={newPlaceTypeFilters.park}
-              onChange={handlePlaceTypeFilterChange}
-            />
-            <span className="text-lg font-normal">Parks</span>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <h2 className="text-xl font-bold">Price Level:</h2>
-        <ul>
-          <li>
-            <input
-              type="checkbox"
-              name="0"
-              checked={newPriceLevelFilters[0]}
-              onChange={handlePriceLevelFilterChange}
-            />
-            <span className="text-lg font-normal">Free</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="1"
-              checked={newPriceLevelFilters[1]}
-              onChange={handlePriceLevelFilterChange}
-            />
-            <span className="text-lg font-normal">$</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="2"
-              checked={newPriceLevelFilters[2]}
-              onChange={handlePriceLevelFilterChange}
-            />
-            <span className="text-lg font-normal">$$</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="3"
-              checked={newPriceLevelFilters[3]}
-              onChange={handlePriceLevelFilterChange}
-            />
-            <span className="text-lg font-normal">$$$</span>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              name="4"
-              checked={newPriceLevelFilters[4]}
-              onChange={handlePriceLevelFilterChange}
-            />
-            <span className="text-lg font-normal">$$$$</span>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <h2 className="text-xl font-bold">Accessibility:</h2>
-        <label className="text-lg font-normal">
+<div className="container mx-auto p-4">
+  <h1 className="text-3xl font-bold text-center mb-4">Change Filters</h1>
+  <div className="flex flex-wrap justify-center mb-4">
+    <div className="w-full md:w-1/2 xl:w-1/3 p-4 bg-gray-100 rounded-md shadow-md">
+      <h2 className="text-xl font-bold mb-2">Location Type:</h2>
+      <ul>
+        <li>
           <input
             type="checkbox"
-            checked={newAccessibilityFilter}
-            onChange={handleAccessibilityFilterChange}
+            name="restaurant"
+            checked={newPlaceTypeFilters.restaurant}
+            onChange={handlePlaceTypeFilterChange}
+            className="mr-2"
           />
-          {newAccessibilityFilter ? "On" : "Off"}
-        </label>
-      </div>
-      <div className="mt-4 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button className="w-full text-center font-normal" onClick={applyFilters} style={{justifyContent: "center"}}>
-          Apply Filters
-        </button>
-      </div>
+          <span className="text-lg font-normal">Restaurants</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="store"
+            checked={newPlaceTypeFilters.store}
+            onChange={handlePlaceTypeFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">Stores</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="cafe"
+            checked={newPlaceTypeFilters.cafe}
+            onChange={handlePlaceTypeFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">Cafes</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="park"
+            checked={newPlaceTypeFilters.park}
+            onChange={handlePlaceTypeFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">Parks</span>
+        </li>
+      </ul>
     </div>
+    <div className="w-full md:w-1/2 xl:w-1/3 p-4 bg-gray-100 rounded-md shadow-md">
+      <h2 className="text-xl font-bold mb-2">Price Level:</h2>
+      <ul>
+        <li>
+          <input
+            type="checkbox"
+            name="0"
+            checked={newPriceLevelFilters[0]}
+            onChange={handlePriceLevelFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">Free</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="1"
+            checked={newPriceLevelFilters[1]}
+            onChange={handlePriceLevelFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">$</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="2"
+            checked={newPriceLevelFilters[2]}
+            onChange={handlePriceLevelFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">$$</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="3"
+            checked={newPriceLevelFilters[3]}
+            onChange={handlePriceLevelFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">$$$</span>
+        </li>
+        <li>
+          <input
+            type="checkbox"
+            name="4"
+            checked={newPriceLevelFilters[4]}
+            onChange={handlePriceLevelFilterChange}
+            className="mr-2"
+          />
+          <span className="text-lg font-normal">$$$$</span>
+        </li>
+      </ul>
+    </div>
+    <div className="w-full md:w-1/2 xl:w-1/3 p-4 bg-gray-100 rounded-md shadow-md">
+      <h2 className="text-xl font-bold mb-2">Accessibility:</h2>
+      <label className="text-lg font-normal">
+        <input
+          type="checkbox"
+          checked={newAccessibilityFilter}
+          onChange={handleAccessibilityFilterChange}
+          className="mr-2"
+        />
+        {newAccessibilityFilter ? "On" : "Off"}
+      </label>
+    </div>
+  </div>
+  <button
+    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    onClick={applyFilters}
+  >
+    Apply Filters
+  </button>
+</div>
   );
 };
