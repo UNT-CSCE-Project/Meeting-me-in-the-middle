@@ -235,7 +235,7 @@ export function InviteFriend({
 }: {
   inviter: friendInfo;
   invitee: friendInfo;
-  place:  placeInfo;
+  place:  google.maps.places.PlaceResult;
 }) {
   const [invitationSent, setInvitationSent] = useState(false);
   const [isPending, setIsPending] = useState(false);

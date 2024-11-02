@@ -5,7 +5,7 @@ import { addNotification } from '../notifications/actions';
 import { NotificationType } from '../notifications/definitions';
 import * as admin  from "firebase-admin";
 import { placeInfo } from '@/app/lib/locationApproval/definitions'
-export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: google.maps.places.PlaceResult) {
+export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo) {
     try {
         const docRef = firebaseFirestore.collection('location_approvals').doc();
         await docRef.set({
@@ -22,10 +22,10 @@ export async function invitationApproval( inviter: friendInfo, invitee: friendIn
 
         docRef.get().then(async (doc) => {
         const notificationResponse = await addNotification({
-            sender_uid: invitee.uid,
-            recipient_uid: inviter.uid,
-            sender_name: invitee.name,
-            recipient_name: inviter.name,
+            sender_uid: inviter.uid,
+            recipient_uid: invitee.uid,
+            sender_name: inviter.name,
+            recipient_name: invitee.name,
             message: `${inviter.name} sent you an invitation to meet in ${place.name}!`,
             type: NotificationType.INVITATION_REQUEST,
             isRead: false
