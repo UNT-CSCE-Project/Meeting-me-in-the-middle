@@ -5,7 +5,8 @@ import { fetchLocationApprovals } from "@/app/lib/locationApproval/data";
 import { approvalInfo } from "@/app/lib/locationApproval/definitions";
 import { UserAvatar } from "../userAvatar";
 import ApprovalStatus from "../locationapproval/status";
-import { DeleteFriend, SendRequest } from "../friends/buttons";
+import {AcceptInvitation} from "./buttons";
+import {DeclineInvitation} from "./buttons";
 export default function ApprovalList() {
   const [approvals, setApprovals] = useState<approvalInfo[]>([]);
   const [isFetching, setIsFetching] = useState(true);
@@ -20,10 +21,28 @@ export default function ApprovalList() {
       const data = await fetchLocationApprovals(userData?.uid);
       console.log(data);
       setApprovals(data);
+      console.log(data);
       setIsFetching(false);
     }
     fetchData();
   }, [userData, setIsFetching, setApprovals, fetchLocationApprovals]);
+  const changeAfterAccept = (item: approvalInfo) => {
+    const updatedApprovals = approvals.map((approval) => {
+      if (approval.id === item.id) {
+        return { ...approval, status: "accepted" };
+      }
+      return approval;
+    });
+    setApprovals(updatedApprovals);
+    setIsFetching(false);
+  };
+  const filterAfterDecline = (item: approvalInfo) => {
+    const updatedApprovals = approvals.filter(
+      (approval) => approval.id !== item.id
+    );
+    setApprovals(updatedApprovals);
+    setIsFetching(false);
+  };
   return (
     <div className="mt-6 flow-root flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">
       <div className="inline-block min-w-full align-middle">
@@ -31,8 +50,9 @@ export default function ApprovalList() {
           {approvals.length === 0 && !isFetching ? (
             <div className="w-full text-center">No invitation found</div>
           ) : (
+            !isFetching &&
             <table className="hidden min-w-full text-gray-900 md:table">
-              <thead className="rounded-lg text-left text-sm font-normal">
+              <thead className="rounded-lg text-left text-sm font-normal text-center">
                 <tr>
                   <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                     Name
@@ -46,9 +66,9 @@ export default function ApprovalList() {
                   <th scope="col" className="px-3 py-5 font-medium">
                     Status
                   </th>
-                  {/* <th scope="col" className="relative py-3 pl-6 pr-3 ">
-                        Edit
-                      </th> */}
+                  <th scope="col" className="px-3 py-5 font-medium">
+                    Edit
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -91,21 +111,17 @@ export default function ApprovalList() {
                     </td>
 
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                          {item.status === 'pending' || item.status === 'connected' ? (
-                        <div className="flex justify-start gap-3">
-                            {item.inviter.uid !== null && (
-                              <DeleteFriend request_id={item.inviter.uid} onDelete={() => setIsFetching(true)}/>
-                            )}
-                            </div>
-                        ) : (
-                        <div className="flex justify-start gap-3">
-                          {
-                            item !== null && (
-                            <SendRequest request={item} onSendRequest={() => setIsFetching(true)}/>                          
-                            )
-                          }
-  
-                        </div>
+                        {item.status === 'pending' ? (
+                          <div>
+                              <AcceptInvitation item_id={item.id} onAccept={() => changeAfterAccept(item)}/>
+                              <DeclineInvitation item_id={item.id} onDecline={() => filterAfterDecline(item)}/>                          
+                          </div>
+                          
+                        ) : ( 
+                          item.status === 'accepted' ? (
+                            <DeclineInvitation item_id={item.id} onDecline={() => filterAfterDecline(item)} />                          
+                          ) : null
+                    
                   )}
                         </td>
                   </tr>

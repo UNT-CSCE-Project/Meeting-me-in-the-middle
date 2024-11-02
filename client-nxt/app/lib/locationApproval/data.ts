@@ -7,12 +7,13 @@ export async function fetchLocationApprovals(uid: string) {
        // console.log('id:', id);
        if(uid == undefined || uid == null) {
         console.log("uid ", uid);
-        return 0
+        return []
       }
         const locationApprovalSnapshot = await firebaseFirestore.collection('location_approvals')
 
         .where('is_deleted', '==', false)
         .where('invitee.uid', '==', uid)
+        .where('status', '==', 'pending' || 'accepted')
         .get();
         return locationApprovalSnapshot.docs
         .map((doc) => ({

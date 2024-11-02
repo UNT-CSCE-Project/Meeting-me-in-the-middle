@@ -46,3 +46,16 @@ export async function invitationApproval( inviter: friendInfo, invitee: friendIn
 }
 
 
+export async function updateStatus(id: string, status: string) {
+    try {
+        const docRef = firebaseFirestore.collection('location_approvals').doc(id);
+        await docRef.update({
+            status: status,
+            updated_at: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        return { status: 200, message: 'Status updated successfully.' };
+    } catch (error) {
+        console.error("Error updating status:", error);
+        return { status: 500, message: 'Firestore Error: Failed to update status.' };
+    }
+}
