@@ -1,6 +1,9 @@
 import { GeocodeResponse } from "../lib/location/definitions";
-export const getAddress = async (latitude: number, longitude: number): Promise<string> => {
+export const getAddress = async (latitude: number, longitude: number):  Promise<string> => {
     try {
+      if(!latitude || !longitude) {
+        return "";
+      }
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
       );

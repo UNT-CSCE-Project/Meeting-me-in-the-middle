@@ -7,6 +7,7 @@ export interface placeInfo {
     place_id: string;
     place_type: string[];
     rating: number;
+    address: string;
 }
 
 export type approvalInfo = {
