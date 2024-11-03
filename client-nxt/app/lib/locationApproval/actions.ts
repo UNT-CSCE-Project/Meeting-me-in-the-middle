@@ -5,7 +5,7 @@ import { addNotification } from '../notifications/actions';
 import { NotificationType } from '../notifications/definitions';
 import * as admin  from "firebase-admin";
 import { placeInfo } from '@/app/lib/locationApproval/definitions'
-export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo) {
+export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string ) {
     try {
         const docRef = firebaseFirestore.collection('location_approvals').doc();
         await docRef.set({
@@ -16,6 +16,17 @@ export async function invitationApproval( inviter: friendInfo, invitee: friendIn
             request_send_time: admin.firestore.FieldValue.serverTimestamp(),
             is_deleted: false,
             updated_at: admin.firestore.FieldValue.serverTimestamp(),
+            meetingTime: new Date(meetingTime || Date.now()).toLocaleString("en-US", {
+                timeZone: "America/Chicago", // UTC-6 (Central Time)
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: true,
+              })
+            ,
         });
 
         // add notification
@@ -26,7 +37,8 @@ export async function invitationApproval( inviter: friendInfo, invitee: friendIn
             recipient_uid: invitee.uid,
             sender_name: inviter.name,
             recipient_name: invitee.name,
-            message: `${inviter.name} sent you an invitation to meet in ${place.name}!`,
+            meetingTime: doc.data()?.meetingTime,
+            message: `${inviter.name} sent you an invitation to meet in ${place.name} at ${doc.data()?.meetingTime}!`,
             type: NotificationType.INVITATION_REQUEST,
             isRead: false
         } as any)
@@ -61,7 +73,7 @@ export async function updateStatus(id: string, status: string) {
                 recipient_uid: doc.data()?.inviter.uid,
                 sender_name: doc.data()?.invitee.name,
                 recipient_name: doc.data()?.inviter.name,
-                message: `Your invitation to meet in ${doc.data()?.place.name} has been ${status}.`,
+                message: `Your invitation to meet in ${doc.data()?.place.name} at ${doc.data()?.meetingTime} has been ${status}.`,
                 type: NotificationType.INVITATION_RESPONSE,
                 isRead: false
             } as any) 

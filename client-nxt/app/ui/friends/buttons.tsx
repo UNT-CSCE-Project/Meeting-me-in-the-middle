@@ -232,10 +232,12 @@ export function InviteFriend({
   inviter,
   invitee,
   place,
+  meetingTime
 }: {
   inviter: friendInfo;
   invitee: friendInfo;
   place:  google.maps.places.PlaceResult;
+  meetingTime: string  
 }) {
   const [invitationSent, setInvitationSent] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -251,7 +253,8 @@ export function InviteFriend({
         lng: place.geometry?.location?.lng() || 0,
         rating: place.rating || 0,
         place_type: place.types || [],
-      } as placeInfo) as any;
+      } as placeInfo,
+      meetingTime) as any;
       console.log(response);
       if (response.status === 200) {
         setInvitationSent(true);

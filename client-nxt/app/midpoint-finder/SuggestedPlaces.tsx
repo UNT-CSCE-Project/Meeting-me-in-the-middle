@@ -29,6 +29,7 @@ export function SuggestedPlaces() {
     setTripDuration,
     error,
     setError,
+    meetingTime
   } = useSharedStateDestructured();
 
   const { handlePlaceSelect, updatePlaces, updatePrice } = usePlaceOperations();
@@ -275,7 +276,7 @@ export function SuggestedPlaces() {
                 Reviews
                 { 
                   userInfo && friendInfo && selectedPlace &&
-                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } />
+                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } meetingTime = {meetingTime}/>
                 }
                 </h2>
                 <div

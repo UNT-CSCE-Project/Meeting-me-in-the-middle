@@ -20,4 +20,5 @@ export type approvalInfo = {
     request_send_time : Date | admin.firestore.FieldValue,
     is_deleted : boolean
     updated_at : Date | admin.firestore.FieldValue,
+    meetingTime : string
 }
