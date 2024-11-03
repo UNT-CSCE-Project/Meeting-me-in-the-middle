@@ -5,7 +5,7 @@ import { addNotification } from '../notifications/actions';
 import { NotificationType } from '../notifications/definitions';
 import * as admin  from "firebase-admin";
 import { placeInfo } from '@/app/lib/locationApproval/definitions'
-export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string ) {
+export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string | null) {
     try {
         const docRef = firebaseFirestore.collection('location_approvals').doc();
         await docRef.set({

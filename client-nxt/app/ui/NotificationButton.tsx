@@ -20,6 +20,10 @@ export default function NotificationButton() {
     }
   }, [userData]);
 
+  const decrementNotificationCount = () => {
+    setNotificationCount((prevCount) => Math.max(prevCount - 1, 0));
+  };
+
   return (
     <button onClick={() => setShowNotifications(!showNotifications)}>
       <div className="relative flex ml-4 items-center justify-center h-10 w-10 bg-gray-200 rounded-full">
@@ -31,7 +35,7 @@ export default function NotificationButton() {
       {showNotifications && (
         <div className="absolute top-14 mt-3 w-1/3 right-4 bg-white p-4 border border-gray-200 rounded" style={{ zIndex: 1000 }}>
           <h2 className="text-lg font-bold mb-2">Notifications</h2>
-          <Notifications />
+          <Notifications decrementNotificationCount={decrementNotificationCount} />
         </div>
       )}
     </button>
