@@ -57,12 +57,12 @@ export async function updateStatus(id: string, status: string) {
         // add notification
         await docRef.get().then(async (doc) => {
             const notificationResponse = await addNotification({
-                sender_uid: doc.data()?.inviter.uid,
-                recipient_uid: doc.data()?.invitee.uid,
-                sender_name: doc.data()?.inviter.name,
-                recipient_name: doc.data()?.invitee.name,
+                sender_uid: doc.data()?.invitee.uid,
+                recipient_uid: doc.data()?.inviter.uid,
+                sender_name: doc.data()?.invitee.name,
+                recipient_name: doc.data()?.inviter.name,
                 message: `Your invitation to meet in ${doc.data()?.place.name} has been ${status}.`,
-                type: NotificationType.INVITATION_REQUEST,
+                type: NotificationType.INVITATION_RESPONSE,
                 isRead: false
             } as any) 
 

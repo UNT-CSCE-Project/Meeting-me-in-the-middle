@@ -34,22 +34,20 @@ export function CardsSkeleton() {
 }
 
 export function ProfileInfoSkeleton() {
-
-
   return (
-    <div className={`${shimmer}`}>
-      <div className="relative flex ml-4 items-center justify-center h-10 w-10 bg-gray-200 rounded-full">
+    <div className="animate-pulse">
+      <div className="relative flex flex ml-4 items-center justify-center h-10 w-10 bg-gray-200 rounded-full">
         <BellIcon className="h-6 w-6 text-gray-500 cursor-pointer hover:text-gray-900" />
-        <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">0</span>
+        <span className="relative top-0 right-0 h-3 w-3 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">0</span>
         <div className="object-cover sb-avatar sb-avatar--text" style={{ display: 'inline-block', verticalAlign: 'middle', width: '50px', height: '50px', borderRadius: '100%', fontFamily: 'Helvetica, Arial, sans-serif' }}>
-          <div className="object-cover sb-avatar__text" title="Avijeet Shil" style={{ width: '50px', height: '50px', lineHeight: 'initial', textAlign: 'center', color: 'rgb(255, 255, 255)', borderRadius: '100%', background: 'rgb(126, 55, 148)' }}>
+          <div className="object-cover sb-avatar__text" title="Avijeet Shil" style={{ width: '50px', height: '50px', lineHeight: 'initial', textAlign: 'center', color: 'rgb(255, 255, 255)', borderRadius: '100%', background: 'linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%)', backgroundSize: '200px 100%', animation: 'loading 1.5s infinite' }}>
             <div style={{ display: 'table', tableLayout: 'fixed', width: '100%', height: '100%', fontSize: '16.6667px' }}>
               <span style={{ display: 'table-cell', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                <span> </span>
+                <span> ADADASD ASDASD ADAS</span>
               </span>
             </div>
           </div>
-        </div>      
+        </div>
         <button
                 type="button"
                
@@ -58,28 +56,27 @@ export function ProfileInfoSkeleton() {
                 <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
               </button>        
       </div>
-     
-      {/* <UserAvatar firstName={"John"} lastName={"Doe"} />
-        <p className={`mt-2 mr-4 text-white`}>{"John Doe"}</p> */}
-      </div>
+    </div>
   );
 }
 
 export function SearchSkeleton() {
   return (
-    <div className={`${shimmer}`}>
-      <div className="relative flex flex-1 flex-shrink-0">
-          <label htmlFor="search" className="sr-only">
-            Search
-          </label>
-          <input
-            id="search"
-            className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-            placeholder="Search for friends" // Directly pass the value
-          />
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-        </div>
+<>
+  <div className={`${shimmer} relative w-2/3 flex flex-1 flex-shrink-0  `}>
+      <label htmlFor="search" className="sr-only">
+        Search
+      </label>
+      <input
+        id="search"
+        className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+         // Directly pass the value
+      />
+      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
     </div>
+    <ProfileInfoSkeleton />
+  
+</>
     
   );
 }

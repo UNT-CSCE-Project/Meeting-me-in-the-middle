@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { NotificationData } from './definitions';
 import { db as firebaseFirestore  } from '@/app/lib/firebaseAdmin.js';
 import * as admin  from "firebase-admin";
+import { faY } from '@fortawesome/free-solid-svg-icons';
 const notificationSchema = z.object({
   type: z.string(),
   sender_uid: z.string(),
@@ -39,4 +40,21 @@ export async function addNotification(formData: NotificationData) {
       message: 'Firestore Error: Failed to send notification.',
     };
   }
+}
+
+export async function updateNotificationStatus(id: string, status: boolean) {
+  try {
+    const docRef = firebaseFirestore.collection('notifications').doc(id);
+    if((await docRef.get()).data()?.is_read === true) {
+      return { status: 200, message: 'Status updated successfully.' };
+    }
+    await docRef.update({
+      is_read: status,
+    });
+    return { status: 200, message: 'Status updated successfully.' };
+  } catch (error) {
+    console.error("Error updating status:", error);
+    return { status: 500, message: 'Firestore Error: Failed to update status.' };
+  }
+  
 }

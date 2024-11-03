@@ -273,7 +273,7 @@ export function InviteFriend({
       }`}
       disabled={isPending}
     >
-      {invitationSent ? "Invitation Sent" : "Invite"}
+      {invitationSent ? `Invitation Sent to ${invitee.name}` :   `Invite ${invitee.name}`}
 
     </button>
   );
