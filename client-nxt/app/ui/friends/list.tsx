@@ -127,6 +127,7 @@ export default function FriendsList() {
           items={currentList}
           onRemoveFriend={handleRemoveFriend}
           isRemoving={isRemoving}
+          isLoading={isLoading}
         />
       </Suspense>
     </div>
