@@ -219,10 +219,10 @@ function MidpointFinderInner() {
               {isFetching ? (
                 <tr>
                   <td colSpan={3} className="text-center">
-                  Loading..
+                    Loading..
                   </td>
                 </tr>
-              ) : (
+              ) : friends.length > 0 ? (
                 friends.map((friend: friendInfo) => (
                   <tr key={friend.uid}>
                     <td className="p-2">{friend.name}</td>
@@ -236,7 +236,11 @@ function MidpointFinderInner() {
                       </button>
                     </td>
                   </tr>
-                ))    
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="text-center p-4">No friends</td>
+                </tr>
               )}
             </tbody>
           </table>

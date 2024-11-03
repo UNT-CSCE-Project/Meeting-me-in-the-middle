@@ -276,7 +276,7 @@ export function SuggestedPlaces() {
                 Reviews
                 { 
                   userInfo && friendInfo && selectedPlace &&
-                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } meetingTime = {meetingTime}/>
+                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } meetingTime = {meetingTime }/>
                 }
                 </h2>
                 <div
