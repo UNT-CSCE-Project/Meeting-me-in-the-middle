@@ -5,7 +5,7 @@ import { addNotification } from '../notifications/actions';
 import { NotificationType } from '../notifications/definitions';
 import * as admin  from "firebase-admin";
 import { placeInfo } from '@/app/lib/locationApproval/definitions'
-export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string | null) {
+export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string | number | readonly string[] | undefined) {
     try {
         const docRef = firebaseFirestore.collection('location_approvals').doc();
         await docRef.set({
@@ -16,16 +16,25 @@ export async function invitationApproval( inviter: friendInfo, invitee: friendIn
             request_send_time: admin.firestore.FieldValue.serverTimestamp(),
             is_deleted: false,
             updated_at: admin.firestore.FieldValue.serverTimestamp(),
-            meetingTime: new Date(meetingTime || Date.now()).toLocaleString("en-US", {
-                timeZone: "America/Chicago", // UTC-6 (Central Time)
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-                hour12: true,
-              })
+            meetingTime: meetingTime !== undefined ? new Date(meetingTime instanceof Date ? meetingTime : meetingTime.toString()).toLocaleString("en-US", {
+              timeZone: "America/Chicago", // UTC-6 (Central Time)
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              second: "numeric",
+              hour12: true,
+            }) : new Date(Date.now()).toLocaleString("en-US", {
+              timeZone: "America/Chicago", // UTC-6 (Central Time)
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              second: "numeric",
+              hour12: true,
+            })
             ,
         });
 

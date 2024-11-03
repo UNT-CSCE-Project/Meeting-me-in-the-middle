@@ -237,7 +237,7 @@ export function InviteFriend({
   inviter: friendInfo;
   invitee: friendInfo;
   place:  google.maps.places.PlaceResult;
-  meetingTime: string  | null
+  meetingTime: string | number | readonly string[] | undefined
 }) {
   const [invitationSent, setInvitationSent] = useState(false);
   const [isPending, setIsPending] = useState(false);

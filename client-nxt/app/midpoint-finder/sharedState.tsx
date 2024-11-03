@@ -6,7 +6,7 @@ import { acceptEncoding } from "@googlemaps/google-maps-services-js";
 interface SharedState {
   originLocation: string;
   destinationLocation: string;
-  meetingTime: string | null;
+  meetingTime: string | number | readonly string[] | undefined;
   midpoint: google.maps.LatLng | null;
   nearestCity: string | null;
   places: google.maps.places.PlaceResult[];
