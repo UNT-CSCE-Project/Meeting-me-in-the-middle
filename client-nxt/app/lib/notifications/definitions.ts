@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export enum NotificationType {
     FRIEND_REQUEST = 'friend_request',
     INVITATION_REQUEST = 'invitation_request',
@@ -6,6 +8,7 @@ export enum NotificationType {
   }
 
 export type NotificationData = {
+  id: string;
   type: string;
   sender_uid: string;
   sender_name: string;

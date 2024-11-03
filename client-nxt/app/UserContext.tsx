@@ -40,7 +40,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [router, pathname]);
 
   const signOutUser = async () => {
     try {

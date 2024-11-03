@@ -17,17 +17,21 @@ import { ProfileInfoSkeleton, SearchSkeleton } from "@/app/ui/skeletons";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { set } from "zod";
-const Search = React.lazy(() => import("@/app/ui/search"));
-const Notification = React.lazy(() => import("@/app/ui/Notification"));
+import { Notifications } from "./notifications/notifications";
+import Search from "@/app/ui/search";
+import NotificationButton from "@/app/ui/NotificationButton";
+
 export default function Navbar() {
   const { signOutUser, userData } = useUser();
   const pathname = usePathname();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isPending, setIsPending] = useState(true);
+  
   useEffect(() => {
-    if (userData) {
+    if (userData && userData.firstName && userData.lastName) {
       console.log(userData);
       setFirstName(userData?.firstName);
       setLastName(userData?.lastName);
@@ -38,45 +42,18 @@ export default function Navbar() {
 
   return pathname === "/login" || pathname === "/registration" ? (
     <></>
-  ) : isPending ? (
-    <div className=" bg-[#2c2c2c] px-4">
-      <div className="ml-20 mr-4 pt-4">
-        <div className="w-25 ml-8 flex items-center justify-between ">
-          <Suspense fallback={<div>Loading...</div>}>
-            <Search placeholder="Search for friends" baseUrl="/friends" />
-          </Suspense>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Notification  />
-
-            <form>
-              {/* Uncomment and implement the sign-out functionality if needed */}
-              <button type="button" className="text-white">
-                <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
-              </button>
-            </form>
-          </Suspense>
-        </div>
-      </div>
-      {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-            <Table query={query} currentPage={currentPage} />
-        </Suspense> */}
-      <div className="mt-5 flex w-full justify-center">
-        {/* <Pagination totalPages={totalPages} /> */}
-      </div>
-    </div>
   ) : (
+
     <div className=" bg-[#2c2c2c] px-4">
       <div className="ml-20 mr-4 pt-4">
-        <div className="w-25 ml-8 flex items-center justify-between ">
+        <div className="w-25 ml-8 flex items-center justify-between ab">
           <Suspense fallback={<SearchSkeleton/>}>
             <Search placeholder="Search for friends" baseUrl="/friends" />
-          </Suspense>
-          <Suspense fallback={<ProfileInfoSkeleton/>}>
-            <Notification  />
+        
+            <NotificationButton />
 
             <ProfileInfo firstName={firstName} lastName={lastName} />
-            <form>
-              {/* Uncomment and implement the sign-out functionality if needed */}
+           
               <button
                 type="button"
                 onClick={signOutUser}
@@ -84,7 +61,7 @@ export default function Navbar() {
               >
                 <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
               </button>
-            </form>
+
           </Suspense>
         </div>
       </div>
