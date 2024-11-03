@@ -17,28 +17,35 @@ export default function ApprovalList() {
     setIsFetching(true);
 
     async function fetchData() {
-      if (!userData) {
-        return;
+      if (userData && userData.uid) {
+        const data = await fetchLocationApprovals(userData?.uid);
+        const resolvedData = await Promise.all(data.map(async (item) => ({
+          ...item,
+          address: await item.address, // Resolve the promise here
+        })));
+
+        setApprovals(resolvedData);
+        setIsFetching(false);
       }
-      const data = await fetchLocationApprovals(userData?.uid);
-      setApprovals(data);
-      setIsFetching(false);
     }
     fetchData();
   }, [userData]);
 
   // Sorting function based on sortConfig
   const sortedApprovals = [...approvals].sort((a, b) => {
-    if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === "ascending" ? -1 : 1;
-    }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === "ascending" ? 1 : -1;
+    const key = sortConfig.key as keyof approvalInfo;
+    if (a[key] !== null && b[key] !== null) {
+      if (a[key] < b[key]) {
+        return sortConfig.direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return sortConfig.direction === "ascending" ? 1 : -1;
+      }
     }
     return 0;
   });
 
-  const requestSort = (key) => {
+  const requestSort = (key: keyof approvalInfo ) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
@@ -46,7 +53,7 @@ export default function ApprovalList() {
     setSortConfig({ key, direction });
   };
 
-  const changeAfterAccept = (item) => {
+  const changeAfterAccept = (item : approvalInfo) => {
     const updatedApprovals = approvals.map((approval) => {
       if (approval.id === item.id) {
         return { ...approval, status: "accepted" };
@@ -56,7 +63,7 @@ export default function ApprovalList() {
     setApprovals(updatedApprovals);
   };
 
-  const filterAfterDecline = (item) => {
+  const filterAfterDecline = (item : approvalInfo) => {
     const updatedApprovals = approvals.filter((approval) => approval.id !== item.id);
     setApprovals(updatedApprovals);
   };
@@ -75,14 +82,14 @@ export default function ApprovalList() {
                     <th
                       scope="col"
                       className="px-4 py-5 font-medium sm:pl-6 cursor-pointer"
-                      onClick={() => requestSort("inviter.name")}
+                      onClick={() => requestSort("inviter.name" as keyof approvalInfo)}
                     >
                       Name {sortConfig.key === "inviter.name" && (sortConfig.direction === "ascending" ? "▲" : "▼")}
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-5 font-medium cursor-pointer"
-                      onClick={() => requestSort("place.name")}
+                      onClick={() => requestSort("place.name" as keyof approvalInfo)}
                     >
                       Place {sortConfig.key === "place.name" && (sortConfig.direction === "ascending" ? "▲" : "▼")}
                     </th>

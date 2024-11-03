@@ -36,6 +36,7 @@ export async function getNotifications(uid: string) {
    // Query Firestore to get documents where status is 'pending'
     const notificationsSnapshot = await db.collection('notifications')
       .where('recipient_uid', '==', uid?.toString())
+      .orderBy('timestamp', 'desc')
       .get();
 
       
