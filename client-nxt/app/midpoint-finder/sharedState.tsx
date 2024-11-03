@@ -6,6 +6,7 @@ import { acceptEncoding } from "@googlemaps/google-maps-services-js";
 interface SharedState {
   originLocation: string;
   destinationLocation: string;
+  meetingTime: string | null;
   midpoint: google.maps.LatLng | null;
   nearestCity: string | null;
   places: google.maps.places.PlaceResult[];
@@ -36,6 +37,7 @@ interface SharedState {
   tripDuration: string | null;
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
+  setMeetingTime: (meetingTime: string  ) => void;
   setMidpoint: (midpoint: google.maps.LatLng | null) => void;
   setNearestCity: (nearestCity: string | null) => void;
   setPlaces: (places: google.maps.places.PlaceResult[]) => void;
@@ -75,6 +77,7 @@ const SharedStateContext = createContext<SharedState | null>(null);
 const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [originLocation, setOriginLocation] = useState("");
   const [destinationLocation, setDestinationLocation] = useState("");
+  const [meetingTime, setMeetingTime] = useState<string>('');
   const [midpoint, setMidpoint] = useState<google.maps.LatLng | null>(null);
   const [nearestCity, setNearestCity] = useState<string | null>(null);
   const [places, setPlaces] = useState<google.maps.places.PlaceResult[]>([]);
@@ -116,6 +119,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       setOriginLocation,
       destinationLocation,
       setDestinationLocation,
+      meetingTime, 
+      setMeetingTime,
       midpoint,
       setMidpoint,
       nearestCity,
@@ -153,6 +158,7 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       map,
       originLocation,
       destinationLocation,
+      meetingTime,
       midpoint,
       nearestCity,
       places,
@@ -194,6 +200,8 @@ const useSharedStateDestructured = () => {
     setSelectedPlace: sharedState.setSelectedPlace,
     destinationLocation: sharedState.destinationLocation,
     setDestinationLocation: sharedState.setDestinationLocation,
+    meetingTime: sharedState.meetingTime,
+    setMeetingTime: sharedState.setMeetingTime,
     newDirections: sharedState.newDirections,
     setNewDirections: sharedState.setNewDirections,
     distanceInMiles: sharedState.distanceInMiles,

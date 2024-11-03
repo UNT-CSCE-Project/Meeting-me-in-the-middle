@@ -29,6 +29,8 @@ function MidpointFinderInner() {
     setOriginLocation,
     destinationLocation,
     setDestinationLocation,
+    meetingTime,
+    setMeetingTime,
     error,
     setError,
     places,
@@ -48,6 +50,7 @@ function MidpointFinderInner() {
   const [isFetching, setIsFetching] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isWheelChairAccessible, setIsWheelChairAccessible] = useState(false);
+
   const fetchFriends = async () => {
     setIsFetching(true);
     if (userData) {
@@ -164,7 +167,16 @@ function MidpointFinderInner() {
             placeholder="Enter destination location"
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-
+          <div className="flex items-center justify-between">
+            <label htmlFor="meeting-time" className="block text-lg font-medium text-gray-700">Meeting Time:</label>
+            <input
+              id="meeting-time"
+              type="datetime-local"
+              value={meetingTime}
+              onChange={(e) => setMeetingTime(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <button
             onClick={calculateMidpoint}
             className="mt-4 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -207,10 +219,10 @@ function MidpointFinderInner() {
               {isFetching ? (
                 <tr>
                   <td colSpan={3} className="text-center">
-                  Loading..
+                    Loading..
                   </td>
                 </tr>
-              ) : (
+              ) : friends.length > 0 ? (
                 friends.map((friend: friendInfo) => (
                   <tr key={friend.uid}>
                     <td className="p-2">{friend.name}</td>
@@ -224,7 +236,11 @@ function MidpointFinderInner() {
                       </button>
                     </td>
                   </tr>
-                ))    
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="text-center p-4">No friends</td>
+                </tr>
               )}
             </tbody>
           </table>

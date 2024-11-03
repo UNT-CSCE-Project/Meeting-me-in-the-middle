@@ -9,11 +9,10 @@ export async function fetchLocationApprovals(uid: string) {
         console.log("uid ", uid);
         return []
       }
-        const locationApprovalSnapshot = await firebaseFirestore.collection('location_approvals')
-
+      const locationApprovalSnapshot = await firebaseFirestore.collection('location_approvals')
         .where('is_deleted', '==', false)
         .where('invitee.uid', '==', uid)
-        .where('status', '==', 'pending' || 'accepted')
+        .where('status', 'in', ['pending', 'accepted'])
         .get();
         return locationApprovalSnapshot.docs
         .map((doc) => ({
@@ -24,6 +23,7 @@ export async function fetchLocationApprovals(uid: string) {
             address: getAddress(doc.data().place.lat, doc.data().place.lng),
             status: doc.data().status,
             request_send_time: doc.data().request_send_time.toDate().toISOString(),
+            meetingTime: doc.data().meetingTime,
             is_deleted: doc.data().is_deleted,
             updated_at: doc.data().updated_at.toDate().toISOString(),
           }));
