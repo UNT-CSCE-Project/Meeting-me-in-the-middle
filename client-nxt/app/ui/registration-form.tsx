@@ -99,25 +99,29 @@ export default function RegistrationForm() {
                         setErrorMessage(response.message);
                         await deleteUser(user);
                         return;
-                    } 
-                }
-                setSuccessMessage('Registration successful, redirecting to login...');
-                setTimeout(() => {
-
-                    router.push('/login');
-                }, 3000)
-
-                setErrorMessage('')
-                setEmail('')
-                setPassword('')
-                setConfirmPassword('')
-                setfirstName('')
-                setlastName('')
-                setphoneNumber('')
-                setStreetAddress('')
-                setCity('')
-                setState('')
-                setZipCode('')
+                    }  else {
+                      setSuccessMessage('Registration successful, redirecting to login...');
+                      setTimeout(() => {
+      
+                          router.push('/login');
+                      }, 3000)
+      
+                      setErrorMessage('')
+                      setEmail('')
+                      setPassword('')
+                      setConfirmPassword('')
+                      setfirstName('')
+                      setlastName('')
+                      setphoneNumber('')
+                      setStreetAddress('')
+                      setCity('')
+                      setState('')
+                      setZipCode('')
+                    }
+                } else {
+                  setErrorMessage('Registration failed, please try again');
+                } 
+              
       } catch (error) {
             console.error('An error occurred:', error.message);
             setErrorMessage(error?.message);
