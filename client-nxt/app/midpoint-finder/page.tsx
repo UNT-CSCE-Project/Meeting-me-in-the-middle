@@ -12,7 +12,8 @@ import { getFriends } from "../lib/friends/data";
 import { useUser } from "../UserContext";
 import { friendInfo } from "../lib/friends/definitions";
 import { set } from "zod";
-
+import { useLoadScript } from "@react-google-maps/api";
+import { useRef } from "react";
 
 export default function MidpointFinder() {
   return (
@@ -50,7 +51,7 @@ function MidpointFinderInner() {
   const [isFetching, setIsFetching] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isWheelChairAccessible, setIsWheelChairAccessible] = useState(false);
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const fetchFriends = async () => {
     setIsFetching(true);
     if (userData) {
@@ -97,14 +98,6 @@ function MidpointFinderInner() {
     }
   };
 
-  const handleLocationClick = () => {
-    setOriginLocation("Loading...");
-    navigator.geolocation.getCurrentPosition((position: Position) => {
-      const { latitude, longitude } = position.coords;
-      getAddress(latitude, longitude);
-    });
-  };
-
 
   const fetchFriendLocation = (friend: friendInfo) => {
     setDestinationLocation(friend.location); // Set the destination location to friend's location
@@ -114,7 +107,7 @@ function MidpointFinderInner() {
   };
   useEffect(() => {
     if(userData) {
-      if (userData.uid) {
+      if (userData.uid && userData.firstName && userData.lastName && userData.streetAddress && userData.city && userData.state && userData.zipCode) {
         setUserInfo({
           uid: userData.uid,
           name: `${userData.firstName} ${userData.lastName}`,
@@ -125,6 +118,35 @@ function MidpointFinderInner() {
       setOriginLocation(userData.streetAddress+", "+userData.city+", "+userData.state+", "+userData.zipCode);
     }
   }, [userData]);
+  
+
+  const handleLocationClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+      setOriginLocation("");
+    }
+  };
+  const handlePinClick = () => {
+    setOriginLocation("Loading...");
+    navigator.geolocation.getCurrentPosition((position: Position) => {
+      const { latitude, longitude } = position.coords;
+      getAddress(latitude, longitude);
+    });
+  };
+  const handlePlaceSelect = () => {
+    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current!, {
+      types: ["geocode"], // Restrict results to addresses
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      console.log(place);
+      if (place.formatted_address) {
+        setOriginLocation(place.formatted_address);
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">
       <div className="w-full lg:w-1/2 flex flex-col gap-6 p-6 bg-white shadow-lg rounded-lg"> 
@@ -132,16 +154,18 @@ function MidpointFinderInner() {
           <div className="flex items-center gap-2">
             <label htmlFor="origin-location" className="block text-lg font-medium text-gray-700">Your Location:</label>
             <MapPinIcon
-              onClick={handleLocationClick}
+              onClick={handlePinClick}
               className="h-6 w-6 text-blue-500 hover:text-red-500 cursor-pointer"
             />
             
           </div>
           <input
+            ref={inputRef}
             id="origin-location"
             type="text"
             value={originLocation}
             onChange={(e) => setOriginLocation(e.target.value)}
+            onFocus={handlePlaceSelect} // Initialize autocomplete when focused
             placeholder="Enter origin location"
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

@@ -126,6 +126,7 @@ const useDirections = () => {
       setError,
       originLocation,
       destinationLocation,
+      meetingTime,
       setAccessibilityFilter,
       setPlaceTypeFilters,
       setPriceLevelFilters,
@@ -141,7 +142,7 @@ const useDirections = () => {
     setPriceLevelFilters({ "0": false, "1": false, "2": false, "3": false, "4": false });
     const directionsService = new google.maps.DirectionsService();
 
-    if (originLocation && destinationLocation) {
+    if (originLocation && destinationLocation && meetingTime!="") {
       const request = {
         origin: originLocation,
         destination: destinationLocation,
@@ -151,8 +152,13 @@ const useDirections = () => {
         directionsCallback(result, status)
       );
     } else {
-      console.error("Origin or destination location is null");
-      setError("Origin or destination location is null");
+      if(!originLocation) {
+        setError("Please select an origin location.");
+      } else if(!destinationLocation) {
+        setError("Please select a destination location.");
+      } else if(!meetingTime) {
+        setError("Please select a meeting time.");
+      }
     }
   }, [
     sharedState,
