@@ -14,15 +14,23 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, setIsPending] = useState(false); // Track pending state
-
+  const [isError, setIsError] = useState(false);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
     setIsPending(true);
+    
     setErrorMessage(''); // Reset previous errors
 
     try {
-      
-          const result = await emailSignIn(email, password) as any;
+      if(email ===''){
+        setIsError(true);
+        
+      } else if(password ===''){
+        setIsError(true);
+        
+      } else{
+        setIsError(false);
+        const result = await emailSignIn(email, password) as any;
           console.log(result);
           if (result?.error) {
             setIsPending(false);
@@ -48,6 +56,8 @@ export default function LoginForm() {
             router.push('/midpoint-finder');
          }
          setIsPending(false);
+      }
+          
 
               // Store the user information in local storage
   //            localStorage.setItem('user', JSON.stringify(userData));
@@ -71,23 +81,23 @@ export default function LoginForm() {
         <div className="flex-grow p-6 md:p-12 flex flex-col justify-center items-center">
           <div>
             <h1 className="text-2xl font-bold mb-4">Sign in to Meet Me in the Middle</h1>
+            <label htmlFor="email" className={`${email === '' && isError ? 'text-red-500' : ''} block mb-2`}>Email Address</label>
             <input
               type="email"
               id="email"
               name="email"
               placeholder="Enter your email address"
-              required
-              className="border rounded p-2 mb-4 w-full"
+              className=  {`border rounded p-2 mb-4 w-full ${email === '' && isError ? 'border-red-500' : ''}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)} // Update email state
             />
+            <label htmlFor="password" className={`${password === '' && isError ? 'text-red-500' : ''} block mb-2`}>Password</label>
             <input
               type="password"
               name='password'
               id="password"
               placeholder="Enter your password"
-              required
-              className="border rounded p-2 mb-4 w-full"
+              className=  {`border rounded p-2 mb-4 w-full ${password === '' && isError ? 'border-red-500' : ''}`}
               value={password}
               onChange={(e) => setPassword(e.target.value)} // Update password state
             />
