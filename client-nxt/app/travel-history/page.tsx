@@ -1,5 +1,5 @@
-import Error from "../ui/error";
 
-export default async function friends() {
-    return <Error />;
+import { TravelHistory } from "../ui/travel-history/TravelHistory";
+export default async function travelHistory() {
+    return <TravelHistory/>
 }
