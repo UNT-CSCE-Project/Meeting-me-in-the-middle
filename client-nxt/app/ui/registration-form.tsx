@@ -107,8 +107,8 @@ export default function RegistrationForm() {
                 } 
                 
       } catch (error) {
-            console.error('An error occurred:', error?.message || error);
-            setErrorMessage(error?.message || 'An error occurred');
+            console.error('An error occurred:', error as Error);
+            setErrorMessage(error as string  || 'An error occurred');
 
         }
     }

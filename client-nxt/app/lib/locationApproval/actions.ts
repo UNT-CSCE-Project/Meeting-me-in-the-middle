@@ -5,6 +5,7 @@ import { addNotification } from '../notifications/actions';
 import { NotificationType } from '../notifications/definitions';
 import * as admin  from "firebase-admin";
 import { placeInfo } from '@/app/lib/locationApproval/definitions'
+import { getAddress } from '@/app/utils/utils';
 export async function invitationApproval( inviter: friendInfo, invitee: friendInfo, place: placeInfo, meetingTime: string | number | readonly string[] | undefined) {
     try {
         const docRef = firebaseFirestore.collection('location_approvals').doc();
@@ -75,6 +76,22 @@ export async function updateStatus(id: string, status: string) {
             updated_at: admin.firestore.FieldValue.serverTimestamp(),
         });
 
+        if (status === 'accepted') {
+            /* add to travel history */
+            await docRef.get().then(async (doc) => {
+                const travelHistoryDocRef = firebaseFirestore.collection('travel_history').doc();
+                await travelHistoryDocRef.set({
+                    inviter: doc.data()?.inviter,
+                    invitee: doc.data()?.invitee,
+                    place: doc.data()?.place,
+                    address: await getAddress(doc.data()?.place.lat, doc.data()?.place.lng),
+                    is_traveled: false,
+                    is_deleted: false,
+                    updated_at: admin.firestore.FieldValue.serverTimestamp(),
+                    meetingTime: doc.data()?.meetingTime
+                });
+            })
+        }
         // add notification
         await docRef.get().then(async (doc) => {
             const notificationResponse = await addNotification({

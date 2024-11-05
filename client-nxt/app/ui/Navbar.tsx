@@ -28,14 +28,15 @@ export default function Navbar() {
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [ email, setEmail ] = useState("");
   const [isPending, setIsPending] = useState(true);
   
   useEffect(() => {
-    if (userData && userData.firstName && userData.lastName) {
+    if (userData && userData.firstName && userData.lastName && userData.email) {
       console.log(userData);
       setFirstName(userData?.firstName);
       setLastName(userData?.lastName);
-      
+      setEmail(userData?.email);
       setIsPending(false);
     }
   }, [userData]);
@@ -52,7 +53,7 @@ export default function Navbar() {
         
             <NotificationButton />
 
-            <ProfileInfo firstName={firstName} lastName={lastName} />
+            <ProfileInfo firstName={firstName} lastName={lastName} email={email}/>
            
               <button
                 type="button"
