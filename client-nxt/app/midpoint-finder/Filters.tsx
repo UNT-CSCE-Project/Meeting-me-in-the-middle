@@ -16,6 +16,8 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
     priceLevelFilters,
     accessibilityFilter,
     setAccessibilityFilter,
+    favoritesFilter,
+    setFavoritesFilter,
   } = useSharedStateDestructured();
 
   const [newPlaceTypeFilters, setNewPlaceTypeFilters] =
@@ -24,6 +26,7 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
     useState(priceLevelFilters);
   const [newAccessibilityFilter, setNewAccessibilityFilter] =
     useState(accessibilityFilter);
+    const [newFavoriteFilter, setNewFavoriteFilter] = useState(favoritesFilter);
 
   const applyFilters = () => {
     console.log("Applying filters...");
@@ -31,6 +34,7 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
     setPlaceTypeFilters(newPlaceTypeFilters);
     setPriceLevelFilters(newPriceLevelFilters);
     setAccessibilityFilter(newAccessibilityFilter);
+    setFavoritesFilter(newFavoriteFilter);
     updatePlaces();
     updatePrice();
     onClose();
@@ -58,6 +62,10 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
 
   const handleAccessibilityFilterChange = () => {
     setNewAccessibilityFilter(!newAccessibilityFilter);
+  };
+
+  const handleFavoriteFilterChange = () => {
+    setNewFavoriteFilter(!newFavoriteFilter);
   };
 
   return (
@@ -174,6 +182,18 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
           className="mr-2"
         />
         {newAccessibilityFilter ? "On" : "Off"}
+      </label>
+    </div>
+    <div className="w-full md:w-1/2 xl:w-1/3 p-4 bg-gray-100 rounded-md shadow-md">
+      <h2 className="text-xl font-bold mb-2">Favorites:</h2>
+      <label className="text-lg font-normal">
+        <input
+          type="checkbox"
+          checked={newFavoriteFilter}
+          onChange={handleFavoriteFilterChange}
+          className="mr-2"
+        />
+        {newFavoriteFilter ? "On" : "Off"}
       </label>
     </div>
   </div>

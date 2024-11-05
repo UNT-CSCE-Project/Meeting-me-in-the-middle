@@ -17,6 +17,8 @@ const usePlaceOperations = () => {
     placeTypeFilters,
     priceLevelFilters,
     accessibilityFilter,
+    favoritesFilter,
+    favorites,
   } = sharedState;
 
   const handlePlaceSelect = useCallback(
@@ -95,7 +97,8 @@ const usePlaceOperations = () => {
               nearestCity.formatted_address ?? "",
               placeTypeFilters,
               priceLevelFilters,
-              accessibilityFilter
+              accessibilityFilter,
+              favoritesFilter
             );
           }
         }
@@ -136,7 +139,8 @@ const usePlaceOperations = () => {
       "3": boolean;
       "4": boolean;
     },
-    accessibilityFilter: boolean
+    accessibilityFilter: boolean,
+    favoritesFilter: boolean
   ) => {
     if (map) {
       const service = new google.maps.places.PlacesService(map);
@@ -177,7 +181,15 @@ const usePlaceOperations = () => {
                         status === google.maps.places.PlacesServiceStatus.OK &&
                         results !== null
                       ) {
-                        setPlaces(results);
+                        const filteredResults = favoritesFilter
+                          ? results.filter((place) =>
+                              favorites.some(
+                                (favorite) =>
+                                  favorite.place_id === place.place_id
+                              )
+                            )
+                          : results;
+                        setPlaces(filteredResults);
                       }
                     });
                   }
@@ -199,7 +211,14 @@ const usePlaceOperations = () => {
                       status === google.maps.places.PlacesServiceStatus.OK &&
                       results !== null
                     ) {
-                      setPlaces(results);
+                      const filteredResults = favoritesFilter
+                        ? results.filter((place) =>
+                            favorites.some(
+                              (favorite) => favorite.place_id === place.place_id
+                            )
+                          )
+                        : results;
+                      setPlaces(filteredResults);
                     }
                   });
                 }
@@ -223,7 +242,14 @@ const usePlaceOperations = () => {
                       status === google.maps.places.PlacesServiceStatus.OK &&
                       results !== null
                     ) {
-                      setPlaces(results);
+                      const filteredResults = favoritesFilter
+                        ? results.filter((place) =>
+                            favorites.some(
+                              (favorite) => favorite.place_id === place.place_id
+                            )
+                          )
+                        : results;
+                      setPlaces(filteredResults);
                     }
                   });
                 }
@@ -239,7 +265,14 @@ const usePlaceOperations = () => {
                   status === google.maps.places.PlacesServiceStatus.OK &&
                   results !== null
                 ) {
-                  setPlaces(results);
+                  const filteredResults = favoritesFilter
+                    ? results.filter((place) =>
+                        favorites.some(
+                          (favorite) => favorite.place_id === place.place_id
+                        )
+                      )
+                    : results;
+                  setPlaces(filteredResults);
                 }
               });
             }
@@ -257,7 +290,8 @@ const usePlaceOperations = () => {
         nearestCity,
         placeTypeFilters,
         priceLevelFilters,
-        accessibilityFilter
+        accessibilityFilter,
+        favoritesFilter
       );
     } else {
       setPlaces([]);
@@ -270,7 +304,8 @@ const usePlaceOperations = () => {
         nearestCity,
         placeTypeFilters,
         priceLevelFilters,
-        accessibilityFilter
+        accessibilityFilter,
+        favoritesFilter
       );
     } else {
       setPlaces([]);
