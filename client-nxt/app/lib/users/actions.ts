@@ -51,7 +51,7 @@ export async function addUser(formData: FormData) {
     const issues = validatedFields.error.issues;
     const errorMessage = issues.map((issue) => issue.message).join(', ');
     return {
-      errors: issues,
+      status: 200,
       message: errorMessage,
     };
   }
@@ -67,7 +67,7 @@ export async function addUser(formData: FormData) {
     // If user already exists, handle accordingly
     if (!userQuerySnapshot.empty) {
       // console.log('User already exists');
-      return; // Optionally, return or throw an error
+      return { status: 200, message: 'User already exists.' }; // Optionally, return or throw an error
     }
 
     // If user does not exist, add them to the collection
@@ -80,9 +80,11 @@ export async function addUser(formData: FormData) {
       lastName,
       phoneNumber,
     }); // Set the user data
+
+    return { status: 200, message: 'User added successfully.' };
     // console.log('User added successfully');
   } catch (error) {
-    return { message: 'Firestore Error: Failed to Add User.' };
+    return { status: 500, message: 'Firestore Error: Failed to Add User.' };
   }
   
 
