@@ -5,8 +5,13 @@ import Modal from "./Modal";
 import { ChangeTransportation } from "./ChangeTransportation";
 import { Filters } from "./Filters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faWheelchair } from "@fortawesome/free-solid-svg-icons";
-import { FilterTabs, AccessibilityTabFilter } from "./FilterTabs";
+import {
+  faPencilAlt,
+  faWheelchair,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
+import { FilterTabs, AccessibilityTabFilter, FavoritesTabFilter } from "./FilterTabs";
 import { InviteFriend } from "../ui/friends/buttons";
 import { set } from "zod";
 
@@ -29,21 +34,39 @@ export function SuggestedPlaces() {
     setTripDuration,
     error,
     setError,
-    meetingTime
+    meetingTime,
+    favorites,
+    setFavorites,
+    favoritesFilter,
+    setFavoritesFilter,
   } = useSharedStateDestructured();
 
   const { handlePlaceSelect, updatePlaces, updatePrice } = usePlaceOperations();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isWheelChairAccessible, setIsWheelChairAccessible] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [reviews, setReviews] = useState<
     google.maps.places.PlaceReview[] | null
   >(null);
+  const [activePlaces, setActivePlaces] = useState<{ [key: string]: boolean }>({});
 
   const handlePlaceClick = (place: google.maps.places.PlaceResult) => {
     handlePlaceSelect(place);
     setIsModalOpen(true);
     setError(null);
+  };
+
+  const handleFavoritesClick = (place: google.maps.places.PlaceResult) => {
+    const newFavorites = [...favorites];
+    const index = newFavorites.findIndex((favorite) => favorite.place_id === place.place_id);
+    if (index === -1) {
+      newFavorites.push(place);
+    } else {
+      newFavorites.splice(index, 1);
+    }
+    setFavorites(newFavorites);
+    setIsActive(!isActive);
   };
 
   const closeModal = () => {
@@ -81,7 +104,7 @@ export function SuggestedPlaces() {
     }
     updatePlaces();
     updatePrice();
-  }, [selectedPlace, placeTypeFilters, priceLevelFilters, accessibilityFilter]);
+  }, [selectedPlace, placeTypeFilters, priceLevelFilters, accessibilityFilter, favoritesFilter]);
 
   return (
     <>
@@ -105,7 +128,13 @@ export function SuggestedPlaces() {
                 <Filters onClose={() => setIsFiltersOpen(false)} />
               </Modal>
             </h2>
-            <div style={{display: "flex", justifyContent: "center", width: "60%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "60%",
+              }}
+            >
               <ChangeTransportation />
             </div>
           </div>
@@ -132,13 +161,20 @@ export function SuggestedPlaces() {
               updatePrice();
             }}
           />
+          <FavoritesTabFilter
+            onChange={() => {
+              setFavoritesFilter(!favoritesFilter);
+              updatePlaces();
+              updatePrice();
+            }}
+          />
           {!Object.values(placeTypeFilters).some(Boolean) &&
           !Object.values(priceLevelFilters).some(Boolean) &&
-          !accessibilityFilter ? (
+          !accessibilityFilter && !favoritesFilter? (
             <p>No filters added</p>
           ) : null}
 
-          { !selectedPlace && <p>No place selected</p> }
+          {!selectedPlace && <p>No place selected</p>}
           <div
             style={{
               display: "grid",
@@ -160,7 +196,10 @@ export function SuggestedPlaces() {
                 <div
                   key={index}
                   style={{
-                    backgroundColor: selectedPlace?.name === place?.name ? "lightblue" : "white",
+                    backgroundColor:
+                      selectedPlace?.name === place?.name
+                        ? "lightblue"
+                        : "white",
                     borderRadius: "10px",
                     padding: "10px",
                     marginBottom: "10px",
@@ -168,7 +207,7 @@ export function SuggestedPlaces() {
                     flex: 1,
                     display: "flex",
                     alignItems: "center",
-                  }} 
+                  }}
                   onClick={() => handlePlaceSelect(place)}
                 >
                   {place.photos && place.photos[0] && (
@@ -199,6 +238,29 @@ export function SuggestedPlaces() {
                           style={{ marginLeft: "5px" }}
                         />
                       )}
+                      <button
+                        style={{
+                          backgroundColor: "transparent",
+                          border: "none",
+                          padding: 0,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          handleFavoritesClick(place);
+                          const newActivePlaces: { [key: string]: boolean } = { ...activePlaces };
+                          newActivePlaces[place?.place_id ?? ''] =
+                            !newActivePlaces[place?.place_id ?? ''];
+                          setActivePlaces(newActivePlaces);
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={activePlaces[place?.place_id ?? ''] ? faStar : faStarRegular}
+                          size="lg"
+                          style={{
+                            color: activePlaces[place?.place_id ?? ''] ? "#FFD700" : "#000",
+                          }}
+                        />
+                      </button>
                     </h3>
                     <p className="text-sm">{place.vicinity}</p>
                     <p className="text-sm">
@@ -270,14 +332,20 @@ export function SuggestedPlaces() {
                 )}
                 <h2 className="text-lg font-bold">{selectedPlace.name}</h2>
                 <p>{selectedPlace.vicinity}</p>
-                <p>Miles: {distanceInMiles.toFixed(2)} ({tripDuration})</p>
+                <p>
+                  Miles: {distanceInMiles.toFixed(2)} ({tripDuration})
+                </p>
                 <p>Rating: {selectedPlace.rating}/5</p>
                 <h2 className="text-md font-bold mt-4 flex items-center">
-                Reviews
-                { 
-                  userInfo && friendInfo && selectedPlace &&
-                  <InviteFriend inviter={userInfo} invitee={friendInfo} place={selectedPlace } meetingTime = {meetingTime }/>
-                }
+                  Reviews
+                  {userInfo && friendInfo && selectedPlace && (
+                    <InviteFriend
+                      inviter={userInfo}
+                      invitee={friendInfo}
+                      place={selectedPlace}
+                      meetingTime={meetingTime}
+                    />
+                  )}
                 </h2>
                 <div
                   style={{

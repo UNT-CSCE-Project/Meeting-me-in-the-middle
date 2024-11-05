@@ -76,3 +76,33 @@ export const AccessibilityTabFilter = ({
     </div>
   );
 };
+
+export const FavoritesTabFilter = ({
+  onChange,
+}: {
+  onChange: (value: boolean) => void;
+}) => {
+  const { favoritesFilter, setFavoritesFilter } =
+    useSharedStateDestructured();
+
+  const handleFilterChange = () => {
+    setFavoritesFilter(!favoritesFilter);
+    onChange(!favoritesFilter);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {favoritesFilter && (
+        <div
+          key="favorites"
+          className="bg-gray-200 py-2 px-4 rounded-full flex items-center justify-between"
+        >
+          <span className="text-sm">Favorites: </span>
+          <button className="ml-2" onClick={handleFilterChange}>
+            <FontAwesomeIcon icon={faTimes} size="sm" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -34,7 +34,9 @@ interface SharedState {
     "4": boolean;
   };
   accessibilityFilter: boolean;
+  favoritesFilter: boolean;
   tripDuration: string | null;
+  favorites: google.maps.places.PlaceResult[];
   setOriginLocation: (originLocation: string) => void;
   setDestinationLocation: (destinationLocation: string) => void;
   setMeetingTime: (meetingTime: string  ) => void;
@@ -69,7 +71,9 @@ interface SharedState {
     "4": boolean;
   }) => void;
   setAccessibilityFilter: (accessibilityFilter: boolean) => void;
+  setFavoritesFilter: (favoritesFilter: boolean) => void;
   setTripDuration: (duration: string | null) => void;
+  setFavorites: (favorites: google.maps.places.PlaceResult[]) => void;
 }
 
 const SharedStateContext = createContext<SharedState | null>(null);
@@ -109,7 +113,9 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
     "4": false,
   });
   const [accessibilityFilter, setAccessibilityFilter] = useState(false);
+  const [favoritesFilter, setFavoritesFilter] = useState(false);
   const [tripDuration, setTripDuration] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<google.maps.places.PlaceResult[]>([]);
 
   const value = useMemo(
     () => ({
@@ -153,6 +159,10 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       setAccessibilityFilter,
       tripDuration,
       setTripDuration,
+      favorites,
+      setFavorites,
+      favoritesFilter,
+      setFavoritesFilter,
     }),
     [
       map,
@@ -173,6 +183,8 @@ const SharedStateProvider = ({ children }: { children: React.ReactNode }) => {
       priceLevelFilters,
       accessibilityFilter,
       tripDuration,
+      favorites,
+      favoritesFilter,
     ]
   );
 
@@ -234,6 +246,10 @@ const useSharedStateDestructured = () => {
     setAccessibilityFilter: sharedState.setAccessibilityFilter,
     tripDuration: sharedState.tripDuration,
     setTripDuration: sharedState.setTripDuration,
+    favorites: sharedState.favorites,
+    setFavorites: sharedState.setFavorites,
+    favoritesFilter: sharedState.favoritesFilter,
+    setFavoritesFilter: sharedState.setFavoritesFilter,
   };
 };
 
