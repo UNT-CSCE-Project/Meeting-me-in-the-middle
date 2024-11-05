@@ -12,8 +12,8 @@ export default function NavLinks() {
     { name: 'Mid Point Finder', href: '/midpoint-finder'},
     {name: 'Manage Friends',  href: '/friends'},
     { name: 'Location Approval', href: '/location-approval', },
-    { name: 'Travel History', href: '/travel-history', },
-    { name: 'Reviews', href: '/reviews', },
+    // { name: 'Travel History', href: '/travel-history', },
+    // { name: 'Reviews', href: '/reviews', },
     
   
   ] as any;

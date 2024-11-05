@@ -22,7 +22,7 @@ export default function FriendsList() {
     const [curUserId, setCurUserId] = useState("");
 
     useEffect(() => {
-        if(currentUser?.uid) {
+        if(currentUser && currentUser?.uid) {
             setCurUserId(currentUser?.uid);
         }
     }, [currentUser]);

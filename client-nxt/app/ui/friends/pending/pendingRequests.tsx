@@ -18,7 +18,7 @@ export default function PendingRequests({
         </h1>
         <Suspense fallback={<div>Loading...</div>}>
         {
-          isLoading ? <CardSkeleton/> : pendingRequests?.length === 0 ? (
+          isLoading ? <CardSkeleton/> : pendingRequests && pendingRequests?.length === 0 ? (
             <h6 className={`${lusitana.className} mt-4 ml-4 text-xl md:text-sm`}>
               No Record Found
             </h6>
