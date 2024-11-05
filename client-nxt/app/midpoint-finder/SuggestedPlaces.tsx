@@ -11,9 +11,14 @@ import {
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
-import { FilterTabs, AccessibilityTabFilter, FavoritesTabFilter } from "./FilterTabs";
+import {
+  FilterTabs,
+  AccessibilityTabFilter,
+  FavoritesTabFilter,
+} from "./FilterTabs";
 import { InviteFriend } from "../ui/friends/buttons";
 import { set } from "zod";
+import { getTravelMode } from "./ChangeTransportation";
 
 export function SuggestedPlaces() {
   const {
@@ -39,6 +44,8 @@ export function SuggestedPlaces() {
     setFavorites,
     favoritesFilter,
     setFavoritesFilter,
+    originLocation,
+    travelMode,
   } = useSharedStateDestructured();
 
   const { handlePlaceSelect, updatePlaces, updatePrice } = usePlaceOperations();
@@ -49,7 +56,11 @@ export function SuggestedPlaces() {
   const [reviews, setReviews] = useState<
     google.maps.places.PlaceReview[] | null
   >(null);
-  const [activePlaces, setActivePlaces] = useState<{ [key: string]: boolean }>({});
+  const [activePlaces, setActivePlaces] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [distances, setDistances] = useState<{ [key: string]: number }>({});
+  const [durations, setDurations] = useState<{ [key: string]: string }>({});
 
   const handlePlaceClick = (place: google.maps.places.PlaceResult) => {
     handlePlaceSelect(place);
@@ -59,7 +70,9 @@ export function SuggestedPlaces() {
 
   const handleFavoritesClick = (place: google.maps.places.PlaceResult) => {
     const newFavorites = [...favorites];
-    const index = newFavorites.findIndex((favorite) => favorite.place_id === place.place_id);
+    const index = newFavorites.findIndex(
+      (favorite) => favorite.place_id === place.place_id
+    );
     if (index === -1) {
       newFavorites.push(place);
     } else {
@@ -104,7 +117,41 @@ export function SuggestedPlaces() {
     }
     updatePlaces();
     updatePrice();
-  }, [selectedPlace, placeTypeFilters, priceLevelFilters, accessibilityFilter, favoritesFilter]);
+
+    if (places.length > 0 && originLocation) {
+      const distanceService = new google.maps.DistanceMatrixService();
+      const origins = [originLocation];
+      const destinations = places.map((place) => place.vicinity ?? "");
+      distanceService.getDistanceMatrix(
+        {
+          origins: origins,
+          destinations: destinations,
+          travelMode: getTravelMode(travelMode),
+        },
+        (response, status) => {
+          if (status === google.maps.DistanceMatrixStatus.OK) {
+            const newDistances: { [key: string]: number } = {};
+            const newDurations: { [key: string]: string } = {};
+            response?.rows[0].elements.forEach((element, index) => {
+              const placeId = places[index]?.place_id ?? "";
+              newDistances[placeId] = element.distance.value;
+              newDurations[placeId] = element.duration.text;
+            });
+            setDistances(newDistances);
+            setDurations(newDurations);
+          }
+        }
+      );
+    }
+  }, [
+    selectedPlace,
+    placeTypeFilters,
+    priceLevelFilters,
+    accessibilityFilter,
+    favoritesFilter,
+    travelMode,
+    places
+  ]);
 
   return (
     <>
@@ -170,7 +217,8 @@ export function SuggestedPlaces() {
           />
           {!Object.values(placeTypeFilters).some(Boolean) &&
           !Object.values(priceLevelFilters).some(Boolean) &&
-          !accessibilityFilter && !favoritesFilter? (
+          !accessibilityFilter &&
+          !favoritesFilter ? (
             <p>No filters added</p>
           ) : null}
 
@@ -247,34 +295,54 @@ export function SuggestedPlaces() {
                         }}
                         onClick={() => {
                           handleFavoritesClick(place);
-                          const newActivePlaces: { [key: string]: boolean } = { ...activePlaces };
-                          newActivePlaces[place?.place_id ?? ''] =
-                            !newActivePlaces[place?.place_id ?? ''];
+                          const newActivePlaces: { [key: string]: boolean } = {
+                            ...activePlaces,
+                          };
+                          newActivePlaces[place?.place_id ?? ""] =
+                            !newActivePlaces[place?.place_id ?? ""];
                           setActivePlaces(newActivePlaces);
                         }}
                       >
                         <FontAwesomeIcon
-                          icon={activePlaces[place?.place_id ?? ''] ? faStar : faStarRegular}
+                          icon={
+                            activePlaces[place?.place_id ?? ""]
+                              ? faStar
+                              : faStarRegular
+                          }
                           size="lg"
                           style={{
-                            color: activePlaces[place?.place_id ?? ''] ? "#FFD700" : "#000",
+                            color: activePlaces[place?.place_id ?? ""]
+                              ? "#FFD700"
+                              : "#000",
                           }}
                         />
                       </button>
                     </h3>
                     <p className="text-sm">{place.vicinity}</p>
                     <p className="text-sm">
-                      {place.price_level?.toString() === "0"
-                        ? "Free"
-                        : place.price_level?.toString() === "1"
-                        ? "$"
-                        : place.price_level?.toString() === "2"
-                        ? "$$"
-                        : place.price_level?.toString() === "3"
-                        ? "$$$"
-                        : place.price_level?.toString() === "4"
-                        ? "$$$$"
+                      Distance:{" "}
+                      {distances[place?.place_id ?? ""]
+                        ? (distances[place?.place_id ?? ""] / 1609.34).toFixed(
+                            2
+                          )
                         : "N/A"}
+                      miles ({durations[place?.place_id ?? ""] || "N/A"})
+                    </p>
+                    <p className="text-sm">
+                      Price Level: 
+                      {place.price_level !== undefined
+                        ? place.price_level === 0
+                          ? "Free"
+                          : place.price_level === 1
+                          ? "$"
+                          : place.price_level === 2
+                          ? "$$"
+                          : place.price_level === 3
+                          ? "$$$"
+                          : place.price_level === 4
+                          ? "$$$$"
+                          : "Unknown"
+                        : "Not available"}
                     </p>
                   </div>
                   <button
