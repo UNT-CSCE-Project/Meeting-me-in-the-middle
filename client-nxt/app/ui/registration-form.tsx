@@ -22,6 +22,7 @@ export default function RegistrationForm() {
     const router = useRouter();
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage('');
         if(firstName=='') {
           setIsError(true);
           return
@@ -74,18 +75,13 @@ export default function RegistrationForm() {
                 setIsError(false);
                           // console.log(email, password)
                 const user = await emailSignUp(email, password);
-                console.log(user);
+                
                 const formData = new FormData();
                 formData.append('email', email);
                 formData.append('password', password);
-                
-                
-
                 formData.append('firstName', firstName);
                 formData.append('lastName', lastName);
-                formData.append('phoneNumber', phoneNumber);
-                
-                  
+                formData.append('phoneNumber', phoneNumber);                 
                 formData.append('streetAddress', streetAddress);
                 formData.append('city', city);
                 formData.append('state', state);
@@ -93,38 +89,27 @@ export default function RegistrationForm() {
                 
                 
                 if(user && user?.uid) {
-                    formData.append('uid', user?.uid);
+                    formData.append('uid', user?.uid as string);
+                    setErrorMessage('');
                     const response = await addUser(formData);
-                    if(response?.errors) {
+                    if(response?.status !== 200) {
                         setErrorMessage(response.message);
-                        await deleteUser(user);
+                        await deleteUser(user as any);
                         return;
-                    }  else {
+                    } else {
                       setSuccessMessage('Registration successful, redirecting to login...');
                       setTimeout(() => {
-      
+
                           router.push('/login');
                       }, 3000)
-      
-                      setErrorMessage('')
-                      setEmail('')
-                      setPassword('')
-                      setConfirmPassword('')
-                      setfirstName('')
-                      setlastName('')
-                      setphoneNumber('')
-                      setStreetAddress('')
-                      setCity('')
-                      setState('')
-                      setZipCode('')
+
                     }
-                } else {
-                  setErrorMessage('Registration failed, please try again');
                 } 
-              
+                
       } catch (error) {
-            console.error('An error occurred:', error.message);
-            setErrorMessage(error?.message);
+            console.error('An error occurred:', error?.message || error);
+            setErrorMessage(error?.message || 'An error occurred');
+
         }
     }
     return (
