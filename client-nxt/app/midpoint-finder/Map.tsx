@@ -14,7 +14,7 @@ const mapStyles = {
   width: "100%",
 };
 
-const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+const apiKey = "AIzaSyCHXzNcDG3Cr7Qo7J8VONhCI6HzzXAAEzU";
 
 if (!apiKey) {
   throw new Error("Google Maps API key is not set");
