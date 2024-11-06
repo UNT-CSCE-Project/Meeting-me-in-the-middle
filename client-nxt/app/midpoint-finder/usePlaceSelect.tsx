@@ -19,6 +19,7 @@ const usePlaceOperations = () => {
     accessibilityFilter,
     favoritesFilter,
     favorites,
+    setTripDuration,
   } = sharedState;
 
   const handlePlaceSelect = useCallback(
@@ -33,17 +34,15 @@ const usePlaceOperations = () => {
         };
         const directionsService = new google.maps.DirectionsService();
         directionsService.route(newRequest, (newResult, newStatus) => {
-          console.log("directionsService.route callback called");
           if (
             newStatus === google.maps.DirectionsStatus.OK &&
             newResult !== null
           ) {
-            console.log("newResult:", newResult);
+            const duration = newResult.routes[0]?.legs[0]?.duration?.text;
             const distance = newResult.routes[0]?.legs[0]?.distance?.value;
-            if (distance !== undefined) {
-              console.log("Distance:", distance);
+            if (distance !== undefined && duration !== undefined) {
               const distanceInMilesValue = (distance / 1000) * 0.621371;
-              console.log("Distance in miles:", distanceInMilesValue);
+              setTripDuration(duration);
               setDistanceInMiles(distanceInMilesValue);
               setNewDirections(newResult);
             } else {
@@ -181,15 +180,7 @@ const usePlaceOperations = () => {
                         status === google.maps.places.PlacesServiceStatus.OK &&
                         results !== null
                       ) {
-                        const filteredResults = favoritesFilter
-                          ? results.filter((place) =>
-                              favorites.some(
-                                (favorite) =>
-                                  favorite.place_id === place.place_id
-                              )
-                            )
-                          : results;
-                        setPlaces(filteredResults);
+                        setPlaces(results);
                       }
                     });
                   }
