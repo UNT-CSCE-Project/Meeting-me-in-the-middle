@@ -150,7 +150,8 @@ export function SuggestedPlaces() {
     accessibilityFilter,
     favoritesFilter,
     travelMode,
-    places
+    places,
+    map
   ]);
 
   return (
