@@ -115,8 +115,11 @@ export function SuggestedPlaces() {
         }
       );
     }
-    updatePlaces();
-    updatePrice();
+    if(!places.length && originLocation && !selectedPlace) {
+      updatePlaces();
+      updatePrice();
+    }
+
 
     if (places.length > 0 && originLocation) {
       const distanceService = new google.maps.DistanceMatrixService();
@@ -151,7 +154,10 @@ export function SuggestedPlaces() {
     favoritesFilter,
     travelMode,
     places,
-    map
+    map,
+    updatePlaces,
+    updatePrice,
+    originLocation
   ]);
 
   return (
