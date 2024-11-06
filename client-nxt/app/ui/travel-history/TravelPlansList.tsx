@@ -91,26 +91,26 @@ export const TravelPlansList = ({
                 {/* People */}
                 <div className="flex items-center gap-2 mb-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-md text-gray-900 truncate">
+                    <p className="font-medium text-md text-gray-900 ">
                       {plan.inviter.name}
                       <span className="text-md font-semibold px-3 py-1 rounded-full bg-blue-100 ">
                         Inviter
                       </span>
                     </p>
-                    <p className="text-xs text-blue-600 flex items-center gap-1 truncate ">
+                    <p className="text-xs text-blue-600 flex items-center gap-2  mt-1">
                       <MapPinIcon className="w-3 h-3 flex-shrink-0 " />
                       {plan.inviter.location}
                     </p>
                   </div>
                   <ArrowRightIcon className="w-5 h-3 text-green-600  flex-shrink-0" />
                   <div className="flex-1 min-w-0 text-right">
-                    <p className="font-medium text-md text-gray-900 truncate">
+                    <p className="font-medium text-md text-gray-900 ">
                       {plan.invitee.name}
                       <span className="text-md font-semibold px-3 py-1 rounded-full bg-blue-100 ">
                         Invitee
                       </span>
                     </p>
-                    <p className="text-xs text-gray-600 flex items-center justify-end gap-1 truncate">
+                    <p className="text-xs text-blue-600 flex items-center gap-2 mt-1">
                       <MapPinIcon className="w-3 h-3 flex-shrink-0" />
                       {plan.invitee.location}
                     </p>

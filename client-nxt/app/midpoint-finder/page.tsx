@@ -133,19 +133,7 @@ function MidpointFinderInner() {
       getAddress(latitude, longitude);
     });
   };
-  const handlePlaceSelect = () => {
-    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current!, {
-      types: ["geocode"], // Restrict results to addresses
-    });
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      console.log(place);
-      if (place.formatted_address) {
-        setOriginLocation(place.formatted_address);
-      }
-    });
-  };
 
   return (
     <div className="flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">
@@ -165,7 +153,6 @@ function MidpointFinderInner() {
             type="text"
             value={originLocation}
             onChange={(e) => setOriginLocation(e.target.value)}
-            onFocus={handlePlaceSelect} // Initialize autocomplete when focused
             placeholder="Enter origin location"
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
