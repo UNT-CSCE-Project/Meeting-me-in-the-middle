@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useSharedStateDestructured } from "./sharedState";
 import { getTravelMode } from "./ChangeTransportation";
+import { set } from "date-fns";
 
 const usePlaceOperations = () => {
   const sharedState = useSharedStateDestructured();
@@ -19,6 +20,7 @@ const usePlaceOperations = () => {
     accessibilityFilter,
     favoritesFilter,
     favorites,
+    setTripDuration,
   } = sharedState;
 
   const handlePlaceSelect = useCallback(
@@ -33,17 +35,15 @@ const usePlaceOperations = () => {
         };
         const directionsService = new google.maps.DirectionsService();
         directionsService.route(newRequest, (newResult, newStatus) => {
-          console.log("directionsService.route callback called");
           if (
             newStatus === google.maps.DirectionsStatus.OK &&
             newResult !== null
           ) {
-            console.log("newResult:", newResult);
+            const duration = newResult.routes[0]?.legs[0]?.duration?.text;
             const distance = newResult.routes[0]?.legs[0]?.distance?.value;
-            if (distance !== undefined) {
-              console.log("Distance:", distance);
+            if (distance !== undefined && duration !== undefined) {
               const distanceInMilesValue = (distance / 1000) * 0.621371;
-              console.log("Distance in miles:", distanceInMilesValue);
+              setTripDuration(duration);
               setDistanceInMiles(distanceInMilesValue);
               setNewDirections(newResult);
             } else {
@@ -155,7 +155,15 @@ const usePlaceOperations = () => {
             const allPriceTypesFalse = Object.values(priceLevel).every(
               (value) => value === false
             );
-            if (!allPlaceTypesFalse && !allPriceTypesFalse) {
+            if (favoritesFilter) {
+              if (favorites.length > 0) {
+                setPlaces(favorites);
+              } else {
+                <div>
+                  <p>No places found</p>
+                </div>;
+              }
+            } else if (!allPlaceTypesFalse && !allPriceTypesFalse) {
               Object.keys(placeTypeFilters).forEach((placeType) => {
                 Object.keys(priceLevelFilters).forEach((priceLevel) => {
                   if (
@@ -181,15 +189,11 @@ const usePlaceOperations = () => {
                         status === google.maps.places.PlacesServiceStatus.OK &&
                         results !== null
                       ) {
-                        const filteredResults = favoritesFilter
-                          ? results.filter((place) =>
-                              favorites.some(
-                                (favorite) =>
-                                  favorite.place_id === place.place_id
-                              )
-                            )
-                          : results;
-                        setPlaces(filteredResults);
+                        setPlaces(results);
+                      } else {
+                        <div>
+                          <p>No places found</p>
+                        </div>;
                       }
                     });
                   }
@@ -211,14 +215,11 @@ const usePlaceOperations = () => {
                       status === google.maps.places.PlacesServiceStatus.OK &&
                       results !== null
                     ) {
-                      const filteredResults = favoritesFilter
-                        ? results.filter((place) =>
-                            favorites.some(
-                              (favorite) => favorite.place_id === place.place_id
-                            )
-                          )
-                        : results;
-                      setPlaces(filteredResults);
+                      setPlaces(results);
+                    } else {
+                      <div>
+                        <p>No places found</p>
+                      </div>;
                     }
                   });
                 }
@@ -242,14 +243,11 @@ const usePlaceOperations = () => {
                       status === google.maps.places.PlacesServiceStatus.OK &&
                       results !== null
                     ) {
-                      const filteredResults = favoritesFilter
-                        ? results.filter((place) =>
-                            favorites.some(
-                              (favorite) => favorite.place_id === place.place_id
-                            )
-                          )
-                        : results;
-                      setPlaces(filteredResults);
+                      setPlaces(results);
+                    } else {
+                      <div>
+                        <p>No places found</p>
+                      </div>;
                     }
                   });
                 }
@@ -265,14 +263,7 @@ const usePlaceOperations = () => {
                   status === google.maps.places.PlacesServiceStatus.OK &&
                   results !== null
                 ) {
-                  const filteredResults = favoritesFilter
-                    ? results.filter((place) =>
-                        favorites.some(
-                          (favorite) => favorite.place_id === place.place_id
-                        )
-                      )
-                    : results;
-                  setPlaces(filteredResults);
+                  setPlaces(results);
                 }
               });
             }
@@ -298,27 +289,12 @@ const usePlaceOperations = () => {
     }
   };
 
-  const updatePrice = () => {
-    if (nearestCity) {
-      findPlacesAroundCity(
-        nearestCity,
-        placeTypeFilters,
-        priceLevelFilters,
-        accessibilityFilter,
-        favoritesFilter
-      );
-    } else {
-      setPlaces([]);
-    }
-  };
-
   return {
     handlePlaceSelect,
     findNearestCity,
     zoomInOnCity,
     findPlacesAroundCity,
     updatePlaces,
-    updatePrice,
   };
 };
 

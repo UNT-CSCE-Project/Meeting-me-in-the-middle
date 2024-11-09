@@ -8,7 +8,7 @@ interface FiltersProps {
 }
 
 export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
-  const { updatePlaces, updatePrice } = usePlaceOperations();
+  const { updatePlaces} = usePlaceOperations();
   const {
     setPlaceTypeFilters,
     setPriceLevelFilters,
@@ -36,7 +36,6 @@ export const Filters: React.FC<FiltersProps> = ({ onClose }) => {
     setAccessibilityFilter(newAccessibilityFilter);
     setFavoritesFilter(newFavoriteFilter);
     updatePlaces();
-    updatePrice();
     onClose();
   };
 
