@@ -113,9 +113,9 @@ function MidpointFinderInner() {
           name: `${userData.firstName} ${userData.lastName}`,
           location: `${userData.streetAddress}, ${userData.city}, ${userData.state}, ${userData.zipCode}`
         } as friendInfo);
-        
+        setOriginLocation(userData.streetAddress+", "+userData.city+", "+userData.state+", "+userData.zipCode);
       }
-      setOriginLocation(userData.streetAddress+", "+userData.city+", "+userData.state+", "+userData.zipCode);
+     
     }
   }, [userData]);
   
@@ -154,9 +154,9 @@ function MidpointFinderInner() {
           <div className="flex items-center gap-2">
             <label htmlFor="origin-location" className="block text-lg font-medium text-gray-700">Your Location:</label>
             <MapPinIcon
-              onClick={handlePinClick}
+              onClick={()=>handlePinClick()}
               className="h-6 w-6 text-blue-500 hover:text-red-500 cursor-pointer"
-            />
+            /> 
             
           </div>
           <input

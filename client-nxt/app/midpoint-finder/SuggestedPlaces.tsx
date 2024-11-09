@@ -115,8 +115,10 @@ export function SuggestedPlaces() {
         }
       );
     }
-    updatePlaces();
-
+    
+    if(!places.length && originLocation && !selectedPlace) {
+      updatePlaces();
+    }
     /*if (places.length > 0 && originLocation) {
       const distanceService = new google.maps.DistanceMatrixService();
       const origins = [originLocation];
