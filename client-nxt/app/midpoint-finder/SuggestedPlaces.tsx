@@ -117,7 +117,7 @@ export function SuggestedPlaces() {
     }
     updatePlaces();
 
-    if (places.length > 0 && originLocation) {
+    /*if (places.length > 0 && originLocation) {
       const distanceService = new google.maps.DistanceMatrixService();
       const origins = [originLocation];
       const destinations = places.map((place) => place.vicinity ?? "");
@@ -141,7 +141,7 @@ export function SuggestedPlaces() {
           }
         }
       );
-    }
+    }*/
   }, [
     selectedPlace,
     placeTypeFilters,
