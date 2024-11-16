@@ -340,7 +340,7 @@ export function SuggestedPlaces() {
                   </div>
                   <button
                     onClick={() => handlePlaceClick(place)}
-                    className="text-blue-500 underline"
+                    className="text-blue-600 underline"
                     style={{ marginLeft: "auto" }}
                   >
                     More
