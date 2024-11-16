@@ -162,7 +162,7 @@ export function SuggestedPlaces() {
             {places.length > 0
               ? `${places.length} Places Found`
               : "Search for Places"}
-            <button onClick={handleFiltersClick} style={{ marginLeft: "auto" }}>
+            <button onClick={handleFiltersClick} type="button" aria-label="Filters" style={{ marginLeft: "auto" }}>
               <FontAwesomeIcon icon={faPencilAlt} size="lg" />
             </button>
             <Modal

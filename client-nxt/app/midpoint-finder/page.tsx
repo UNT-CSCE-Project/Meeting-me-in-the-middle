@@ -177,7 +177,7 @@ function MidpointFinderInner() {
            type="button" onClick={() => {
                fetchFriends();
                setShowFriendModal(true);
-           }} className="text-blue-500">
+           }} className="bg-blue-600 text-white py-2 px-4 rounded">
                Select Friend
            </button>
           </div>
