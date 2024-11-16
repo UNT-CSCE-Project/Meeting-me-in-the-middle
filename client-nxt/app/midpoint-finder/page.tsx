@@ -172,16 +172,14 @@ function MidpointFinderInner() {
 
           <div className="flex items-center justify-between">
             <label htmlFor="destination-location" className="block text-lg font-medium text-gray-700">Friend's Location:</label>
-            <button
-              type="button"
-              onClick={() => {
-                fetchFriends()
-                setShowFriendModal(true)}
-              }
-              className="text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              Select Friend
-            </button>
+           <button 
+            aria-label="Select Friend"
+           type="button" onClick={() => {
+               fetchFriends();
+               setShowFriendModal(true);
+           }} className="text-blue-500">
+               Select Friend
+           </button>
           </div>
 
           <input
@@ -203,6 +201,7 @@ function MidpointFinderInner() {
             />
           </div>
           <button
+            aria-label="Calculate Midpoint"
             onClick={calculateMidpoint}
             className="mt-4 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
