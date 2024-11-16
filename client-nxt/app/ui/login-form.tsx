@@ -5,6 +5,7 @@ import { redirect, useRouter } from 'next/navigation'; // Import useRouter
 import { emailSignIn } from '@/app/lib/firebaseClient';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { fetchUserByUidAndEmail } from '../lib/users/data';
 
 import logo from "@/app/ui/logo.png";
 import { deleteUser } from 'firebase/auth';
@@ -23,8 +24,6 @@ export default function LoginForm() {
     setErrorMessage(''); // Reset previous errors
   
     try {
-      const users = await fetching();
-      console.log(users)
       if(email ===''){
         setIsError(true);
         
