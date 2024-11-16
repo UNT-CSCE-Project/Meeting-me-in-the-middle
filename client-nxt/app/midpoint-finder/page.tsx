@@ -173,11 +173,12 @@ function MidpointFinderInner() {
           <div className="flex items-center justify-between">
             <label htmlFor="destination-location" className="block text-lg font-medium text-gray-700">Friend's Location:</label>
             <button
+              type="button"
               onClick={() => {
                 fetchFriends()
                 setShowFriendModal(true)}
               }
-              className="text-blue-500 hover:underline"
+              className="text-blue-500"
             >
               Select Friend
             </button>
