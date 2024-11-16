@@ -178,7 +178,7 @@ function MidpointFinderInner() {
                 fetchFriends()
                 setShowFriendModal(true)}
               }
-              className="text-blue-500"
+              className="text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               Select Friend
             </button>
@@ -213,7 +213,7 @@ function MidpointFinderInner() {
         {error && <p className="text-red-500 mt-4">{error}</p>}
         {
           places.length > 0 && (
-            <div className="mt-6 overflow-y-auto border border-gray-300 rounded-md p-2">
+            <div className="mt-6 overflow-y-auto border border-gray-600 rounded-md p-2">
               <SuggestedPlaces />
             </div>
           )

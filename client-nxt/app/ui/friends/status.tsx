@@ -7,16 +7,16 @@ export default function FriendStatus({ status }: { status: string }) {
       className={clsx(
         'inline-flex items-center rounded-full px-2 py-1 text-xs',
         {
-          'bg-gray-100 text-gray-500': status === 'pending',
-          'bg-green-500 text-white': status === 'connected',
-          'bg-yellow-500 text-white': status === 'not connected',
+          'bg-gray-100 text-gray-600': status === 'pending',
+          'bg-green-600 text-white': status === 'connected',
+          'bg-yellow-600 text-white': status === 'not connected',
         },
       )}
     >
       {status === 'pending' ? (
         <>
           Pending
-          <ClockIcon className="ml-1 w-4 text-gray-500" />
+          <ClockIcon className="ml-1 w-4 text-gray-600" />
         </>
       ) : null}
       {status === 'connected' ? (

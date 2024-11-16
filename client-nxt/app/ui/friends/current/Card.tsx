@@ -19,7 +19,7 @@ export async function Card({ friend,
             {/* Name, Title and Address Section */}
             <div className="ml-4">
               <h3 className="text-sm font-medium">{friend.friend_name}</h3>
-              <p className="text-xs text-gray-500">{friend.streetAddress+", "+friend.city+", "+friend.state+", "+friend.zipCode}</p>
+              <p className="text-xs text-gray-600">{friend.streetAddress+", "+friend.city+", "+friend.state+", "+friend.zipCode}</p>
             </div>
           </div>
   

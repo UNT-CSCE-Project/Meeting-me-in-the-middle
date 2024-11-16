@@ -23,7 +23,7 @@ export function Card({
         {/* Name, Title and Address Section */}
         <div className="ml-4">
           <h3 className="text-sm font-medium">{request.sender_name}</h3>
-          <p className="text-xs text-gray-500">{request.streetAddress+", "+request.city+", "+request.state+", "+request.zipCode }</p>
+          <p className="text-xs text-gray-600">{request.streetAddress+", "+request.city+", "+request.state+", "+request.zipCode }</p>
         </div>
       </div>
 
