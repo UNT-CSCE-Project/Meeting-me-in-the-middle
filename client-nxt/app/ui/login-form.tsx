@@ -112,7 +112,7 @@ export default function LoginForm() {
             <button 
               type="submit" // Ensure this is a submit button
               aria-disabled={isPending}
-              className={`bg-blue-500 text-white rounded p-2 w-full ${isPending && 'opacity-50 cursor-not-allowed'}`}
+              className={`bg-blue-600 text-white rounded p-2 w-full ${isPending && 'opacity-50 cursor-not-allowed'}`}
             >
               Sign in
             </button>
