@@ -281,6 +281,8 @@ export function SuggestedPlaces() {
                         />
                       )}
                       <button
+                        aria-label="Add to favorites"
+                        type="button"
                         style={{
                           backgroundColor: "transparent",
                           border: "none",
