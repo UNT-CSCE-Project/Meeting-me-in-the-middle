@@ -21,7 +21,11 @@ export default function Search({ placeholder, baseUrl}: { placeholder: string, b
 
   return (
     <div className="relative w-2/3 flex flex-1 flex-shrink-0">
-      <label htmlFor="search" className="sr-only">
+      <label htmlFor="search" className="sr-only" style={{
+      opacity: 1,
+      color: "rgb(0, 0, 0)",
+      backgroundColor: "rgb(44, 44, 44)",
+    }}>
         Search
       </label>
       <input

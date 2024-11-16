@@ -35,7 +35,7 @@ export function Notification({ notification, decrementNotificationCount }: { not
 >
   <div className="w-full pl-0">
     <span className="text-gray-700 items-start">{notification.message}</span>
-    <p className="text-sm text-gray-500 mt-2">
+    <p className="text-sm text-gray-600 mt-2">
       {new Date(notification.timestamp).toLocaleString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
