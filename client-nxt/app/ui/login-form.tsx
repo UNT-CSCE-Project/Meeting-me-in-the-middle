@@ -5,8 +5,9 @@ import { redirect, useRouter } from 'next/navigation'; // Import useRouter
 import { emailSignIn } from '@/app/lib/firebaseClient';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import {fetchUserByUidAndEmail} from '@/app/lib/users/data';
+
 import logo from "@/app/ui/logo.png";
+import { deleteUser } from 'firebase/auth';
 
 export default function LoginForm() {
   const router = useRouter(); // Initialize router for redirection
@@ -20,8 +21,10 @@ export default function LoginForm() {
     setIsPending(true);
     
     setErrorMessage(''); // Reset previous errors
-
+  
     try {
+      const users = await fetching();
+      console.log(users)
       if(email ===''){
         setIsError(true);
         
@@ -32,7 +35,7 @@ export default function LoginForm() {
         setIsError(false);
         const result = await emailSignIn(email, password) as any;
           console.log(result);
-          if (result?.error) {
+          if (result?.error ) {
             setIsPending(false);
             setErrorMessage(result.error);
             return;
@@ -47,13 +50,19 @@ export default function LoginForm() {
           const user = result;
           if (user && 'uid' in user && 'email' in user) {
             const response = await fetchUserByUidAndEmail(user.uid, user.email || "");
+            console.log(response);
             if (response?.message) {
               setErrorMessage(response.message);
+              if(response.message === 'Error fetching user')
+                await deleteUser(user as any);
+              return;
+            } else {
+              setIsPending(false);            
+              setErrorMessage('');
+              router.push('/midpoint-finder');
+              return;
             }
           }
-          setIsPending(false);            
-          setErrorMessage('');
-            router.push('/midpoint-finder');
          }
          setIsPending(false);
       }

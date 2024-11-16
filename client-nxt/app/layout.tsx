@@ -17,13 +17,16 @@ export default function RootLayout({
   return (
     <UserProvider>
       <html lang="en">
+        <head>
+          <title>Meet Me in the Middle</title>
+          </head>
           <body className={`${lusitana.className} antialiased`}>
           <div className="flex flex-col h-full">
             <div className="flex flex-row h-full">
               <SideNav />
               <div className="flex flex-col flex-grow">
                 <Navbar />
-                <div className="flex flex-col lg:flex-row h-screen w-full bg-gray-100">{children}</div>
+                <div className="flex flex-col h-screen w-full bg-gray-100">{children}</div>
               </div>
             </div>
           </div>

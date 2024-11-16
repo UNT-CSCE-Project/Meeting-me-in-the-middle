@@ -1,4 +1,4 @@
-
+'use client';
 import { useState } from 'react';
 import {emailSignUp} from '@/app/lib/firebaseClient';
 import { addUser } from '../lib/users/actions';
@@ -75,7 +75,7 @@ export default function RegistrationForm() {
                 setIsError(false);
                           // console.log(email, password)
                 const user = await emailSignUp(email, password);
-                
+
                 const formData = new FormData();
                 formData.append('email', email);
                 formData.append('password', password);
@@ -113,11 +113,11 @@ export default function RegistrationForm() {
         }
     }
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-4">
-        
-            <div className="flex-grow p-6 md:p-12 flex items-center justify-center">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
+          
+            <div className="flex-grow p-6 md:p-6 flex items-center justify-center">
             <div>
-                <div className="flex items-center mb-4">
+                <div className="flex items-center">
                     <div className="w-1/2 pr-4">
                         <label htmlFor="firstName" className={firstName === '' && isError ? 'text-red-500' : ''}>First Name</label>
                         <input
@@ -165,26 +165,32 @@ export default function RegistrationForm() {
                 value={streetAddress}
                 onChange={(e) => setStreetAddress(e.target.value)}
               />
-              <label htmlFor="city" className={city === '' && isError ? 'text-red-500' : ''}>City</label>
-              <input
-                type="text"
-                name="city"
-                id="city"
-                placeholder="City"
-                className={`border rounded p-2 mb-4 w-full ${city === '' && isError ? 'border-red-500' : ''}`}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-              <label htmlFor="state"  className={state === '' && isError ? 'text-red-500' : ''}>State</label>
-              <input
-                type="text"
-                name="state"
-                id="state"
-                placeholder="State"
-                className={`border rounded p-2 mb-4 w-full ${state === '' && isError ? 'border-red-500' : ''}`}
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-              />
+              <div className="flex justify-between w-full">
+                <div className="w-1/2 mr-2">
+                  <label htmlFor="city" className={city === '' && isError ? 'text-red-500' : ''}>City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    id="city"
+                    placeholder="City"
+                    className={`border rounded p-2 mb-4 w-full ${city === '' && isError ? 'border-red-500' : ''}`}
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label htmlFor="state" className={state === '' && isError ? 'text-red-500' : ''}>State</label>
+                  <input
+                    type="text"
+                    name="state"
+                    id="state"
+                    placeholder="State"
+                    className={`border rounded p-2 mb-4 w-full ${state === '' && isError ? 'border-red-500' : ''}`}
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                  />
+                </div>
+              </div>
               <label htmlFor="zipCode" className={zipCode === '' && isError ? 'text-red-500' : ''}>Zip Code</label>
               <input
                 type="text"
