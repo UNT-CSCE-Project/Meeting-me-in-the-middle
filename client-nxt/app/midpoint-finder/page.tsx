@@ -178,7 +178,7 @@ function MidpointFinderInner() {
                 fetchFriends()
                 setShowFriendModal(true)}
               }
-              className="text-blue-500"
+              className="text-blue-600"
             >
               Select Friend
             </button>
