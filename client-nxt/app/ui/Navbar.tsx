@@ -59,7 +59,7 @@ export default function Navbar() {
                 type="button"
                 onClick={signOutUser}
                 className="text-white"
-              >
+              >  Sign Out
                 <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
               </button>
 

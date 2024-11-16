@@ -41,6 +41,7 @@ export default function SideNav() {
             <form>
               {/* Uncomment and implement the sign-out functionality if needed */}
               <button type="button" onClick={signOutUser} className="text-white">
+                Sign Out
                 <PowerIcon className="h-5 w-5" />
               </button>
             </form>
