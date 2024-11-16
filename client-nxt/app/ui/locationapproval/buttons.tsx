@@ -19,7 +19,7 @@ export function AcceptInvitation({item_id, onAccept}: {
     return (
         <button
             onClick={handleAcceptRequest}
-            className={`ml-auto bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 focus:outline-none ${
+            className={`ml-auto bg-blue-600 text-white py-1 px-3 rounded focus:outline-none ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isLoading}
@@ -47,7 +47,7 @@ export function DeclineInvitation({item_id, onDecline}: {
     return (
         <button
             onClick={handleDeclineRequest}
-            className={`ml-3 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 focus:outline-none ${
+            className={`ml-3 bg-red-600 text-white py-1 px-3 rounded focus:outline-none ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isLoading}

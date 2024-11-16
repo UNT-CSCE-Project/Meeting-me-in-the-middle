@@ -73,6 +73,8 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({
         cursor: "pointer",
         color: isActive ? "#fff" : "#000",
       }}
+      type="button"
+      aria-label="Toggle button"
       onClick={onClick}
     >
       {children}

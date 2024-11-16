@@ -88,7 +88,6 @@ export function MyMap() {
                 key={index}
                 position={place.geometry.location}
                 title={place.name}
-                label={`${index + 1}`}
                 aria-label={place.name}
                 onClick={() => handlePlaceSelect(place)}
               />

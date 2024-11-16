@@ -146,7 +146,7 @@ export const TravelPlansList = ({
         })}
         {plans.length === 0 && (
           <div className="col-span-2 p-6 bg-white rounded-lg shadow text-center">
-            <p className="text-gray-500 italic text-sm">
+            <p className="text-gray-600 italic text-sm">
               {planStatus === "upcoming"
                 ? "No upcoming meetups planned"
                 : "No past meetups found"}
