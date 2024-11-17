@@ -31,7 +31,7 @@ export default function NavLinks() {
             )}
           >
 
-            <p className=" md:block">{link.name}</p>
+            <p className=" md:block text-gray-600">{link.name}</p>
           </a>
         );
       })}

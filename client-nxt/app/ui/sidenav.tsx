@@ -37,7 +37,7 @@ export default function SideNav() {
           </Link>
           <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2" style={{ background: "#2c2c2c" }}>
             <NavLinks />
-            <div className="hidden h-auto w-full grow rounded-md md:block" style={{ background: "#2c2c2c" }}></div>
+            <div className="hidden h-auto w-full grow rounded-md md:block " style={{ background: "#2c2c2c" }}></div>
             <form>
               {/* Uncomment and implement the sign-out functionality if needed */}
               <button type="button" onClick={signOutUser} className="text-white">

@@ -24,7 +24,7 @@ export default function Search({ placeholder, baseUrl}: { placeholder: string, b
       <label htmlFor="search" className="sr-only" style={{
       opacity: 1,
       color: "rgb(0, 0, 0)",
-      backgroundColor: "rgb(44, 44, 44)",
+      backgroundColor: "rgb(255, 255, 255)",
     }}>
         Search
       </label>

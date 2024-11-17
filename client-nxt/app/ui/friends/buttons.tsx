@@ -73,7 +73,7 @@ export function SendRequest({
           <span>Loading...</span>
         ) : (
           <>
-            <span className="hidden md:block">Connect</span>
+            <span className="hidden md:block text-white">Connect</span>
             <PlusIcon className="h-5 md:ml-4" />
           </>
         )}
