@@ -38,7 +38,7 @@ export default function NavLinks() {
             )}
           >
             <LinkIcon className="w-6" />
-            <p className="hidden md:block text-white">{link.name}</p>
+            <p className="hidden md:block text-white-800">{link.name}</p>
           </Link>
         );
       })}

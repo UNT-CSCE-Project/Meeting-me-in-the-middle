@@ -14,7 +14,7 @@ export default function Logo() {
         height={80}         // Set the height of the image
         priority
       />
-      <p className="text-[20px] px-1 ml-2  text-gray-600">Meet Me In The Middle</p>
+      <p className="text-[20px] px-1 ml-2  text-white-600">Meet Me In The Middle</p>
     </div>
   );
 }
