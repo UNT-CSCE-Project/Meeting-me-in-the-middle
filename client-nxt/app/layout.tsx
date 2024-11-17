@@ -16,7 +16,7 @@ export default function RootLayout({
  
   return (
     <UserProvider>
-      <html lang="en">
+      <html lang="en-US">
         <head>
           <title>Meet Me in the Middle</title>
           </head>

@@ -20,7 +20,7 @@ export default async function Registration() {
           
 
           <p className="text-center text-gray-600">
-            Already have an account? <Link href="/login" className="text-blue-600 hover:underline">Sign in</Link>
+            Already have an account? <Link href="/login" className="text-blue-600 hover:text-blue-800 underline">Sign in</Link>
           </p>
         </div>
       </div>
