@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import usePlaceOperations from "./usePlaceSelect";
 import { useSharedStateDestructured } from "./sharedState";
 import Modal from "./Modal";
@@ -91,67 +91,85 @@ export function SuggestedPlaces() {
     setError(null);
   };
 
+  // Effect for fetching reviews
   useEffect(() => {
-    if (selectedPlace && map) {
-      console.log("Making API request for reviews...");
-      const service = new google.maps.places.PlacesService(map);
-      service.getDetails(
-        {
-          placeId: selectedPlace.place_id ?? "",
-          fields: ["reviews"],
-        },
-        (place, status) => {
-          console.log("API request complete:", status);
-          if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-            const reviews = place.reviews ?? [];
-            console.log("Reviews:", reviews);
-            if (reviews.length === 0) {
-              console.log("No reviews found for this place.");
-            }
-            setReviews(reviews);
-          } else {
-            console.error("Error fetching reviews:", status);
+    if (!selectedPlace || !map) return;
+
+    console.log("Making API request for reviews...");
+    const service = new google.maps.places.PlacesService(map);
+
+    service.getDetails(
+      {
+        placeId: selectedPlace.place_id ?? "",
+        fields: ["reviews"],
+      },
+      (place, status) => {
+        console.log("API request complete:", status);
+        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+          const reviews = place.reviews ?? [];
+          console.log("Reviews:", reviews);
+          if (reviews.length === 0) {
+            console.log("No reviews found for this place.");
           }
+          setReviews(reviews);
+        } else {
+          console.error("Error fetching reviews:", status);
         }
-      );
-    }
-    
-    if(!places.length && originLocation && !selectedPlace) {
+      }
+    );
+  }, [selectedPlace, map]); // Only depends on selectedPlace and map
+
+  // Effect for updating places when none exist
+  useEffect(() => {
+    if (!places.length && originLocation && !selectedPlace) {
       updatePlaces();
     }
-    /*if (places.length > 0 && originLocation) {
-      const distanceService = new google.maps.DistanceMatrixService();
-      const origins = [originLocation];
-      const destinations = places.map((place) => place.vicinity ?? "");
-      distanceService.getDistanceMatrix(
-        {
-          origins: origins,
-          destinations: destinations,
-          travelMode: getTravelMode(travelMode),
-        },
-        (response, status) => {
-          if (status === google.maps.DistanceMatrixStatus.OK) {
-            const newDistances: { [key: string]: number } = {};
-            const newDurations: { [key: string]: string } = {};
-            response?.rows[0].elements.forEach((element, index) => {
-              const placeId = places[index]?.place_id ?? "";
-              newDistances[placeId] = element.distance?.value ?? 0;
-              newDurations[placeId] = element.duration?.text ?? "";
-            });
-            setDistances(newDistances);
-            setDurations(newDurations);
-          }
+  }, [places.length, originLocation, selectedPlace, updatePlaces]);
+
+  // Effect for distance matrix calculations
+  const calculateDistances = useCallback(() => {
+    if (!(places.length > 0 && originLocation && travelMode)) return;
+
+    const distanceService = new google.maps.DistanceMatrixService();
+    const origins = [originLocation];
+    const destinations = places.map((place) => place.vicinity ?? "");
+
+    distanceService.getDistanceMatrix(
+      {
+        origins,
+        destinations,
+        travelMode: getTravelMode(travelMode),
+      },
+      (response, status) => {
+        if (status === google.maps.DistanceMatrixStatus.OK && response) {
+          const newDistances: { [key: string]: number } = {};
+          const newDurations: { [key: string]: string } = {};
+
+          response.rows[0].elements.forEach((element, index) => {
+            const placeId = places[index]?.place_id ?? "";
+            newDistances[placeId] = element.distance?.value ?? 0;
+            newDurations[placeId] = element.duration?.text ?? "";
+          });
+
+          setDistances(newDistances);
+          setDurations(newDurations);
         }
-      );
-    }*/
+      }
+    );
+  }, [places, originLocation, travelMode]);
+
+  // Debounced effect for distance calculations
+  useEffect(() => {
+    const debounceTimeout = setTimeout(calculateDistances, 1000);
+    return () => clearTimeout(debounceTimeout);
   }, [
-    selectedPlace,
+    calculateDistances,
+    // These filters should only be included if they actually affect the distance calculations
+    // If they don't, remove them from this dependency array
     placeTypeFilters,
     priceLevelFilters,
     accessibilityFilter,
     favoritesFilter,
-    travelMode,
-    places,
   ]);
 
   return (
@@ -162,7 +180,12 @@ export function SuggestedPlaces() {
             {places.length > 0
               ? `${places.length} Places Found`
               : "Search for Places"}
-            <button onClick={handleFiltersClick} type="button" aria-label="Filters" style={{ marginLeft: "auto" }}>
+            <button
+              onClick={handleFiltersClick}
+              type="button"
+              aria-label="Filters"
+              style={{ marginLeft: "auto" }}
+            >
               <FontAwesomeIcon icon={faPencilAlt} size="lg" />
             </button>
             <Modal
@@ -252,7 +275,7 @@ export function SuggestedPlaces() {
                   }}
                   onClick={() => handlePlaceSelect(place)}
                 >
-                  {place.photos && place.photos[0] && (
+                  {place.photos && place.photos[0] ? (
                     <img
                       src={place.photos[0].getUrl()}
                       alt={place.name}
@@ -269,6 +292,21 @@ export function SuggestedPlaces() {
                         )
                       }
                     />
+                  ) : (
+                    <div
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        borderRadius: "5px",
+                        marginRight: "10px",
+                        backgroundColor: "#ccc",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <p className="text-center">No photo available</p>
+                    </div>
                   )}
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <h3 className="text-lg font-bold">

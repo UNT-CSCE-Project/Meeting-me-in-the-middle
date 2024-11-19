@@ -21,97 +21,87 @@ export default function RegistrationForm() {
     const [phoneNumber, setphoneNumber] = useState('');
     const router = useRouter();
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setErrorMessage('');
-        if(firstName=='') {
-          setIsError(true);
-          return
-        } else if(lastName=='') {
-          setIsError(true);
-          return
-        }
-        else if(phoneNumber=='' || phoneNumber.length < 8) {
-          setIsError(true);
-          return
-        } else  if(!phoneNumber.match(/^\d{3}-\d{3}-\d{4}$/)) {
-          setErrorMessage('Please give an input of the form XXX-XXX-XXXX');
-          setIsError(true);
-          return
-        }
-        else if(streetAddress=='') {
-          setIsError(true);
-          return
-        }
-        else  if(city=='') {
-          setIsError(true);
-          return
-        }
-        else  if(state=='') {
-          setIsError(true);
-          return
-        }
-        else  if(zipCode=='') {
-          setIsError(true);
-          return
-        }
-        else if(email=='') {
-          setIsError(true);
-          return
-        }
-        else if(password=='') {
-          setIsError(true);
-          return
-        }
-        else if(confirmPassword=='') {
-          setIsError(true);
-          return
-        } else if(password !== confirmPassword) {
-          setErrorMessage('Passwords do not match');
-          setIsError(true);
-          return
-        }
-        try {
-
-                setIsError(false);
-                          // console.log(email, password)
-                const user = await emailSignUp(email, password);
-
-                const formData = new FormData();
-                formData.append('email', email);
-                formData.append('password', password);
-                formData.append('firstName', firstName);
-                formData.append('lastName', lastName);
-                formData.append('phoneNumber', phoneNumber);                 
-                formData.append('streetAddress', streetAddress);
-                formData.append('city', city);
-                formData.append('state', state);
-                formData.append('zipCode', zipCode);
-                
-                
-                if(user && user?.uid) {
-                    formData.append('uid', user?.uid as string);
-                    setErrorMessage('');
-                    const response = await addUser(formData);
-                    if(response?.status !== 200) {
-                        setErrorMessage(response.message);
-                        await deleteUser(user as any);
-                        return;
-                    } else {
-                      setSuccessMessage('Registration successful, redirecting to login...');
-                      setTimeout(() => {
-
-                          router.push('/login');
-                      }, 3000)
-
-                    }
-                } 
-                
+      e.preventDefault();
+      setErrorMessage('');
+  
+      // Validation checks
+      const validationChecks = [
+          { condition: firstName === '', message: 'First name is required' },
+          { condition: lastName === '', message: 'Last name is required' },
+          { condition: phoneNumber === '' || phoneNumber.length < 8, message: 'Valid phone number is required' },
+          { condition: !phoneNumber.match(/^\d{3}-\d{3}-\d{4}$/), message: 'Please give an input of the form XXX-XXX-XXXX' },
+          { condition: streetAddress === '', message: 'Street address is required' },
+          { condition: city === '', message: 'City is required' },
+          { condition: state === '', message: 'State is required' },
+          { condition: zipCode === '', message: 'Zip code is required' },
+          { condition: email === '', message: 'Email is required' },
+          { condition: password === '', message: 'Password is required' },
+          { condition: confirmPassword === '', message: 'Please confirm your password' },
+          { condition: password !== confirmPassword, message: 'Passwords do not match' }
+      ];
+  
+      // Check all validations
+      for (const check of validationChecks) {
+          if (check.condition) {
+              setIsError(true);
+              setErrorMessage(check.message);
+              return;
+          }
+      }
+  
+      try {
+          setIsError(false);
+          const user = await emailSignUp(email, password);
+          console.log(user);
+          // Check if user creation was successful  
+          if (!user || !user.uid) {
+              setErrorMessage('Failed to create user account');
+              return;
+          }
+          console.log(user);
+  
+          const formData = new FormData();
+          const formFields = {
+              email,
+              password,
+              firstName,
+              lastName,
+              phoneNumber,
+              streetAddress,
+              city,
+              state,
+              zipCode,
+              uid: user.uid
+          };
+  
+          // Append all form fields
+          Object.entries(formFields).forEach(([key, value]) => {
+              formData.append(key, value);
+          });
+  
+          const response = await addUser(formData);
+          console.log(response);
+          if (response?.status !== 200) {
+              setErrorMessage(response.message || 'Failed to create user profile');
+              // Optionally handle user deletion if profile creation fails
+              // await deleteUser(user);
+          } else {
+              setSuccessMessage('Registration successful, redirecting to login...');
+              setTimeout(() => {
+                  router.push('/login');
+              }, 3000);
+          }
       } catch (error) {
-            console.error('An error occurred:', error as Error);
-            setErrorMessage(error as string  || 'An error occurred');
-
-        }
-    }
+          console.error('An error occurred:', error);
+          
+          // Properly handle the error message
+          const errorMessage = error instanceof Error 
+              ? error.message 
+              : 'An unexpected error occurred during registration';
+          
+          setErrorMessage(errorMessage);
+      }
+  };
     return (
         <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
           

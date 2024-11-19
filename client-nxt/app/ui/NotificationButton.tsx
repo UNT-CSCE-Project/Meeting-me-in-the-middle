@@ -25,6 +25,7 @@ export default function NotificationButton() {
   };
 
   return (
+    
     <button onClick={() => setShowNotifications(!showNotifications)} type='button'>
       <div className="relative flex ml-4 items-center justify-center h-10 w-10 rounded-full">
         <BellIcon className="h-6 w-6 text-red-500 cursor-pointer hover:text-red-900" />
@@ -39,5 +40,6 @@ export default function NotificationButton() {
         </div>
       )}
     </button>
+
   );
 }

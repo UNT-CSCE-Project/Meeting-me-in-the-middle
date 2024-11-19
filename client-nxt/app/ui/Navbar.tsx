@@ -50,7 +50,7 @@ export default function Navbar() {
         <div className="w-25 ml-8 flex items-center justify-between ab">
           <Suspense fallback={<SearchSkeleton/>}>
             <Search placeholder="Search for friends" baseUrl="/friends" />
-        
+            <div className="relative flex">
             <NotificationButton />
 
             <ProfileInfo firstName={firstName} lastName={lastName} email={email}/>
@@ -62,7 +62,7 @@ export default function Navbar() {
               >  Sign Out
                 <ArrowRightEndOnRectangleIcon className="h-10 w-10" />
               </button>
-
+              </div>
           </Suspense>
         </div>
       </div>

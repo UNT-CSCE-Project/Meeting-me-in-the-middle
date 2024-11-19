@@ -62,7 +62,9 @@ export default function ApprovalList() {
     });
     setApprovals(updatedApprovals);
   };
-
+  const handleInvite = () => {
+    window.location.href = "/midpoint-finder";
+  }
   const filterAfterDecline = (item : approvalInfo) => {
     const updatedApprovals = approvals.filter((approval) => approval.id !== item.id);
     setApprovals(updatedApprovals);
@@ -72,9 +74,32 @@ export default function ApprovalList() {
     <div className="mt-6 flow-root flex flex-col lg:flex-row h-screen w-full p-6 bg-gray-100">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-blue-50 p-2 md:pt-0 ml-4 mr-4">
-          {approvals.length === 0 && !isFetching ? (
-            <div className="w-full text-center">No invitation found</div>
-          ) : (
+        { approvals.length === 0  ? (
+<div className="w-full text-center p-6">
+  <i className="fas fa-envelope-open-text text-red-500 text-5xl mb-4"></i>
+
+  {isFetching ? (
+    <p className="text-gray-600 text-sm mb-4">
+      Loading location approvals...
+    </p>
+  ) : (
+    <>
+      <p className="text-red-600 italic text-lg mb-2">
+        No pending location approvals! 
+      </p>
+      <p className="text-gray-600 text-sm mb-4">
+        Why not send an invitation to a friend or colleague?
+      </p>
+      <button
+        onClick={handleInvite}
+        className="mt-4 px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-150 ease-in-out"
+      >
+        Invite Now
+      </button>
+    </>
+  )}
+</div>
+): (
             !isFetching && (
               <table className="hidden min-w-full text-gray-900 md:table">
                 <thead className="rounded-lg text-left text-sm font-normal">

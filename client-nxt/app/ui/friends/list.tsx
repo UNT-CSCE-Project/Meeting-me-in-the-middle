@@ -9,6 +9,8 @@ import PendingRequests from "@/app/ui/friends/pending/pendingRequests";
 import CurrentList from "@/app/ui/friends/current/currentlist";
 import { addNotification } from "@/app/lib/notifications/actions";
 import { NotificationType } from "@/app/lib/notifications/definitions";
+import { CardSkeleton } from "../skeletons";
+import { set } from "date-fns";
 export default function FriendsList() {
 
     const { currentUser, userData } = useUser();
@@ -27,6 +29,7 @@ export default function FriendsList() {
         }
     }, [currentUser]);
     useEffect(() => {
+      setIsLoading(true);
       const fetchPendingRequests = async () => {
           const pendingRequests = await getPendingRequests(curUserId.toString());
           // console.log(pendingRequests);
@@ -52,6 +55,7 @@ export default function FriendsList() {
   
       fetchPendingRequests();
       fetchCurrentList();
+      setIsLoading(false);
   }, [curUserId]);
   
     const handleAcceptRequest = async (request : friendRequest) => {
@@ -113,15 +117,14 @@ export default function FriendsList() {
 
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      
         <PendingRequests
           pendingRequests={pendingRequests}
           onAcceptRequest={handleAcceptRequest}
           onCancelRequest={handleCancelRequest}
           isLoading={isLoading}
         />
-      </Suspense>
-      <Suspense fallback={<div>Loading...</div>}>
+
       
         <CurrentList
           items={currentList}
@@ -129,7 +132,7 @@ export default function FriendsList() {
           isRemoving={isRemoving}
           isLoading={isLoading}
         />
-      </Suspense>
+
     </div>
   );
 }
