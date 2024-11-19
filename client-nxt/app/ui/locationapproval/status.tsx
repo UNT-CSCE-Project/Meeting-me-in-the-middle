@@ -8,7 +8,7 @@ export default function ApprovalStatus({ status }: { status: string }) {
       className={clsx(
         'inline-flex items-center rounded-full px-2 py-1 text-xs',
         {
-          'bg-gray-200 text-gray-100': status === 'pending',
+          'bg-yellow-200 text-white-200': status === 'pending',
           'bg-green-900 text-white': status === 'accepted',
         },
       )}
@@ -16,7 +16,7 @@ export default function ApprovalStatus({ status }: { status: string }) {
       {status === 'pending' ? (
         <>
           Pending
-          <ClockIcon className="ml-1 w-4 text-gray-600" />
+          <ClockIcon className="ml-1 w-4 text-yellow-600" />
         </>
       ) : null}
       {status === 'accepted' ? (
